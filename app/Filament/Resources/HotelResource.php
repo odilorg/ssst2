@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Hotel;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use App\Models\Hotel;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -27,9 +30,56 @@ class HotelResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('address')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('cost_per_night')
-                    ->required()
-                    ->numeric(),
+                
+                    Select::make('type')
+                    ->label('Type')
+                    ->options([
+                        'bed_and_breakfast' => 'B&B',
+                        '3_star' => '3 Star',
+                        '4_star' => '4 Star',
+                    ])
+                   // ->default('bus')  // If you want a default value
+                    ->required(),
+
+
+                    Repeater::make('rooms')
+                    ->relationship()
+                    ->schema([
+                       
+                    Forms\Components\select::make('room_type_id')
+                        ->relationship('roomType', 'type')
+                        ->required()
+                        ->preload()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('type')
+                                ->required(),
+                            ]),
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('description')
+                        ->columnSpanFull(),
+    
+    
+                    Select::make('amenities')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->relationship(titleAttribute: 'name')
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required(),
+    
+                        ]),
+                    Forms\Components\TextInput::make('cost_per_night')
+                        ->required()
+                        ->numeric()
+                        ->default(0.00),
+                    FileUpload::make('images')
+                        ->multiple(),
+                    ])        
+
+
             ]);
     }
 
