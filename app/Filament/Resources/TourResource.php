@@ -8,6 +8,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
@@ -35,26 +36,43 @@ class TourResource extends Resource
                     ->relationship()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('description')
-                            ->columnSpanFull(),
-
-
-                        Forms\Components\Select::make('guide_id')
-                            ->relationship('guide', 'name')
-                            ->required()
-                            ->preload(),
-
-                        Forms\Components\Select::make('transport_id')
-                            ->relationship('transport.transportType', 'type')
-                            ->required()
-                            ->preload(),
-
-                        Forms\Components\Select::make('hotel_id')
-                            ->relationship('hotel', 'name')
-                            ->required()
-                            ->preload(),
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('description')
+                        ->columnSpanFull(),
+                    Forms\Components\Select::make('tour_id')
+                        ->relationship('tour', 'name')
+                        ->required()
+                        ->preload(),
+    
+                    Forms\Components\Select::make('guide_id')
+                        ->relationship('guide', 'name')
+                        ->required()
+                        ->preload(),
+    
+                        Repeater::make('tourDayTransports')
+                                ->relationship()
+                                ->schema([
+                                    Select::make('transport_id')
+                                        ->relationship('transport', 'model')
+                                        ->required()
+                                        ->preload(),
+                                        Select::make('price_type')
+                                        ->options([
+                                            'per_day' => 'Per Day',
+                                    'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                                        ])   
+                                ]),
+    
+                    forms\Components\Select::make('transport_id')
+                        ->relationship('transport.transportType', 'type')
+                        ->required()
+                        ->preload(),
+    
+                    Forms\Components\Select::make('hotel_id')
+                        ->relationship('hotel', 'name')
+                        ->required()
+                        ->preload(),
                     ]),
             ]);
     }
