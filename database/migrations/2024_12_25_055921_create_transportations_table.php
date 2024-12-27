@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('transportations', function (Blueprint $table) {
             $table->id();
-            $table->enum('size', ['FORTY_SEAT', 'FIFTY_SEAT']); // Using enums for bus sizes
-            $table->string('provider')->nullable();
-            $table->decimal('cost_per_unit', 10, 2)->default(0); // Cost per trip, per person, etc.
-            $table->timestamps();
-            $table->string('vehicle_type')->nullable();
-        });
+            $table->enum('category', ['Bus', 'Car', 'Air', 'Rail']); // Using enums for bus sizes
+        //     $table->string('provider')->nullable();
+        //     $table->decimal('cost_per_unit', 10, 2)->default(0); // Cost per trip, per person, etc.
+        //     $table->timestamps();
+        //     $table->string('vehicle_type')->nullable();
+         });
     }
 
     /**

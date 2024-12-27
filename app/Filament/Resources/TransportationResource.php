@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transportation;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,16 +26,15 @@ class TransportationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('type')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('vehicle_type')
-                    ->required()
-                    ->maxLength(255),
-                Repeater::make('pricings')->relationship('pricings')->schema([
-                    Forms\Components\TextInput::make('cost_per_unit')->required()->numeric(),
-                    Forms\Components\DatePicker::make('start_date'),
-                    Forms\Components\DatePicker::make('end_date'),
+                Select::make('category')
+                ->label('Category')
+                ->options([
+                    'bus' => 'Bus',
+                    'car' => 'Car',
+                    'mikro_bus' => 'Mikro Bus',
+                    'air' => 'Air',
+                    'rail' => 'Rail',
+
                 ])
             ]);
     }

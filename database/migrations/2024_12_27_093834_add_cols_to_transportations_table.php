@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transportations', function (Blueprint $table) {
-            $table->enum('size', ['FORTY_SEAT', 'FIFTY_SEAT']); // Using enums for bus sizes
+            $table->enum('category', ['bus', 'car','mikro_bus', 'air', 'rail']); // Using enums for bus sizes
 
         });
     }
