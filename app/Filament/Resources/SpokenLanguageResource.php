@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\GuideResource\Pages;
-use App\Filament\Resources\GuideResource\RelationManagers;
-use App\Models\Guide;
+use App\Filament\Resources\SpokenLanguageResource\Pages;
+use App\Filament\Resources\SpokenLanguageResource\RelationManagers;
+use App\Models\SpokenLanguage;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -14,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class GuideResource extends Resource
+class SpokenLanguageResource extends Resource
 {
-    protected static ?string $model = Guide::class;
+    protected static ?string $model = SpokenLanguage::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -27,16 +26,6 @@ class GuideResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('daily_rate')
-                    ->required()
-                    ->numeric()
-                    ->default(0.00),
-                Select::make('languages')
-                    ->relationship('languages', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable()
-                    ->required(),
             ]);
     }
 
@@ -44,11 +33,6 @@ class GuideResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('daily_rate')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -57,7 +41,7 @@ class GuideResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('language')
+                Tables\Columns\TextColumn::make('name')
                     ->searchable(),
             ])
             ->filters([
@@ -83,9 +67,9 @@ class GuideResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGuides::route('/'),
-            'create' => Pages\CreateGuide::route('/create'),
-            'edit' => Pages\EditGuide::route('/{record}/edit'),
+            'index' => Pages\ListSpokenLanguages::route('/'),
+            'create' => Pages\CreateSpokenLanguage::route('/create'),
+            'edit' => Pages\EditSpokenLanguage::route('/{record}/edit'),
         ];
     }
 }
