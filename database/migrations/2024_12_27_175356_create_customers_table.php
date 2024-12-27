@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('days', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tour_id')->constrained()->onDelete('cascade'); // A day belongs to a tour
-            $table->integer('day_number'); // Day 1, Day 2, etc.
-            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('days');
+        Schema::dropIfExists('customers');
     }
 };

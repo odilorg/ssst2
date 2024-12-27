@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\DayResource\Pages;
+namespace App\Filament\Resources\EstimateResource\Pages;
 
-use App\Filament\Resources\DayResource;
+use App\Filament\Resources\EstimateResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListDays extends ListRecords
+class ListEstimates extends ListRecords
 {
-    protected static string $resource = DayResource::class;
+    protected static string $resource = EstimateResource::class;
 
     protected function getHeaderActions(): array
     {

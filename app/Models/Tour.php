@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tour extends Model
 {
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'tour_number'];
 
-    public function days(): HasMany
+    public function tourDays(): HasMany
     {
-        return $this->hasMany(Day::class);
+        return $this->hasMany(TourDay::class);
     }
 }
