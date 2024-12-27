@@ -13,7 +13,8 @@ class Room extends Model
         'room_type_id',
         'cost_per_night',
         'hotel_id',
-        'images'
+        'images',
+        'image'
     ];
 
     public function roomType()

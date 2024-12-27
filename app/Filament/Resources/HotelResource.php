@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -31,12 +32,13 @@ class HotelResource extends Resource
                 Forms\Components\TextInput::make('address')
                     ->maxLength(255),
                 
-                    Select::make('type')
-                    ->label('Type')
+                    Select::make('category')
+                    ->label('Category')
                     ->options([
-                        'bed_and_breakfast' => 'B&B',
+                        'bed_breakfast' => 'B&B',
                         '3_star' => '3 Star',
                         '4_star' => '4 Star',
+                        '5_star' => '5 Star',
                     ])
                    // ->default('bus')  // If you want a default value
                     ->required(),
@@ -89,8 +91,13 @@ class HotelResource extends Resource
             ->columns([
                 TextColumn::make('name'),
                 TextColumn::make('address'),
-                TextColumn::make('cost_per_night'),
-            ])
+                SelectColumn::make('category')
+                ->options([
+                    'bed_breakfast' => 'B&B',
+                    '3_star' => '3 Star',
+                    '4_star' => '4 Star',
+                    '5_star' => '5 Star',
+                ]),        ])
             ->filters([
                 //
             ])

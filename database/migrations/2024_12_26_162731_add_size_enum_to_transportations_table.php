@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transportations', function (Blueprint $table) {
-            $table->id();
+        Schema::table('transportations', function (Blueprint $table) {
             $table->enum('size', ['FORTY_SEAT', 'FIFTY_SEAT']); // Using enums for bus sizes
-            $table->string('provider')->nullable();
-            $table->decimal('cost_per_unit', 10, 2)->default(0); // Cost per trip, per person, etc.
-            $table->timestamps();
-            $table->string('vehicle_type')->nullable();
+
         });
     }
 
@@ -26,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transportations');
+        Schema::table('transportations', function (Blueprint $table) {
+            //
+        });
     }
 };
