@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RoomTypeResource extends Resource
 {
     protected static ?string $model = RoomType::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Hotels';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

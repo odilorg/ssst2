@@ -18,6 +18,8 @@ use App\Filament\Resources\TransportResource\RelationManagers;
 class TransportResource extends Resource
 {
     protected static ?string $model = Transport::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

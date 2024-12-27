@@ -18,6 +18,8 @@ class GuideResource extends Resource
 {
     protected static ?string $model = Guide::class;
 
+    protected static ?string $navigationGroup = 'Tour Items';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -32,6 +34,11 @@ class GuideResource extends Resource
                     ->numeric()
                     ->default(0.00),
                 Select::make('languages')
+                ->createOptionForm([
+                    Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                ])
                     ->relationship('languages', 'name')
                     ->multiple()
                     ->preload()

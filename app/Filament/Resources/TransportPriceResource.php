@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class TransportPriceResource extends Resource
 {
     protected static ?string $model = TransportPrice::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Transports';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

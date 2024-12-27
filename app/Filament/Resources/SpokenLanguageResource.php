@@ -16,6 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SpokenLanguageResource extends Resource
 {
     protected static ?string $model = SpokenLanguage::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Guides';
+
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

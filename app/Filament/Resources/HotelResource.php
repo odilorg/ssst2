@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class HotelResource extends Resource
 {
     protected static ?string $model = Hotel::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 

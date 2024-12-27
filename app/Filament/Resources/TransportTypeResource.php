@@ -17,6 +17,9 @@ use App\Filament\Resources\TransportTypeResource\RelationManagers;
 class TransportTypeResource extends Resource
 {
     protected static ?string $model = TransportType::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Transports';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
