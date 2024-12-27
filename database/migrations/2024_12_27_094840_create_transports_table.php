@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('plate_number');
             $table->string('model');
             $table->integer('number_of_seat');
-            $table->foreignId('transportation_id');
-            $table->foreignId('transport_type__id');
+            $table->foreignId('transport_type_id');
 
             
         });

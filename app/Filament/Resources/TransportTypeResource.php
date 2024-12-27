@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TransportTypeResource\Pages;
-use App\Filament\Resources\TransportTypeResource\RelationManagers;
-use App\Models\TransportType;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\TransportType;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TransportTypeResource\Pages;
+use App\Filament\Resources\TransportTypeResource\RelationManagers;
 
 class TransportTypeResource extends Resource
 {
@@ -26,18 +27,23 @@ class TransportTypeResource extends Resource
                 Forms\Components\TextInput::make('type')
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\Select::make('price_type')
-                    ->options([
-                        'per_day' => 'Per Day',
-                        'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                Repeater::make('transportPrices')
+                    ->relationship()
+                    ->schema([
+
+                        Forms\Components\Select::make('price_type')
+                            ->options([
+                                'per_day' => 'Per Day',
+                                'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('cost')
+                            ->required()
+                            ->numeric()
+                            // ->default(0.00)
+                            ->prefix('$'),
                     ])
-                    ->required(),
-                    //->maxLength(255),
-                    Forms\Components\TextInput::make('cost')
-                    ->required()
-                    ->maxLength(255),
-                
-    
+
 
             ]);
     }
@@ -56,9 +62,9 @@ class TransportTypeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('price_type')
+                Tables\Columns\TextColumn::make('price_type')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('cost')
+                Tables\Columns\TextColumn::make('cost')
                     ->searchable(),
             ])
             ->filters([

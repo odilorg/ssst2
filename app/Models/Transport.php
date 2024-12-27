@@ -10,15 +10,11 @@ class Transport extends Model
         'plate_number',
         'model',
         'number_of_seat',
-        'transportation_id',
         'category',
         'transport_type_id'
     ];
 
-    public function transportation()
-    {
-        return $this->belongsTo(Transportation::class);
-    }
+    
 
     public function transportType()
     {

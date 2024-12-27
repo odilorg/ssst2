@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('transport_prices', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name');
             $table->decimal('cost', 8, 2)->default(0); // Cost per trip, per person, etc.
-            $table->foreignId('transport_id');
+            $table->foreignId('transport_type_id');
         });
     }
 

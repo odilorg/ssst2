@@ -9,6 +9,7 @@ use App\Models\Transport;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -50,6 +51,28 @@ class TransportResource extends Resource
                 //     ->preload(),
                 Forms\Components\Select::make('transport_type_id')
                     ->relationship('transportType', 'type')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('type')
+                    ->required()
+                    ->maxLength(255),
+                Repeater::make('transportPrices')
+                    ->relationship()
+                    ->schema([
+
+                        Forms\Components\Select::make('price_type')
+                            ->options([
+                                'per_day' => 'Per Day',
+                                'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('cost')
+                            ->required()
+                            ->numeric()
+                            // ->default(0.00)
+                            ->prefix('$'),
+                    ])
+
+                    ])
                     ->required()
                     ->preload(),
             ]);

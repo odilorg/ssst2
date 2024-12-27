@@ -10,7 +10,11 @@ class TransportType extends Model
 
     protected $fillable = [
         'type',
-        'cost',
-        'price_type'
+        
     ];
+
+    public function transportPrices()
+    {
+        return $this->hasMany(TransportPrice::class, 'transport_type_id', 'id');
+    }
 }
