@@ -31,9 +31,12 @@ class TransportPriceResource extends Resource
                     ->required()
                     ->preload(),
 
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                    Forms\Components\Select::make('price_type')
+                    ->options([
+                        'per_day' => 'Per Day',
+                        'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                    ])
+                    ->required(),
                 Forms\Components\TextInput::make('cost')
                     ->required()
                     ->numeric()

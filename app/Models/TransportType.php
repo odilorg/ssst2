@@ -11,6 +11,7 @@ class TransportType extends Model
     protected $fillable = [
         'type',
         
+        
     ];
 
     public function transportPrices()

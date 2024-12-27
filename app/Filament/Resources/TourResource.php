@@ -28,33 +28,33 @@ class TourResource extends Resource
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                    Forms\Components\Textarea::make('tour_number')
+                Forms\Components\Textarea::make('tour_number')
                     ->columnSpanFull(),
 
-                    Repeater::make('tourDays')
+                Repeater::make('tourDays')
                     ->relationship()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->columnSpanFull(),
-                
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('description')
+                            ->columnSpanFull(),
 
-                Forms\Components\Select::make('guide_id')
-                    ->relationship('guide', 'name')
-                    ->required()
-                    ->preload(),
 
-                forms\Components\Select::make('transport_id')
-                    ->relationship('transport.transportType', 'type')
-                    ->required()
-                    ->preload(),
+                        Forms\Components\Select::make('guide_id')
+                            ->relationship('guide', 'name')
+                            ->required()
+                            ->preload(),
 
-                Forms\Components\Select::make('hotel_id')
-                    ->relationship('hotel', 'name')
-                    ->required()
-                    ->preload(),
+                        Forms\Components\Select::make('transport_id')
+                            ->relationship('transport.transportType', 'type')
+                            ->required()
+                            ->preload(),
+
+                        Forms\Components\Select::make('hotel_id')
+                            ->relationship('hotel', 'name')
+                            ->required()
+                            ->preload(),
                     ]),
             ]);
     }
@@ -65,10 +65,10 @@ class TourResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('description')
-                    ->searchable(),   
-                    Tables\Columns\TextColumn::make('tour_number')
-                    ->searchable(),  
+                Tables\Columns\TextColumn::make('description')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tour_number')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TourDay extends Model
 {
@@ -24,17 +25,22 @@ class TourDay extends Model
         return $this->belongsTo(Guide::class);
     }
 
-    public function transport()
+    public function tourDayTransports(): HasMany
     {
-        return $this->belongsTo(Transport::class);
-    }   
-
+        return $this->hasMany(TourDayTransport::class); ;
+    }
+       
     public function hotel()
     {
         return $this->belongsTo(Hotel::class);
-    }   
-
+    }
     
+    public function transport()
+    {
+        return $this->belongsTo(Transport::class);
+    }
+
+
 
 
 }

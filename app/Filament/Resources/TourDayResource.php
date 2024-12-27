@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TourDayResource\Pages;
-use App\Filament\Resources\TourDayResource\RelationManagers;
-use App\Models\TourDay;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\TourDay;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\TourDayResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TourDayResource\RelationManagers;
+use Filament\Forms\Components\Select;
 
 class TourDayResource extends Resource
 {
@@ -37,6 +39,20 @@ class TourDayResource extends Resource
                     ->relationship('guide', 'name')
                     ->required()
                     ->preload(),
+
+                    Repeater::make('tourDayTransports')
+                            ->relationship()
+                            ->schema([
+                                Select::make('transport_id')
+                                    ->relationship('transport', 'model')
+                                    ->required()
+                                    ->preload(),
+                                    Select::make('price_type')
+                                    ->options([
+                                        'per_day' => 'Per Day',
+                                'per_pickup_dropoff' => 'Per Pickup Dropoff'
+                                    ])   
+                            ]),
 
                 forms\Components\Select::make('transport_id')
                     ->relationship('transport.transportType', 'type')
