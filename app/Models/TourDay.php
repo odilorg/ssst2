@@ -39,7 +39,10 @@ class TourDay extends Model
     {
         return $this->belongsTo(Transport::class);
     }
-
+    public function hotelRooms()
+    {
+        return $this->hasMany(HotelTourDayRoom::class); // HasMany with the pivot model
+    }
 
 
 

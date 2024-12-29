@@ -13,10 +13,10 @@ class Hotel extends Model
 
     protected $fillable = ['name', 'address', 'category', ];
 
-    public function days(): BelongsToMany
-    {
-        return $this->belongsToMany(Day::class)->withPivot(['number_of_rooms','number_of_nights','agreed_price'])->withTimestamps();
-    }
+    // public function days(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Day::class)->withPivot(['number_of_rooms','number_of_nights','agreed_price'])->withTimestamps();
+    // }
 
     public function rooms(): HasMany
     {

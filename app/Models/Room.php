@@ -31,6 +31,13 @@ class Room extends Model
     {
         return $this->belongsToMany(Amenity::class);
     }
+
+    public function tourDays()
+    {
+        return $this->belongsToMany(TourDay::class, 'tour_day_hotel_room')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
    
 
     protected $casts = [
