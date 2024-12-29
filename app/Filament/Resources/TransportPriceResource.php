@@ -57,7 +57,7 @@ class TransportPriceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('transportType.type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost')
                     ->money()

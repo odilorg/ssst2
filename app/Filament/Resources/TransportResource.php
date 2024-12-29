@@ -100,7 +100,8 @@ class TransportResource extends Resource
                     ->numeric()
                     ->sortable(),
                     Tables\Columns\TextColumn::make('category'),
-                    Tables\Columns\TextColumn::make('transportType.cost'),
+                    Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
+                    ->label('Per Day, Per Pickup'),
 
                
                 Tables\Columns\TextColumn::make('transportType.type')

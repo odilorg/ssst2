@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('daily_rate', 10, 2)->default(0);
             $table->timestamps();
-            $table->string('language')->nullable();
         });
     }
 
