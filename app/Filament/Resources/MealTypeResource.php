@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class MealTypeResource extends Resource
 {
     protected static ?string $model = MealType::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Restaurants';
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -32,21 +36,7 @@ class MealTypeResource extends Resource
                 Forms\Components\Select::make('restaurant_id')
                     ->relationship('restaurant', 'name')
                     ->required()
-                    ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required(),
-                        Forms\Components\TextInput::make('address')
-                            ->required(),
-                        Forms\Components\TextInput::make('phone')
-                            ->tel()
-                            ->required(),
-                        Forms\Components\TextInput::make('website')
-                            ->required(),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->required(),
-                    ]),
+                    ->preload(),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
@@ -71,7 +61,7 @@ class MealTypeResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('restaurant.name')
-                    //  ->numeric()
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money()

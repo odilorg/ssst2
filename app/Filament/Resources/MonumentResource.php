@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class MonumentResource extends Resource
 {
     protected static ?string $model = Monument::class;
+    protected static ?string $navigationGroup = 'Tour Items';
+
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

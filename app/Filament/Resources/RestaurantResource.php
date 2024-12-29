@@ -6,6 +6,7 @@ use App\Filament\Resources\RestaurantResource\Pages;
 use App\Filament\Resources\RestaurantResource\RelationManagers;
 use App\Models\Restaurant;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,6 +17,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RestaurantResource extends Resource
 {
     protected static ?string $model = Restaurant::class;
+
+    protected static ?string $navigationGroup = 'Tour Items';
+
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -40,6 +45,24 @@ class RestaurantResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
+
+                    Repeater::make('mealTypes')
+                    ->relationship()
+                    ->schema([
+
+                        Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('description')
+                        ->maxLength(255)
+                        ->default(null),
+                   
+                    Forms\Components\TextInput::make('price')
+                        ->required()
+                        ->numeric()
+                        ->prefix('$'),
+                        ])
+                    
             ]);
     }
 
