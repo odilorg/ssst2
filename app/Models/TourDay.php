@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TourDay extends Model
@@ -43,6 +45,12 @@ class TourDay extends Model
     {
         return $this->hasMany(HotelTourDayRoom::class); // HasMany with the pivot model
     }
+
+    public function monuments(): BelongsToMany
+    {
+        return $this->belongsToMany(Monument::class, 'monument_tour_days');
+    }  
+    
 
 
 

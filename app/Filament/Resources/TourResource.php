@@ -41,7 +41,7 @@ class TourResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('description')
                             ->columnSpanFull(),
-                            Forms\Components\Select::make('guide_id')
+                        Forms\Components\Select::make('guide_id')
                             ->label('Guide')
                             ->options(function () {
                                 return \App\Models\Guide::with('languages')->get()->mapWithKeys(function ($guide) {
@@ -54,7 +54,7 @@ class TourResource extends Resource
                             ->searchable() // Enable searching for guides
                             ->required()
                             ->preload(),
-                        
+
                         Repeater::make('tourDayTransports')
                             ->relationship()
                             ->schema([
@@ -62,34 +62,34 @@ class TourResource extends Resource
                                     ->relationship('transport', 'model')
                                     ->required()
                                     ->preload(),
-                                    Select::make('price_type')
+                                Select::make('price_type')
                                     ->label('Price Type')
                                     ->options(function (callable $get) {
                                         $transportId = $get('transport_id'); // Get the selected transport ID
-                                
+
                                         if (!$transportId) {
                                             return [
                                                 'per_day' => 'Per Day',
                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
                                             ]; // Default options if no transport is selected
                                         }
-                                
+
                                         // Fetch the selected transport with its related prices
                                         $transport = \App\Models\Transport::where('id', $transportId)
                                             ->with(['transportType.transportPrices'])
                                             ->first();
-                                
+
                                         if (!$transport || !$transport->transportType) {
                                             return [
                                                 'per_day' => 'Per Day',
                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
                                             ]; // Fallback if transport or transportType is missing
                                         }
-                                
+
                                         // Fetch the relevant prices for the two types
                                         $prices = $transport->transportType->transportPrices
                                             ->whereIn('price_type', ['per_day', 'per_pickup_dropoff']);
-                                
+
                                         // Map the prices to the static options
                                         return [
                                             'per_day' => 'Per Day (' . ($prices->where('price_type', 'per_day')->first()->cost ?? 'N/A') . ' USD)',
@@ -99,9 +99,9 @@ class TourResource extends Resource
                                     ->required()
                                     ->reactive()
                                     ->searchable(), // Enable search for usability
-                                
+
                             ]),
-                            Forms\Components\Select::make('hotel_id')
+                        Forms\Components\Select::make('hotel_id')
                             ->label('Hotel')
                             ->options(function () {
                                 return \App\Models\Hotel::all()->mapWithKeys(function ($hotel) {
@@ -116,7 +116,7 @@ class TourResource extends Resource
                                 $set('hotel_rooms', []); // Reset hotel rooms when the hotel changes
                             })
                             ->searchable(), // Enable search for better usability
-                        
+
                         // ->dehydrated(false), // Do NOT send this field to the server
                         Forms\Components\Repeater::make('hotel_rooms')
                             ->relationship('hotelRooms') // Explicitly define the relationship
@@ -127,24 +127,24 @@ class TourResource extends Resource
                                     ->default(fn(callable $get) => $get('../../hotel_id')) // Fetch the parent hotel_id
                                     ->dehydrated(fn(callable $get) => $get('../../hotel_id')), // Include in the payload only if set
 
-                                    Forms\Components\Select::make('room_id')
+                                Forms\Components\Select::make('room_id')
                                     ->label('Room Type')
                                     ->options(function (callable $get) {
                                         $hotelId = $get('hotel_id'); // Get the selected hotel ID
                                         return $hotelId
                                             ? Room::where('hotel_id', $hotelId)
-                                                ->with('roomType') // Eager load the roomType relationship
-                                                ->get()
-                                                ->mapWithKeys(function ($room) {
-                                                    return [
-                                                        $room->id => "{$room->roomType->type} ({$room->cost_per_night} USD)", // Format: "RoomType (Price)"
-                                                    ];
-                                                })
+                                            ->with('roomType') // Eager load the roomType relationship
+                                            ->get()
+                                            ->mapWithKeys(function ($room) {
+                                                return [
+                                                    $room->id => "{$room->roomType->type} ({$room->cost_per_night} USD)", // Format: "RoomType (Price)"
+                                                ];
+                                            })
                                             : [];
                                     })
                                     ->required()
                                     ->searchable(), // Enable search for better usability
-                                
+
 
                                 Forms\Components\TextInput::make('quantity')
                                     ->label('Quantity')
@@ -155,7 +155,33 @@ class TourResource extends Resource
                             ])
                             ->columns(2)
                             ->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
-                            ->collapsible()
+                            ->collapsible(),
+                            Select::make('monuments')
+                            ->label('Select Monuments')
+                            ->relationship('monuments', 'name') // Define the relationship to the Monument model
+                            ->options(function () {
+                                return \App\Models\Monument::all()->mapWithKeys(function ($monument) {
+                                    return [
+                                        $monument->id => "{$monument->name} ({$monument->ticket_price} USD)", // Format: "Name (Ticket Price USD)"
+                                    ];
+                                });
+                            })
+                            ->searchable() // Enable search functionality
+                            ->multiple()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('city')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('ticket_price')
+                                ->required()
+                                ->numeric(),
+                            Forms\Components\Textarea::make('description')
+                                ->columnSpanFull(),
+                            ]),  // Allow multiple selections
+                        
                     ]),
             ]);
     }
