@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-
 use Filament\Forms;
 use App\Models\Room;
 use App\Models\Tour;
@@ -16,8 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TourResource\RelationManagers;
-use Illuminate\Support\Facades\Log;
-
 
 class TourResource extends Resource
 {
@@ -41,15 +38,12 @@ class TourResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required(),
-                            Select::make('city_id')
+                        Select::make('city_id')
                             ->label('City')
                             ->relationship('city', 'name')
                             ->reactive()
                             ->required()
-                            ->preload()
-                            ->afterStateUpdated(function ($state) {
-                                Log::info('Updated City ID:', ['city_id' => $state]);
-                            }),
+                            ->preload(),
                         Forms\Components\Select::make('guide_id')
                             ->label('Guide')
                             ->relationship('guide', 'name', function ($query) {
@@ -122,7 +116,7 @@ class TourResource extends Resource
                             ]),
 
 
-                            Forms\Components\Select::make('type')
+                        Forms\Components\Select::make('type')
                             ->label('Hotel Category')
                             ->options([
                                 'bed_and_breakfast' => 'Bed and Breakfast',
@@ -131,19 +125,13 @@ class TourResource extends Resource
                                 '5_star' => '5 Star',
                             ])
                             ->reactive()
-                            ->dehydrated(false)
-                            ->afterStateUpdated(function ($state) {
-                                Log::info('Updated Hotel Type:', ['type' => $state]);
-                            }),
+                            ->dehydrated(false),
 
                         Forms\Components\Select::make('hotel_id')
                             ->label('Hotel')
                             ->options(function (callable $get) {
                                 $cityId = $get('city_id'); // Fetch city_id from the parent Repeater (tourDays)
                                 $type = $get('type'); // Get the selected hotel type
-
-                                // Log for debugging
-                                Log::info('Fetching Hotels:', ['city_id' => $cityId, 'type' => $type]);
 
                                 $query = \App\Models\Hotel::query();
 
@@ -154,17 +142,11 @@ class TourResource extends Resource
                                     $query->where('type', $type); // Filter by type
                                 }
 
-                                Log::info('Final Hotel Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
-
                                 return $query->pluck('name', 'id');
                             })
                             ->required()
                             ->reactive(),
 
-
-
-
-                        // ->dehydrated(false), // Do NOT send this field to the server
                         Forms\Components\Repeater::make('hotel_rooms')
                             ->relationship('hotelRooms') // Explicitly define the relationship
                             ->label('Hotel Rooms')
@@ -184,7 +166,7 @@ class TourResource extends Resource
                                             ->get()
                                             ->mapWithKeys(function ($room) {
                                                 return [
-                                                    $room->id => "{$room->roomType->type} ({$room->cost_per_night} USD)", // Format: "RoomType (Price)"
+                                                    $room->id => "{$room->roomType->type} ", // Format: "RoomType (Price)"
                                                 ];
                                             })
                                             : [];
@@ -192,27 +174,20 @@ class TourResource extends Resource
                                     ->required()
                                     ->searchable(), // Enable search for better usability
 
-
                                 Forms\Components\TextInput::make('quantity')
                                     ->label('Quantity')
                                     ->default(1)
                                     ->numeric()
-
                                     ->required(),
                             ])
                             ->columns(2)
                             ->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
                             ->collapsible(),
+
                         Select::make('monuments')
+                            ->multiple()
                             ->label('Select Monuments')
                             ->relationship('monuments', 'name') // Define the relationship to the Monument model
-                            ->options(function () {
-                                return \App\Models\Monument::all()->mapWithKeys(function ($monument) {
-                                    return [
-                                        $monument->id => "{$monument->name} ({$monument->ticket_price} USD)", // Format: "Name (Ticket Price USD)"
-                                    ];
-                                });
-                            })
                             ->searchable() // Enable search functionality
                             ->multiple()
                             ->createOptionForm([
