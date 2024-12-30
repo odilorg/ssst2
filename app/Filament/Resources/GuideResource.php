@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\GuideResource\Pages;
-use App\Filament\Resources\GuideResource\RelationManagers;
-use App\Models\Guide;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Guide;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\GuideResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\GuideResource\RelationManagers;
 
 class GuideResource extends Resource
 {
@@ -34,16 +35,20 @@ class GuideResource extends Resource
                     ->numeric()
                     ->default(0.00),
                 Select::make('languages')
-                ->createOptionForm([
-                    Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                ])
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                    ])
                     ->relationship('languages', 'name')
                     ->multiple()
                     ->preload()
                     ->searchable()
                     ->required(),
+                Toggle::make('is_marketing'),
+                    
+
+    
             ]);
     }
 

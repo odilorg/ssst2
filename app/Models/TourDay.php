@@ -16,6 +16,7 @@ class TourDay extends Model
         'guide_id',
          'transport_id',
          'hotel_id',
+        
     ];
 
     public function tour()

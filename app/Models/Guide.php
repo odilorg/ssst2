@@ -10,7 +10,7 @@ class Guide extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'daily_rate', 'language'];
+    protected $fillable = ['name', 'daily_rate', 'language', 'is_marketing'];
 
     // public function days(): BelongsToMany
     // {
