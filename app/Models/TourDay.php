@@ -16,6 +16,7 @@ class TourDay extends Model
         'guide_id',
          'transport_id',
          'hotel_id',
+         'city_id',
         
     ];
 
@@ -26,6 +27,11 @@ class TourDay extends Model
     public function guide()
     {
         return $this->belongsTo(Guide::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
     public function tourDayTransports(): HasMany

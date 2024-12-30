@@ -39,7 +39,13 @@ class TourResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                            Forms\Components\Select::make('guide_id')
+                        Select::make('city_id')
+                            ->label('City')
+                            ->relationship('city', 'name')
+                            ->searchable()
+                            ->required()
+                            ->preload(),    
+                        Forms\Components\Select::make('guide_id')
                             ->label('Guide')
                             ->relationship('guide', 'name', function ($query) {
                                 $query->where('is_marketing', true); // Add the constraint for the is_marketing column
@@ -48,7 +54,7 @@ class TourResource extends Resource
                             ->required()
                             ->preload(),
 
-                            Repeater::make('tourDayTransports')
+                        Repeater::make('tourDayTransports')
                             ->relationship()
                             ->schema([
                                 Select::make('category')
@@ -62,7 +68,7 @@ class TourResource extends Resource
                                     ])
                                     ->dehydrated(false) // Prevent this field from being sent to the server
                                     ->reactive(), // Make this field reactive to trigger updates in the dependent field
-                        
+
                                 Select::make('transport_id')
                                     ->label('Transport')
                                     ->relationship('transport', 'model', function ($query, callable $get) {
@@ -74,31 +80,31 @@ class TourResource extends Resource
                                     ->required()
                                     ->preload()
                                     ->reactive(), // Make this field reactive to update when the category changes
-                        
+
                                 Select::make('price_type')
                                     ->label('Price Type')
                                     ->options(function (callable $get) {
                                         $transportId = $get('transport_id'); // Get the selected transport ID
-                        
+
                                         if (!$transportId) {
                                             return [
                                                 'per_day' => 'Per Day',
                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
                                             ]; // Default options if no transport is selected
                                         }
-                        
+
                                         // Fetch the selected transport with its related prices
                                         $transport = \App\Models\Transport::where('id', $transportId)
                                             ->with(['transportType.transportPrices'])
                                             ->first();
-                        
+
                                         if (!$transport || !$transport->transportType) {
                                             return [
                                                 'per_day' => 'Per Day',
                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
                                             ]; // Fallback if transport or transportType is missing
                                         }
-                        
+
                                         // Return static options
                                         return [
                                             'per_day' => 'Per Day',
@@ -109,37 +115,45 @@ class TourResource extends Resource
                                     ->reactive()
                                     ->searchable(), // Enable search for usability
                             ]),
+                            Forms\Components\Select::make('city_id')
+    ->label('City')
+    ->relationship('city', 'name') // Fetch cities using the city relationship
+    ->reactive() // Make this field reactive to trigger updates in dependent fields
+    ->required(), // Ensure a city is selected
+
+Forms\Components\Select::make('type')
+    ->label('Hotel Category')
+    ->options([
+        'bed_and_breakfast' => 'Bed and Breakfast',
+        '3_star' => '3 Star',
+        '4_star' => '4 Star',
+        '5_star' => '5 Star',
+    ])
+    ->reactive() // Make this field reactive to update dependent fields
+    ->dehydrated(false), // Prevent this field from being sent to the server
+
+Forms\Components\Select::make('hotel_id')
+    ->label('Hotel')
+    ->options(function (callable $get) {
+        $cityId = $get('city_id'); // Get the selected city ID
+        $type = $get('type'); // Get the selected hotel type
+        $query = \App\Models\Hotel::query();
+
+        // Apply both constraints together
+        if ($cityId && $type) {
+            $query->where('city_id', $cityId)->where('type', $type); // Filter by both city and type
+        }
+
+        return $query->pluck('name', 'id'); // Use 'name' as display value and 'id' as key
+    })
+    ->required()
+    ->reactive()
+    ->afterStateUpdated(function ($state, callable $set) {
+        $set('hotel_rooms', []); // Reset hotel rooms when the hotel changes
+    })
+    ->searchable(), // Enable search for better usability
                         
-                            Forms\Components\Select::make('type')
-                            ->label('Hotel Category')
-                            ->options([
-                                'bed_and_breakfast' => 'Bed and Breakfast',
-                                '3_star' => '3 Star',
-                                '4_star' => '4 Star',
-                                '5_star' => '5 Star',
-                            ])
-                            ->reactive() // Make this field reactive to update dependent fields
-                            ->dehydrated(false), // Prevent this field from being sent to the server
-                        
-                            Forms\Components\Select::make('hotel_id')
-                            ->label('Hotel')
-                            ->options(function (callable $get) {
-                                $type = $get('type'); // Get the selected hotel category
-                                $query = \App\Models\Hotel::query();
-                        
-                                if ($type) {
-                                    $query->where('type', $type); // Filter hotels by selected category
-                                }
-                        
-                                return $query->pluck('name'); // Ensure 'name' is used as the display value and 'id' as the key
-                            })
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $set('hotel_rooms', []); // Reset hotel rooms when the hotel changes
-                            })
-                            ->searchable(), // Enable search for better usability
-                        
+
 
                         // ->dehydrated(false), // Do NOT send this field to the server
                         Forms\Components\Repeater::make('hotel_rooms')
