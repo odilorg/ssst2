@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('hotels', function (Blueprint $table) {
-            $table->foreignId('city_id');
+        Schema::table('tour_days', function (Blueprint $table) {
+           $table->foreignId('city_id');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('hotels', function (Blueprint $table) {
+        Schema::table('tour_days', function (Blueprint $table) {
             //
         });
     }

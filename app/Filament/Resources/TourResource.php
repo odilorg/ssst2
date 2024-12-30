@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+
 use Filament\Forms;
 use App\Models\Room;
 use App\Models\Tour;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TourResource\RelationManagers;
+use Illuminate\Support\Facades\Log;
+
 
 class TourResource extends Resource
 {
@@ -37,14 +40,16 @@ class TourResource extends Resource
                     ->relationship()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Select::make('city_id')
+                            ->required(),
+                            Select::make('city_id')
                             ->label('City')
                             ->relationship('city', 'name')
-                            ->searchable()
+                            ->reactive()
                             ->required()
-                            ->preload(),    
+                            ->preload()
+                            ->afterStateUpdated(function ($state) {
+                                Log::info('Updated City ID:', ['city_id' => $state]);
+                            }),
                         Forms\Components\Select::make('guide_id')
                             ->label('Guide')
                             ->relationship('guide', 'name', function ($query) {
@@ -115,44 +120,48 @@ class TourResource extends Resource
                                     ->reactive()
                                     ->searchable(), // Enable search for usability
                             ]),
-                            Forms\Components\Select::make('city_id')
-    ->label('City')
-    ->relationship('city', 'name') // Fetch cities using the city relationship
-    ->reactive() // Make this field reactive to trigger updates in dependent fields
-    ->required(), // Ensure a city is selected
 
-Forms\Components\Select::make('type')
-    ->label('Hotel Category')
-    ->options([
-        'bed_and_breakfast' => 'Bed and Breakfast',
-        '3_star' => '3 Star',
-        '4_star' => '4 Star',
-        '5_star' => '5 Star',
-    ])
-    ->reactive() // Make this field reactive to update dependent fields
-    ->dehydrated(false), // Prevent this field from being sent to the server
 
-Forms\Components\Select::make('hotel_id')
-    ->label('Hotel')
-    ->options(function (callable $get) {
-        $cityId = $get('city_id'); // Get the selected city ID
-        $type = $get('type'); // Get the selected hotel type
-        $query = \App\Models\Hotel::query();
+                            Forms\Components\Select::make('type')
+                            ->label('Hotel Category')
+                            ->options([
+                                'bed_and_breakfast' => 'Bed and Breakfast',
+                                '3_star' => '3 Star',
+                                '4_star' => '4 Star',
+                                '5_star' => '5 Star',
+                            ])
+                            ->reactive()
+                            ->dehydrated(false)
+                            ->afterStateUpdated(function ($state) {
+                                Log::info('Updated Hotel Type:', ['type' => $state]);
+                            }),
 
-        // Apply both constraints together
-        if ($cityId && $type) {
-            $query->where('city_id', $cityId)->where('type', $type); // Filter by both city and type
-        }
+                        Forms\Components\Select::make('hotel_id')
+                            ->label('Hotel')
+                            ->options(function (callable $get) {
+                                $cityId = $get('city_id'); // Fetch city_id from the parent Repeater (tourDays)
+                                $type = $get('type'); // Get the selected hotel type
 
-        return $query->pluck('name', 'id'); // Use 'name' as display value and 'id' as key
-    })
-    ->required()
-    ->reactive()
-    ->afterStateUpdated(function ($state, callable $set) {
-        $set('hotel_rooms', []); // Reset hotel rooms when the hotel changes
-    })
-    ->searchable(), // Enable search for better usability
-                        
+                                // Log for debugging
+                                Log::info('Fetching Hotels:', ['city_id' => $cityId, 'type' => $type]);
+
+                                $query = \App\Models\Hotel::query();
+
+                                if ($cityId) {
+                                    $query->where('city_id', $cityId); // Filter by city_id
+                                }
+                                if ($type) {
+                                    $query->where('type', $type); // Filter by type
+                                }
+
+                                Log::info('Final Hotel Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+
+                                return $query->pluck('name', 'id');
+                            })
+                            ->required()
+                            ->reactive(),
+
+
 
 
                         // ->dehydrated(false), // Do NOT send this field to the server
