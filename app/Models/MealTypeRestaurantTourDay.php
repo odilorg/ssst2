@@ -12,6 +12,7 @@ class MealTypeRestaurantTourDay extends Model
         'restaurant_id',
         'tour_day_id',
     ];
+    protected $table = 'meal_type_restaurant_tour_days';
 
     public function mealType()
     {

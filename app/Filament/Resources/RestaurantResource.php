@@ -7,6 +7,7 @@ use App\Filament\Resources\RestaurantResource\RelationManagers;
 use App\Models\Restaurant;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,6 +29,12 @@ class RestaurantResource extends Resource
     {
         return $form
             ->schema([
+                Select::make('city_id')
+                    ->relationship('city', 'name')
+                    ->required()
+                    ->preload()
+                    ->searchable()
+                    ->label('City'),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),

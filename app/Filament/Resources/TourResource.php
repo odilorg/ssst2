@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TourResource\RelationManagers;
+use App\Models\MealType;
+use App\Models\Restaurant;
 
 class TourResource extends Resource
 {
@@ -45,8 +47,10 @@ class TourResource extends Resource
                             ->label('City')
                             ->relationship('city', 'name')
                             ->live()
-                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
-                            ->required()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('hotel_rooms', []); // Clear the hotel_rooms field
+                                $set('restaurant_meal_types', []); // Set another_field to a specific value
+                            })                            ->required()
                             ->preload(),
                         Forms\Components\Select::make('guide_id')
                             ->label('Guide')
@@ -131,36 +135,14 @@ class TourResource extends Resource
                             ->live()
                             ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
                             ->dehydrated(false),
-                            Select::make('hotel_id')
-                                ->label('Hotel')
-                            ->options(fn (Get $get): Collection => Hotel::query()
+                        Select::make('hotel_id')
+                            ->label('Hotel')
+                            ->options(fn(Get $get): Collection => Hotel::query()
                                 ->where('type', $get('type'))
                                 ->where('city_id', $get('city_id'))
                                 ->pluck('name', 'id'))
-                                ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
-                                ->live(),
-
-                        // Forms\Components\Select::make('hotel_id')
-                        //     ->label('Hotel')
-                        //     ->options(function (callable $get) {
-                        //         $cityId = $get('city_id'); // Fetch city_id from the parent Repeater (tourDays)
-                        //         $type = $get('type'); // Get the selected hotel type
-
-                        //         $query = \App\Models\Hotel::query();
-
-                        //         if ($cityId) {
-                        //             $query->where('city_id', $cityId); // Filter by city_id
-                        //         }
-                        //         if ($type) {
-                        //             $query->where('type', $type); // Filter by type
-                        //         }
-
-                        //         return $query->pluck('name', 'id');
-                        //     })
-                        //     ->required()
-                        //    // ->reactive() // Updates the repeater when changed
-                        //     ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
-                        //     ->live(),
+                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
+                            ->live(),
 
                         Forms\Components\Repeater::make('hotel_rooms')
                             ->relationship('hotelRooms') // Explicitly define the relationship
@@ -171,9 +153,9 @@ class TourResource extends Resource
                                     ->default(fn(callable $get) => $get('../../hotel_id')) // Fetch the parent hotel_id
                                     ->dehydrated(fn(callable $get) => $get('../../hotel_id')), // Include in the payload only if set
 
-                                    Select::make('room_id')
+                                Select::make('room_id')
                                     ->label('Hotel')
-                                    ->options(fn (Get $get): Collection => Room::query()
+                                    ->options(fn(Get $get): Collection => Room::query()
                                         ->with('roomType')
                                         ->where('hotel_id', $get('hotel_id'))
                                         //->where('city_id', $get('city_id'))
@@ -181,28 +163,8 @@ class TourResource extends Resource
                                         ->mapWithKeys(function ($room) {
                                             return [$room->id => $room->roomType->type]; // Map room id to the type from roomType
                                         }))
-                                   ->required()
-                                   ->searchable(),
-
-
-                                // Forms\Components\Select::make('room_id')
-                                //     ->label('Room Type')
-                                //     ->options(function (callable $get) {
-                                //         $hotelId = $get('hotel_id'); // Get the selected hotel ID
-                                //         return $hotelId
-                                //             ? Room::where('hotel_id', $hotelId)
-                                //             ->with('roomType') // Eager load the roomType relationship
-                                //             ->get()
-                                //             ->mapWithKeys(function ($room) {
-                                //                 return [
-                                //                     $room->id => "{$room->roomType->type} ", // Format: "RoomType "
-                                //                 ];
-                                //             })
-                                //             : [];
-                                //     })
-                                //     ->required()
-                                //     ->searchable(), // Enable search for better usability
-
+                                    ->required()
+                                    ->searchable(),
                                 Forms\Components\TextInput::make('quantity')
                                     ->label('Quantity')
                                     ->default(1)
@@ -219,7 +181,7 @@ class TourResource extends Resource
                             ->preload()
                             ->multiple()
                             ->searchable()
-                            ->relationship('monuments', 'name')
+                            ->relationship('monuments', 'name', fn(Builder $query, $get) => $query->where('city_id', $get('city_id'))) // Filter monuments by city    
                             ->required()
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
@@ -235,12 +197,32 @@ class TourResource extends Resource
                                     ->columnSpanFull(),
                             ]),  // Allow multiple selections
 
-                        Select::make('restaurant_id')
+                            Select::make('restaurant_id')
+                            ->label('Restaurant')
+                            ->options(fn(Get $get): Collection => Restaurant::query()
+                                //->where('type', $get('type'))
+                                ->where('city_id', $get('city_id'))
+                                ->pluck('name', 'id'))
+                            ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', [])) // Clear hotel_rooms when hotel_id changes
+                            ->live(),
 
-                            ->label('Select Restaurant')
-                            ->relationship('restaurant', 'name')
-                            ->searchable()
-                            ->preload(),
+                        Repeater::make('restaurant_meal_types')
+                            ->relationship('mealTypeRestaurantTourDays')
+                            ->schema([
+                                Forms\Components\Hidden::make('restaurant_id')
+                                    ->default(fn(callable $get) => $get('../../restaurant_id')) // Fetch the parent restaurant_id
+                                    ->dehydrated(fn(callable $get) => $get('../../restaurant_id')), // Include in the payload only if set
+                                    Select::make('meal_type_id')
+                                    ->label('Meal Type')
+                                    ->options(fn(Get $get): Collection => Restaurant::query()
+                                        ->with('mealTypes') // Include related meal types
+                                        ->where('id', $get('restaurant_id')) // Correctly reference the restaurant's id
+                                        ->get()
+                                        ->flatMap(fn($restaurant) => $restaurant->mealTypes->pluck('name', 'id'))) // Map meal type id to name
+                                    ->required()
+                                    ->searchable(),
+                            ])
+
 
                     ]),
             ]);
