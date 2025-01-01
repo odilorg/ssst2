@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MonumentResource\Pages;
-use App\Filament\Resources\MonumentResource\RelationManagers;
-use App\Models\Monument;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Monument;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\MonumentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MonumentResource\RelationManagers;
 
 class MonumentResource extends Resource
 {
@@ -29,13 +30,19 @@ class MonumentResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('city')
+                Forms\Components\Select::make('city_id')
+                    ->relationship('city', 'name')
                     ->required()
-                    ->maxLength(255),
+                   ->preload(),
                 Forms\Components\TextInput::make('ticket_price')
                     ->required()
                     ->numeric(),
                 Forms\Components\Textarea::make('description')
+                    ->columnSpanFull(),
+                Forms\Components\FileUpload::make('images')
+                    ->image()
+                    ->avatar()
+                    ->multiple()
                     ->columnSpanFull(),
             ]);
     }
@@ -54,11 +61,16 @@ class MonumentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('city')
+                Tables\Columns\TextColumn::make('city.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ticket_price')
                     ->numeric()
                     ->sortable(),
+                    ImageColumn::make('images')
+                    ->circular()
+                    ->stacked()
+
+
             ])
             ->filters([
                 //

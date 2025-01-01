@@ -166,7 +166,7 @@ class TourResource extends Resource
                                             ->get()
                                             ->mapWithKeys(function ($room) {
                                                 return [
-                                                    $room->id => "{$room->roomType->type} ", // Format: "RoomType (Price)"
+                                                    $room->id => "{$room->roomType->type} ", // Format: "RoomType "
                                                 ];
                                             })
                                             : [];
@@ -181,15 +181,21 @@ class TourResource extends Resource
                                     ->required(),
                             ])
                             ->columns(2)
-                            ->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
+                            //->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
                             ->collapsible(),
 
-                        Select::make('monuments')
-                            ->multiple()
+                            Select::make('monuments')
                             ->label('Select Monuments')
-                            ->relationship('monuments', 'name') // Define the relationship to the Monument model
-                            ->searchable() // Enable search functionality
+                            ->preload()
                             ->multiple()
+                            ->searchable()
+                            ->relationship('monuments', 'name', function ($query, $get) {
+                                $cityId = $get('city_id'); // Get the selected city ID
+                                if ($cityId) {
+                                    $query->where('city_id', $cityId); // Filter monuments by city_id
+                                }
+                            })
+                            ->required()
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
                                     ->required()
@@ -203,6 +209,13 @@ class TourResource extends Resource
                                 Forms\Components\Textarea::make('description')
                                     ->columnSpanFull(),
                             ]),  // Allow multiple selections
+
+                        Select::make('restaurant_id')
+
+                            ->label('Select Restaurant')
+                            ->relationship('restaurant', 'name')
+                            ->searchable()
+                            ->preload(),    
 
                     ]),
             ]);
