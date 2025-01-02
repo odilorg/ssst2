@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 01, 2025 at 12:04 PM
+-- Generation Time: Jan 01, 2025 at 03:25 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -94,16 +94,6 @@ CREATE TABLE `cache` (
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('356a192b7913b04c54574d18c28d46e6395428ab', 'i:2;', 1735718918),
-('356a192b7913b04c54574d18c28d46e6395428ab:timer', 'i:1735718918;', 1735718918),
-('a17961fa74e9275d529f489537f179c05d50c2f3', 'i:1;', 1735718512),
-('a17961fa74e9275d529f489537f179c05d50c2f3:timer', 'i:1735718511;', 1735718512);
-
 -- --------------------------------------------------------
 
 --
@@ -148,72 +138,19 @@ INSERT INTO `cities` (`id`, `created_at`, `updated_at`, `name`, `description`, `
 CREATE TABLE `customers` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `days`
+-- Dumping data for table `customers`
 --
 
-CREATE TABLE `days` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `tour_id` bigint(20) UNSIGNED NOT NULL,
-  `day_number` int(11) NOT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `day_guide`
---
-
-CREATE TABLE `day_guide` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `day_id` bigint(20) UNSIGNED NOT NULL,
-  `guide_id` bigint(20) UNSIGNED NOT NULL,
-  `number_of_days` int(11) NOT NULL DEFAULT 1,
-  `agreed_price` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `day_hotel`
---
-
-CREATE TABLE `day_hotel` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `day_id` bigint(20) UNSIGNED NOT NULL,
-  `hotel_id` bigint(20) UNSIGNED NOT NULL,
-  `number_of_rooms` int(11) NOT NULL DEFAULT 1,
-  `number_of_nights` int(11) NOT NULL DEFAULT 1,
-  `agreed_price` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `day_transportation`
---
-
-CREATE TABLE `day_transportation` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `day_id` bigint(20) UNSIGNED NOT NULL,
-  `transportation_id` bigint(20) UNSIGNED NOT NULL,
-  `quantity` int(11) NOT NULL DEFAULT 1,
-  `agreed_price` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `customers` (`id`, `created_at`, `updated_at`, `name`, `email`, `phone`, `address`) VALUES
+(1, '2025-01-01 06:23:18', '2025-01-01 06:23:18', 'Odil Jaha', 'odil@od.com', '99745', 'sam');
 
 -- --------------------------------------------------------
 
@@ -228,12 +165,26 @@ CREATE TABLE `estimates` (
   `estimate_number` varchar(255) NOT NULL,
   `estimate_date` date NOT NULL,
   `notes` text DEFAULT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
   `customer_id` bigint(20) UNSIGNED NOT NULL,
   `tour_id` bigint(20) UNSIGNED NOT NULL,
-  `guide_id` bigint(20) UNSIGNED NOT NULL,
-  `transport_id` bigint(20) UNSIGNED NOT NULL,
-  `hotel_id` bigint(20) UNSIGNED NOT NULL
+  `number` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `estimates`
+--
+
+INSERT INTO `estimates` (`id`, `created_at`, `updated_at`, `estimate_number`, `estimate_date`, `notes`, `file_name`, `customer_id`, `tour_id`, `number`) VALUES
+(31, '2025-01-01 08:50:19', '2025-01-01 08:50:19', '707', '2021-01-28', 'Quisquam est exercit', 'estimate_31.pdf', 1, 2, 'EST-2025-031'),
+(32, '2025-01-01 08:52:20', '2025-01-01 08:52:20', '746', '2001-10-19', 'Doloremque error nat', 'estimate_32.pdf', 1, 2, 'EST-2025-032'),
+(33, '2025-01-01 09:01:21', '2025-01-01 09:01:21', '122', '1995-10-03', 'Quis cillum neque su', 'estimate_33.pdf', 1, 2, 'EST-2025-033'),
+(34, '2025-01-01 09:05:55', '2025-01-01 09:05:55', '781', '1984-06-18', 'Laboris sit sed proi', 'estimate_34.pdf', 1, 2, 'EST-2025-034'),
+(35, '2025-01-01 09:07:24', '2025-01-01 09:07:24', '905', '1975-12-10', 'Enim dolor accusanti', 'estimate_35.pdf', 1, 2, 'EST-2025-035'),
+(36, '2025-01-01 09:12:24', '2025-01-01 09:12:24', '372', '2019-10-11', 'Earum aliquip et nos', 'estimate_36.pdf', 1, 2, 'EST-2025-036'),
+(37, '2025-01-01 09:16:09', '2025-01-01 09:16:10', '105', '1975-11-15', 'Saepe magni laudanti', 'estimate_37.pdf', 1, 2, 'EST-2025-037'),
+(38, '2025-01-01 09:17:49', '2025-01-01 09:17:50', '902', '1977-09-19', 'Rerum impedit conse', 'estimate_38.pdf', 1, 2, 'EST-2025-038'),
+(39, '2025-01-01 09:21:21', '2025-01-01 09:21:21', '999', '2006-01-22', 'Sit consequat Eius', 'estimate_39.pdf', 1, 2, 'EST-2025-039');
 
 -- --------------------------------------------------------
 
@@ -273,7 +224,7 @@ CREATE TABLE `guides` (
 INSERT INTO `guides` (`id`, `name`, `daily_rate`, `created_at`, `updated_at`, `is_marketing`) VALUES
 (1, 'Odil', 100.00, '2024-12-26 22:10:51', '2024-12-26 22:12:50', 0),
 (2, 'Zafar', 90.00, '2024-12-26 22:13:10', '2024-12-26 22:13:10', 0),
-(3, 'English', 55.00, '2025-01-01 05:58:44', '2025-01-01 05:58:44', 1),
+(3, 'English', 55.00, '2025-01-01 05:58:44', '2025-01-01 07:52:40', 1),
 (4, 'French', 65.00, '2025-01-01 05:58:58', '2025-01-01 05:58:58', 1);
 
 -- --------------------------------------------------------
@@ -319,7 +270,8 @@ INSERT INTO `guide_spoken_language` (`id`, `created_at`, `updated_at`, `guide_id
 (5, '2024-12-29 05:25:48', '2024-12-29 05:25:48', 1, 3),
 (6, '2024-12-29 05:25:48', '2024-12-29 05:25:48', 1, 4),
 (7, '2025-01-01 05:58:44', '2025-01-01 05:58:44', 3, 1),
-(8, '2025-01-01 05:58:59', '2025-01-01 05:58:59', 4, 2);
+(8, '2025-01-01 05:58:59', '2025-01-01 05:58:59', 4, 2),
+(9, '2025-01-01 07:52:40', '2025-01-01 07:52:40', 3, 2);
 
 -- --------------------------------------------------------
 
@@ -362,6 +314,15 @@ CREATE TABLE `jobs` (
   `available_at` int(10) UNSIGNED NOT NULL,
   `created_at` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `jobs`
+--
+
+INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `available_at`, `created_at`) VALUES
+(1, 'default', '{\"uuid\":\"61852200-083c-4918-a899-2168dc1b85e6\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:1;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732057, 1735732057),
+(2, 'default', '{\"uuid\":\"7791c56f-eea0-435d-8366-4d218176baa9\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:2;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732166, 1735732166),
+(3, 'default', '{\"uuid\":\"7ecb654d-0a54-475f-9773-d7c46d331e10\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:3;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732231, 1735732231);
 
 -- --------------------------------------------------------
 
@@ -428,10 +389,7 @@ CREATE TABLE `meal_type_restaurant_tour_days` (
 --
 
 INSERT INTO `meal_type_restaurant_tour_days` (`id`, `created_at`, `updated_at`, `meal_type_id`, `restaurant_id`, `tour_day_id`) VALUES
-(1, '2025-01-01 05:53:36', '2025-01-01 05:53:36', 0, 1, 1),
-(2, '2025-01-01 05:53:37', '2025-01-01 05:53:37', 0, 2, 2),
-(3, '2025-01-01 05:53:37', '2025-01-01 05:53:37', 1, 2, 2),
-(4, '2025-01-01 05:54:10', '2025-01-01 05:54:10', 1, 1, 1);
+(8, '2025-01-01 09:21:10', '2025-01-01 09:21:10', 1, 2, 3);
 
 -- --------------------------------------------------------
 
@@ -502,7 +460,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (50, '2025_01_01_021511_add_col_to_monuments_table', 16),
 (51, '2025_01_01_082348_add_city_id_to_hotels_table', 16),
 (2025, '', 0),
-(2026, '2025_01_01_102627_add_city_id_to_restaurants_table', 17);
+(2026, '2025_01_01_102627_add_city_id_to_restaurants_table', 17),
+(2027, '2025_01_01_102628_create_customers_table', 18),
+(2028, '2025_01_01_123050_add_file_name_to_estimates_table', 19);
 
 -- --------------------------------------------------------
 
@@ -550,11 +510,10 @@ CREATE TABLE `monument_tour_days` (
 --
 
 INSERT INTO `monument_tour_days` (`id`, `created_at`, `updated_at`, `monument_id`, `tour_day_id`) VALUES
-(1, NULL, NULL, 2, 1),
-(2, NULL, NULL, 1, 1),
-(3, NULL, NULL, 2, 2),
-(4, NULL, NULL, 3, 2),
-(5, NULL, NULL, 4, 2);
+(6, NULL, NULL, 2, 3),
+(7, NULL, NULL, 1, 3),
+(8, NULL, NULL, 3, 3),
+(9, NULL, NULL, 4, 3);
 
 -- --------------------------------------------------------
 
@@ -667,7 +626,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('CWeS4SFARa7p7H7FA05ywZKLRXEBwxSJfwMnOxS7', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoibjB6MWxPMlN3NURMWkJaS3pWTURna1lKQVQ3MTNuTGF6Y0xMYW43TiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjMzOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vdG91cnMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkUE1vZGpaU1dleU1YTFNIblFjbEdwdUI3dDhCbnJwc2o2dWhhRVRFcXFVZmRmalRrMW1qQ3EiO3M6ODoiZmlsYW1lbnQiO2E6MDp7fX0=', 1735729179);
+('CWeS4SFARa7p7H7FA05ywZKLRXEBwxSJfwMnOxS7', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoibjB6MWxPMlN3NURMWkJaS3pWTURna1lKQVQ3MTNuTGF6Y0xMYW43TiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vZXN0aW1hdGVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2MDoiJDJ5JDEyJFBNb2RqWlNXZXlNWExTSG5RY2xHcHVCN3Q4Qm5ycHNqNnVoYUVURXFxVWZkZmpUazFtakNxIjtzOjg6ImZpbGFtZW50IjthOjA6e319', 1735734750),
+('eso5wGaaWVUrrUNYDVJdKh1QUL2kJUvTgc3QTJGd', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiZUV6c3VaNEN3cnRiT0FvUHlhQjFUUGQ2NW9MVVB6R245alp1RERncyI7czozOiJ1cmwiO2E6MDp7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRQTW9kalpTV2V5TVhMU0huUWNsR3B1Qjd0OEJucnBzajZ1aGFFVEVxcVVmZGZqVGsxbWpDcSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi90b3Vycy8yL2VkaXQiO31zOjg6ImZpbGFtZW50IjthOjA6e319', 1735741534);
 
 -- --------------------------------------------------------
 
@@ -713,7 +673,7 @@ CREATE TABLE `tours` (
 --
 
 INSERT INTO `tours` (`id`, `name`, `description`, `created_at`, `updated_at`, `tour_number`) VALUES
-(1, 'UZb 10', 'dfdsf', '2024-12-25 01:22:20', '2024-12-29 04:35:10', 'UZB-534');
+(2, 'Uzb 10 days', 'very good tour ', '2025-01-01 08:15:46', '2025-01-01 08:15:46', 'UZN10-');
 
 -- --------------------------------------------------------
 
@@ -739,8 +699,7 @@ CREATE TABLE `tour_days` (
 --
 
 INSERT INTO `tour_days` (`id`, `created_at`, `updated_at`, `tour_id`, `name`, `description`, `guide_id`, `hotel_id`, `city_id`, `restaurant_id`) VALUES
-(1, '2024-12-29 03:55:34', '2025-01-01 05:59:35', 1, 'DAy 1', 'd', 4, 2, 1, 1),
-(2, '2024-12-29 04:38:21', '2025-01-01 05:32:24', 1, 'Day 2', NULL, 1, 1, 2, 2);
+(3, '2025-01-01 08:15:46', '2025-01-01 09:21:10', 2, 'Day 1', NULL, 3, 3, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -763,7 +722,7 @@ CREATE TABLE `tour_day_hotel_room` (
 --
 
 INSERT INTO `tour_day_hotel_room` (`id`, `tour_day_id`, `hotel_id`, `room_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(14, 1, 2, 1, 1, '2025-01-01 05:32:24', '2025-01-01 05:32:24');
+(19, 3, 3, 5, 5, '2025-01-01 09:21:09', '2025-01-01 09:21:09');
 
 -- --------------------------------------------------------
 
@@ -785,9 +744,8 @@ CREATE TABLE `tour_day_transport` (
 --
 
 INSERT INTO `tour_day_transport` (`id`, `created_at`, `updated_at`, `tour_day_id`, `transport_id`, `price_type`) VALUES
-(1, '2024-12-29 03:55:34', '2024-12-29 05:42:31', 1, 3, 'per_day'),
-(2, '2024-12-29 03:55:34', '2024-12-29 03:55:34', 1, 1, 'per_pickup_dropoff'),
-(3, '2024-12-29 04:38:21', '2024-12-29 05:42:31', 2, 3, 'per_day');
+(4, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_day'),
+(5, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_pickup_dropoff');
 
 -- --------------------------------------------------------
 
@@ -957,37 +915,6 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `days`
---
-ALTER TABLE `days`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `days_tour_id_foreign` (`tour_id`);
-
---
--- Indexes for table `day_guide`
---
-ALTER TABLE `day_guide`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `day_guide_day_id_guide_id_unique` (`day_id`,`guide_id`),
-  ADD KEY `day_guide_guide_id_foreign` (`guide_id`);
-
---
--- Indexes for table `day_hotel`
---
-ALTER TABLE `day_hotel`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `day_hotel_day_id_hotel_id_unique` (`day_id`,`hotel_id`),
-  ADD KEY `day_hotel_hotel_id_foreign` (`hotel_id`);
-
---
--- Indexes for table `day_transportation`
---
-ALTER TABLE `day_transportation`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `day_transportation_day_id_transportation_id_unique` (`day_id`,`transportation_id`),
-  ADD KEY `day_transportation_transportation_id_foreign` (`transportation_id`);
-
---
 -- Indexes for table `estimates`
 --
 ALTER TABLE `estimates`
@@ -1126,9 +1053,9 @@ ALTER TABLE `tours`
 --
 ALTER TABLE `tour_days`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `tour_days_tour_id_foreign` (`tour_id`),
-  ADD KEY `tour_days_guide_id_foreign` (`guide_id`),
-  ADD KEY `tour_days_hotel_id_foreign` (`hotel_id`);
+  ADD KEY `hotel_id` (`hotel_id`),
+  ADD KEY `guide_id` (`guide_id`),
+  ADD KEY `tour_id` (`tour_id`);
 
 --
 -- Indexes for table `tour_day_hotel_room`
@@ -1202,37 +1129,13 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `days`
---
-ALTER TABLE `days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `day_guide`
---
-ALTER TABLE `day_guide`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `day_hotel`
---
-ALTER TABLE `day_hotel`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `day_transportation`
---
-ALTER TABLE `day_transportation`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `estimates`
 --
 ALTER TABLE `estimates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1256,7 +1159,7 @@ ALTER TABLE `guide_pricings`
 -- AUTO_INCREMENT for table `guide_spoken_language`
 --
 ALTER TABLE `guide_spoken_language`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `hotels`
@@ -1268,7 +1171,7 @@ ALTER TABLE `hotels`
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `meal_types`
@@ -1280,13 +1183,13 @@ ALTER TABLE `meal_types`
 -- AUTO_INCREMENT for table `meal_type_restaurant_tour_days`
 --
 ALTER TABLE `meal_type_restaurant_tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2027;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2029;
 
 --
 -- AUTO_INCREMENT for table `monuments`
@@ -1298,7 +1201,7 @@ ALTER TABLE `monuments`
 -- AUTO_INCREMENT for table `monument_tour_days`
 --
 ALTER TABLE `monument_tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `restaurants`
@@ -1328,25 +1231,25 @@ ALTER TABLE `spoken_languages`
 -- AUTO_INCREMENT for table `tours`
 --
 ALTER TABLE `tours`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tour_days`
 --
 ALTER TABLE `tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tour_day_hotel_room`
 --
 ALTER TABLE `tour_day_hotel_room`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `tour_day_transport`
 --
 ALTER TABLE `tour_day_transport`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transportation_pricings`
@@ -1390,33 +1293,6 @@ ALTER TABLE `amenity_room`
   ADD CONSTRAINT `amenity_room_room_id_foreign` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `days`
---
-ALTER TABLE `days`
-  ADD CONSTRAINT `days_tour_id_foreign` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `day_guide`
---
-ALTER TABLE `day_guide`
-  ADD CONSTRAINT `day_guide_day_id_foreign` FOREIGN KEY (`day_id`) REFERENCES `days` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `day_guide_guide_id_foreign` FOREIGN KEY (`guide_id`) REFERENCES `guides` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `day_hotel`
---
-ALTER TABLE `day_hotel`
-  ADD CONSTRAINT `day_hotel_day_id_foreign` FOREIGN KEY (`day_id`) REFERENCES `days` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `day_hotel_hotel_id_foreign` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `day_transportation`
---
-ALTER TABLE `day_transportation`
-  ADD CONSTRAINT `day_transportation_day_id_foreign` FOREIGN KEY (`day_id`) REFERENCES `days` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `day_transportation_transportation_id_foreign` FOREIGN KEY (`transportation_id`) REFERENCES `transportations` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `guide_pricings`
 --
 ALTER TABLE `guide_pricings`
@@ -1453,9 +1329,9 @@ ALTER TABLE `rooms`
 -- Constraints for table `tour_days`
 --
 ALTER TABLE `tour_days`
-  ADD CONSTRAINT `tour_days_guide_id_foreign` FOREIGN KEY (`guide_id`) REFERENCES `guides` (`id`),
-  ADD CONSTRAINT `tour_days_hotel_id_foreign` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`),
-  ADD CONSTRAINT `tour_days_tour_id_foreign` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`);
+  ADD CONSTRAINT `tour_days_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_days_ibfk_2` FOREIGN KEY (`guide_id`) REFERENCES `guides` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tour_days_ibfk_3` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `tour_day_transport`

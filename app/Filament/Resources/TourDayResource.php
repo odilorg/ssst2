@@ -40,19 +40,19 @@ class TourDayResource extends Resource
                     ->required()
                     ->preload(),
 
-                    Repeater::make('tourDayTransports')
-                            ->relationship()
-                            ->schema([
-                                Select::make('transport_id')
-                                    ->relationship('transport', 'model')
-                                    ->required()
-                                    ->preload(),
-                                    Select::make('price_type')
-                                    ->options([
-                                        'per_day' => 'Per Day',
+                Repeater::make('tourDayTransports')
+                    ->relationship()
+                    ->schema([
+                        Select::make('transport_id')
+                            ->relationship('transport', 'model')
+                            ->required()
+                            ->preload(),
+                        Select::make('price_type')
+                            ->options([
+                                'per_day' => 'Per Day',
                                 'per_pickup_dropoff' => 'Per Pickup Dropoff'
-                                    ])   
-                            ]),
+                            ])
+                    ]),
 
                 forms\Components\Select::make('transport_id')
                     ->relationship('transport.transportType', 'type')

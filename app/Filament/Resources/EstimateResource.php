@@ -24,29 +24,21 @@ class EstimateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('estimate_number')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\DatePicker::make('estimate_date')
-                ->required(),
-            Forms\Components\Textarea::make('notes')
-                ->columnSpanFull(),
-                Forms\Components\Select::make('tour_id')
-                ->relationship('tour', 'name')
-                ->required()
-                ->preload(),
-                Forms\Components\Select::make('guide_id')
-                    ->relationship('guide', 'name')
                     ->required()
-                    ->preload(),
-                    Forms\Components\Select::make('hotel_id')
-                    ->relationship('hotel', 'name')
-                    ->required()
-                    ->preload(),
-               
-                    Forms\Components\Select::make('customer_id')
+                    ->maxLength(255),
+                Forms\Components\DatePicker::make('estimate_date')
+                    ->required(),
+                Forms\Components\Textarea::make('notes')
+                    ->columnSpanFull(),
+                Forms\Components\Select::make('customer_id')
                     ->relationship('customer', 'name')
                     ->required()
                     ->preload(),
+                Forms\Components\Select::make('tour_id')
+                ->relationship('tour', 'name')    
+                ->required()
+                    ->preload(),
+                
             ]);
     }
 
@@ -62,26 +54,28 @@ class EstimateResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('guide_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('hotel_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('estimate_number')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('estimate_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer_id')
+                Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('tour.name')
+                    ->numeric()
+               
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('download')
+                    ->icon('heroicon-s-cloud-arrow-down')
+                    ->visible(fn(Estimate $record): bool => !is_null($record->file_name))
+                    ->action(function (Estimate $record) {
+                        return response()->download(storage_path('app/public/estimates/') . $record->file_name);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

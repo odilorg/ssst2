@@ -17,7 +17,7 @@ class Restaurant extends Model
 
     public function mealTypes()
     {
-        return $this->hasMany(MealType::class);
+        return $this->hasMany(MealType::class, 'restaurant_id');
     }
 
     public function city()

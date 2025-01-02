@@ -8,18 +8,19 @@ use App\Models\Tour;
 use Filament\Tables;
 use App\Models\Hotel;
 use Filament\Forms\Get;
+use App\Models\MealType;
 use Filament\Forms\Form;
+use App\Models\Restaurant;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TourResource\RelationManagers;
-use App\Models\MealType;
-use App\Models\Restaurant;
 
 class TourResource extends Resource
 {
@@ -133,8 +134,8 @@ class TourResource extends Resource
                                 '5_star' => '5 Star',
                             ])
                             ->live()
-                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
-                            ->dehydrated(false),
+                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])), // Clear hotel_rooms when hotel_id changes
+                            //->dehydrated(false),
                         Select::make('hotel_id')
                             ->label('Hotel')
                             ->options(fn(Get $get): Collection => Hotel::query()
@@ -205,23 +206,31 @@ class TourResource extends Resource
                                 ->pluck('name', 'id'))
                             ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', [])) // Clear hotel_rooms when hotel_id changes
                             ->live(),
-
-                        Repeater::make('restaurant_meal_types')
+                            Repeater::make('restaurant_meal_types')
                             ->relationship('mealTypeRestaurantTourDays')
                             ->schema([
                                 Forms\Components\Hidden::make('restaurant_id')
-                                    ->default(fn(callable $get) => $get('../../restaurant_id')) // Fetch the parent restaurant_id
-                                    ->dehydrated(fn(callable $get) => $get('../../restaurant_id')), // Include in the payload only if set
+                                    ->default(fn(callable $get) => $get('../../restaurant_id'))
+                                    ->dehydrated(fn(callable $get) => $get('../../restaurant_id'))
+                                    ->afterStateHydrated(function ($state) {
+                                        Log::info('Restaurant ID set in hidden field:', ['restaurant_id' => $state]);
+                                    }),
                                     Select::make('meal_type_id')
                                     ->label('Meal Type')
-                                    ->options(fn(Get $get): Collection => Restaurant::query()
-                                        ->with('mealTypes') // Include related meal types
-                                        ->where('id', $get('restaurant_id')) // Correctly reference the restaurant's id
-                                        ->get()
-                                        ->flatMap(fn($restaurant) => $restaurant->mealTypes->pluck('name', 'id'))) // Map meal type id to name
+                                    ->options(function (callable $get) {
+                                        $restaurantId = $get('restaurant_id');
+                                        $mealTypes = MealType::where('restaurant_id', $restaurantId)
+                                            ->pluck('name', 'id');
+                                        Log::info('Meal Type Options:', $mealTypes->toArray());
+                                        return $mealTypes;
+                                    })
                                     ->required()
-                                    ->searchable(),
+                                    ->afterStateUpdated(function ($state) {
+                                        Log::info('Meal Type ID Selected:', ['meal_type_id' => $state]);
+                                    })
+                                
                             ])
+                         
 
 
                     ]),

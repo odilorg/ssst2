@@ -11,16 +11,16 @@ class HotelTourDayRoom extends Pivot
 
     public function tourDay()
     {
-        return $this->belongsTo(TourDay::class);
+        return $this->belongsTo(TourDay::class, 'tour_day_id');
     }
 
     public function hotel()
     {
-        return $this->belongsTo(Hotel::class);
+        return $this->belongsTo(Hotel::class, 'hotel_id');
     }
 
     public function hotelRoom()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Room::class, 'room_id');
     }
 }

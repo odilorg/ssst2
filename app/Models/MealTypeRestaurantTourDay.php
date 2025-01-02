@@ -16,14 +16,14 @@ class MealTypeRestaurantTourDay extends Model
 
     public function mealType()
     {
-        return $this->belongsTo(MealType::class);
+        return $this->belongsTo(MealType::class, 'meal_type_id');
     }
     public function restaurant()
     {
-        return $this->belongsTo(Restaurant::class);
+        return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
     public function tourDay()
     {
-        return $this->belongsTo(TourDay::class);
+        return $this->belongsTo(TourDay::class, 'tour_day_id');
     }
 }

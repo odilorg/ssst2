@@ -18,6 +18,7 @@ class TourDay extends Model
          'hotel_id',
          'city_id',
          'restaurant_id',
+         'type'
         
     ];
 
@@ -61,8 +62,9 @@ class TourDay extends Model
 
     public function mealTypeRestaurantTourDays()
     {
-        return $this->hasMany(MealTypeRestaurantTourDay::class); // HasMany with the pivot model
+        return $this->hasMany(MealTypeRestaurantTourDay::class, 'tour_day_id');
     }
+    
 
     public function monuments(): BelongsToMany
     {
