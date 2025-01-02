@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 01, 2025 at 03:25 PM
+-- Generation Time: Jan 02, 2025 at 12:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -80,7 +80,9 @@ INSERT INTO `amenity_room` (`id`, `created_at`, `updated_at`, `amenity_id`, `roo
 (11, NULL, NULL, 5, 4),
 (12, NULL, NULL, 6, 5),
 (13, NULL, NULL, 7, 5),
-(14, NULL, NULL, 8, 5);
+(14, NULL, NULL, 8, 5),
+(15, NULL, NULL, 1, 6),
+(16, NULL, NULL, 4, 6);
 
 -- --------------------------------------------------------
 
@@ -93,6 +95,14 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('a17961fa74e9275d529f489537f179c05d50c2f3', 'i:1;', 1735808915),
+('a17961fa74e9275d529f489537f179c05d50c2f3:timer', 'i:1735808915;', 1735808915);
 
 -- --------------------------------------------------------
 
@@ -176,15 +186,8 @@ CREATE TABLE `estimates` (
 --
 
 INSERT INTO `estimates` (`id`, `created_at`, `updated_at`, `estimate_number`, `estimate_date`, `notes`, `file_name`, `customer_id`, `tour_id`, `number`) VALUES
-(31, '2025-01-01 08:50:19', '2025-01-01 08:50:19', '707', '2021-01-28', 'Quisquam est exercit', 'estimate_31.pdf', 1, 2, 'EST-2025-031'),
-(32, '2025-01-01 08:52:20', '2025-01-01 08:52:20', '746', '2001-10-19', 'Doloremque error nat', 'estimate_32.pdf', 1, 2, 'EST-2025-032'),
-(33, '2025-01-01 09:01:21', '2025-01-01 09:01:21', '122', '1995-10-03', 'Quis cillum neque su', 'estimate_33.pdf', 1, 2, 'EST-2025-033'),
-(34, '2025-01-01 09:05:55', '2025-01-01 09:05:55', '781', '1984-06-18', 'Laboris sit sed proi', 'estimate_34.pdf', 1, 2, 'EST-2025-034'),
-(35, '2025-01-01 09:07:24', '2025-01-01 09:07:24', '905', '1975-12-10', 'Enim dolor accusanti', 'estimate_35.pdf', 1, 2, 'EST-2025-035'),
-(36, '2025-01-01 09:12:24', '2025-01-01 09:12:24', '372', '2019-10-11', 'Earum aliquip et nos', 'estimate_36.pdf', 1, 2, 'EST-2025-036'),
-(37, '2025-01-01 09:16:09', '2025-01-01 09:16:10', '105', '1975-11-15', 'Saepe magni laudanti', 'estimate_37.pdf', 1, 2, 'EST-2025-037'),
-(38, '2025-01-01 09:17:49', '2025-01-01 09:17:50', '902', '1977-09-19', 'Rerum impedit conse', 'estimate_38.pdf', 1, 2, 'EST-2025-038'),
-(39, '2025-01-01 09:21:21', '2025-01-01 09:21:21', '999', '2006-01-22', 'Sit consequat Eius', 'estimate_39.pdf', 1, 2, 'EST-2025-039');
+(43, '2025-01-02 05:27:16', '2025-01-02 05:27:16', '71', '1971-06-30', 'Officiis id porro ve', 'estimate_43.pdf', 1, 4, 'EST-2025-043'),
+(44, '2025-01-02 05:28:15', '2025-01-02 05:28:15', '423', '2024-11-21', 'Non quos est est r', 'estimate_44.pdf', 1, 3, 'EST-2025-044');
 
 -- --------------------------------------------------------
 
@@ -389,7 +392,12 @@ CREATE TABLE `meal_type_restaurant_tour_days` (
 --
 
 INSERT INTO `meal_type_restaurant_tour_days` (`id`, `created_at`, `updated_at`, `meal_type_id`, `restaurant_id`, `tour_day_id`) VALUES
-(8, '2025-01-01 09:21:10', '2025-01-01 09:21:10', 1, 2, 3);
+(11, '2025-01-02 04:45:12', '2025-01-02 04:49:53', 3, 2, 3),
+(12, '2025-01-02 04:50:05', '2025-01-02 04:50:05', 4, 2, 3),
+(13, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 1, 1, 4),
+(14, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 2, 1, 4),
+(19, '2025-01-02 05:19:57', '2025-01-02 05:19:57', 2, 1, 5),
+(20, '2025-01-02 05:20:43', '2025-01-02 05:20:43', 1, 1, 6);
 
 -- --------------------------------------------------------
 
@@ -462,7 +470,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (2025, '', 0),
 (2026, '2025_01_01_102627_add_city_id_to_restaurants_table', 17),
 (2027, '2025_01_01_102628_create_customers_table', 18),
-(2028, '2025_01_01_123050_add_file_name_to_estimates_table', 19);
+(2028, '2025_01_01_123050_add_file_name_to_estimates_table', 19),
+(2029, '2025_01_02_092258_add_hotel_category_to_tour_days_table', 20),
+(2030, '2025_01_02_102212_add_number_people_to_tours_table', 21),
+(2031, '2025_01_02_103016_add_some_cols_to_tours_table', 22);
 
 -- --------------------------------------------------------
 
@@ -513,7 +524,12 @@ INSERT INTO `monument_tour_days` (`id`, `created_at`, `updated_at`, `monument_id
 (6, NULL, NULL, 2, 3),
 (7, NULL, NULL, 1, 3),
 (8, NULL, NULL, 3, 3),
-(9, NULL, NULL, 4, 3);
+(9, NULL, NULL, 4, 3),
+(10, NULL, NULL, 2, 4),
+(11, NULL, NULL, 1, 4),
+(18, NULL, NULL, 2, 5),
+(19, NULL, NULL, 1, 5),
+(20, NULL, NULL, 2, 6);
 
 -- --------------------------------------------------------
 
@@ -580,7 +596,8 @@ INSERT INTO `rooms` (`id`, `created_at`, `updated_at`, `hotel_id`, `room_type_id
 (2, '2024-12-26 23:23:46', '2024-12-26 23:23:46', 2, 2, '11 xona', NULL, 45.00, '[\"01JG35PBNA63Q5K9HZ7MMCNTD0.jpg\",\"01JG35PBNE1RWF3R292GM2ER2T.jpg\"]'),
 (3, '2024-12-27 00:09:33', '2024-12-27 00:10:38', 1, 5, '26 xona', NULL, 90.00, '[\"01JG38A5TQVZHE934MV3SH04E0.jpg\"]'),
 (4, '2024-12-27 00:10:38', '2024-12-27 00:10:38', 1, 2, '22 xona', NULL, 40.00, '[]'),
-(5, '2025-01-01 03:12:30', '2025-01-01 03:12:30', 3, 2, '8', 'ghgf', 45.00, '[]');
+(5, '2025-01-01 03:12:30', '2025-01-01 03:12:30', 3, 2, '8', 'ghgf', 45.00, '[]'),
+(6, '2025-01-02 04:18:56', '2025-01-02 04:18:56', 3, 1, 'single', NULL, 33.00, '[]');
 
 -- --------------------------------------------------------
 
@@ -626,8 +643,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('CWeS4SFARa7p7H7FA05ywZKLRXEBwxSJfwMnOxS7', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoibjB6MWxPMlN3NURMWkJaS3pWTURna1lKQVQ3MTNuTGF6Y0xMYW43TiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vZXN0aW1hdGVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2MDoiJDJ5JDEyJFBNb2RqWlNXZXlNWExTSG5RY2xHcHVCN3Q4Qm5ycHNqNnVoYUVURXFxVWZkZmpUazFtakNxIjtzOjg6ImZpbGFtZW50IjthOjA6e319', 1735734750),
-('eso5wGaaWVUrrUNYDVJdKh1QUL2kJUvTgc3QTJGd', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiZUV6c3VaNEN3cnRiT0FvUHlhQjFUUGQ2NW9MVVB6R245alp1RERncyI7czozOiJ1cmwiO2E6MDp7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRQTW9kalpTV2V5TVhMU0huUWNsR3B1Qjd0OEJucnBzajZ1aGFFVEVxcVVmZGZqVGsxbWpDcSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi90b3Vycy8yL2VkaXQiO31zOjg6ImZpbGFtZW50IjthOjA6e319', 1735741534);
+('ztMDa2wrub8rJX0VzMrio6gv5D2MKc4nVi3hhiEA', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiOFN4MVVJQ05vd2g5VzdFMWxoVVo0b0RjOTNlNGhvUUxnVU5iZUp6RiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi90b3VycyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkUE1vZGpaU1dleU1YTFNIblFjbEdwdUI3dDhCbnJwc2o2dWhhRVRFcXFVZmRmalRrMW1qQ3EiO3M6ODoiZmlsYW1lbnQiO2E6MDp7fX0=', 1735817061);
 
 -- --------------------------------------------------------
 
@@ -665,15 +681,21 @@ CREATE TABLE `tours` (
   `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `tour_number` varchar(255) NOT NULL
+  `tour_number` varchar(255) NOT NULL,
+  `number_people` int(11) NOT NULL DEFAULT 0,
+  `tour_duration` int(5) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tours`
 --
 
-INSERT INTO `tours` (`id`, `name`, `description`, `created_at`, `updated_at`, `tour_number`) VALUES
-(2, 'Uzb 10 days', 'very good tour ', '2025-01-01 08:15:46', '2025-01-01 08:15:46', 'UZN10-');
+INSERT INTO `tours` (`id`, `name`, `description`, `created_at`, `updated_at`, `tour_number`, `number_people`, `tour_duration`, `start_date`, `end_date`) VALUES
+(2, 'Uzb 10 days 9 nights', 'very good tour ', '2025-01-01 08:15:46', '2025-01-02 06:24:04', 'uzb-10-days-9-nights', 7, 14, '2025-01-02', '2025-01-15'),
+(3, 'Uzb 5 days 4 nig', 'This tour offers amazing opportunity', '2025-01-02 04:59:16', '2025-01-02 06:22:58', 'uzb-5-days-4-nig', 10, 16, '2025-01-01', '2025-01-16'),
+(4, 'Alexa Vincent', 'Explicabo Sapiente ', '2025-01-02 05:17:13', '2025-01-02 05:27:31', 'Enim officia vel dol', 5, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -690,6 +712,7 @@ CREATE TABLE `tour_days` (
   `description` text DEFAULT NULL,
   `guide_id` bigint(20) UNSIGNED NOT NULL,
   `hotel_id` bigint(20) UNSIGNED NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `city_id` bigint(20) UNSIGNED NOT NULL,
   `restaurant_id` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -698,8 +721,11 @@ CREATE TABLE `tour_days` (
 -- Dumping data for table `tour_days`
 --
 
-INSERT INTO `tour_days` (`id`, `created_at`, `updated_at`, `tour_id`, `name`, `description`, `guide_id`, `hotel_id`, `city_id`, `restaurant_id`) VALUES
-(3, '2025-01-01 08:15:46', '2025-01-01 09:21:10', 2, 'Day 1', NULL, 3, 3, 2, 2);
+INSERT INTO `tour_days` (`id`, `created_at`, `updated_at`, `tour_id`, `name`, `description`, `guide_id`, `hotel_id`, `type`, `city_id`, `restaurant_id`) VALUES
+(3, '2025-01-01 08:15:46', '2025-01-02 04:29:16', 2, 'Day 1', NULL, 3, 3, '3_star', 2, 2),
+(4, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 2, 'Day 2. Samarkand', NULL, 3, 3, '3_star', 1, 1),
+(5, '2025-01-02 04:59:16', '2025-01-02 05:19:57', 3, 'Day 1. Samarkand', NULL, 3, 1, '3_star', 1, 1),
+(6, '2025-01-02 05:17:13', '2025-01-02 05:20:43', 4, 'Jeremy Delacruz', NULL, 3, 3, '3_star', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -722,7 +748,12 @@ CREATE TABLE `tour_day_hotel_room` (
 --
 
 INSERT INTO `tour_day_hotel_room` (`id`, `tour_day_id`, `hotel_id`, `room_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(19, 3, 3, 5, 5, '2025-01-01 09:21:09', '2025-01-01 09:21:09');
+(23, 3, 3, 6, 5, '2025-01-02 04:29:16', '2025-01-02 04:29:16'),
+(24, 3, 3, 5, 4, '2025-01-02 04:29:48', '2025-01-02 04:29:48'),
+(25, 4, 3, 5, 4, '2025-01-02 04:55:54', '2025-01-02 04:55:54'),
+(26, 4, 3, 6, 3, '2025-01-02 04:55:54', '2025-01-02 04:55:54'),
+(31, 5, 1, 3, 1, '2025-01-02 05:19:56', '2025-01-02 05:19:56'),
+(32, 6, 3, 5, 1, '2025-01-02 05:20:43', '2025-01-02 05:20:43');
 
 -- --------------------------------------------------------
 
@@ -745,7 +776,11 @@ CREATE TABLE `tour_day_transport` (
 
 INSERT INTO `tour_day_transport` (`id`, `created_at`, `updated_at`, `tour_day_id`, `transport_id`, `price_type`) VALUES
 (4, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_day'),
-(5, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_pickup_dropoff');
+(5, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_pickup_dropoff'),
+(6, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 4, 3, 'per_day'),
+(7, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 4, 3, 'per_pickup_dropoff'),
+(8, '2025-01-02 04:59:16', '2025-01-02 04:59:16', 5, 1, 'per_day'),
+(9, '2025-01-02 05:17:13', '2025-01-02 05:17:13', 6, 1, 'per_day');
 
 -- --------------------------------------------------------
 
@@ -1117,7 +1152,7 @@ ALTER TABLE `amenities`
 -- AUTO_INCREMENT for table `amenity_room`
 --
 ALTER TABLE `amenity_room`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `cities`
@@ -1135,7 +1170,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `estimates`
 --
 ALTER TABLE `estimates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1183,13 +1218,13 @@ ALTER TABLE `meal_types`
 -- AUTO_INCREMENT for table `meal_type_restaurant_tour_days`
 --
 ALTER TABLE `meal_type_restaurant_tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2029;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2032;
 
 --
 -- AUTO_INCREMENT for table `monuments`
@@ -1201,7 +1236,7 @@ ALTER TABLE `monuments`
 -- AUTO_INCREMENT for table `monument_tour_days`
 --
 ALTER TABLE `monument_tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `restaurants`
@@ -1213,7 +1248,7 @@ ALTER TABLE `restaurants`
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `room_types`
@@ -1231,25 +1266,25 @@ ALTER TABLE `spoken_languages`
 -- AUTO_INCREMENT for table `tours`
 --
 ALTER TABLE `tours`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tour_days`
 --
 ALTER TABLE `tour_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tour_day_hotel_room`
 --
 ALTER TABLE `tour_day_hotel_room`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `tour_day_transport`
 --
 ALTER TABLE `tour_day_transport`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `transportation_pricings`
