@@ -41,6 +41,8 @@
     <p><strong>Duration:</strong> {{ $tour->duration }} days</p>
     <p><strong>Start Date:</strong> {{ $tour->start_date }}</p>
     <p><strong>End Date:</strong> {{ $tour->end_date }}</p>
+    <p><strong>End Date:</strong> {{ $tour->number_people }}</p>
+    <p><strong>End Date:</strong> {{ $tour->tour_number }}</p>
 
     <h2>Tour Days</h2>
     @php
@@ -147,15 +149,20 @@
         <ul>
             @forelse ($day->mealTypeRestaurantTourDays as $meal)
                 @php
-                    $mealCost = $meal->mealType->price ?? 0;
+                    $mealCostPerPerson = $meal->mealType->price ?? 0;
+                    $mealCost = $mealCostPerPerson * ($tour->number_people ?? 1); // Multiply by number of people
                     $dayCost += $mealCost;
                 @endphp
-                <li>{{ $meal->mealType->name ?? 'N/A' }} at {{ $meal->restaurant?->name ?? 'N/A' }} (Price:
-                    ${{ number_format($mealCost, 2) }})</li>
+                <li>
+                    {{ $meal->mealType->name ?? 'N/A' }} at {{ $meal->restaurant?->name ?? 'N/A' }}
+                    (Price Per Person: ${{ number_format($mealCostPerPerson, 2) }},
+                    Total: ${{ number_format($mealCost, 2) }})
+                </li>
             @empty
                 <li>No meals assigned</li>
             @endforelse
         </ul>
+        
 
         <p><strong>Day {{ $loop->iteration }} Cost:</strong> ${{ number_format($dayCost, 2) }}</p>
         @php

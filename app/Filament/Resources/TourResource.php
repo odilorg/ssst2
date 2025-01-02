@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TourResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TourResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
 
 class TourResource extends Resource
 {
@@ -36,6 +37,34 @@ class TourResource extends Resource
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
+
+                TextInput::make('number_people')
+                    ->numeric()
+                    ->default(0)
+                    ->required(),
+                Forms\Components\DatePicker::make('start_date')
+                    ->required()
+                    ->before('end_date')
+                ->live()
+                    ,
+
+                Forms\Components\DatePicker::make('end_date')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function (callable $set, $state, $get) {
+                        $startDate = $get('start_date');
+                        $endDate = $get('end_date');
+                        if ($startDate && $endDate) {
+                            $duration = \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1;
+                            $set('tour_duration', $duration);
+                        }
+                    }),
+
+                Forms\Components\TextInput::make('tour_duration')
+                    ->required()
+                    ->suffix('days')
+                    ->readOnly()
+                    ->default(0),
                 Forms\Components\Textarea::make('tour_number')
                     ->columnSpanFull(),
 
@@ -51,7 +80,7 @@ class TourResource extends Resource
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $set('hotel_rooms', []); // Clear the hotel_rooms field
                                 $set('restaurant_meal_types', []); // Set another_field to a specific value
-                            })                            ->required()
+                            })->required()
                             ->preload(),
                         Forms\Components\Select::make('guide_id')
                             ->label('Guide')
@@ -135,7 +164,7 @@ class TourResource extends Resource
                             ])
                             ->live()
                             ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])), // Clear hotel_rooms when hotel_id changes
-                            //->dehydrated(false),
+                        //->dehydrated(false),
                         Select::make('hotel_id')
                             ->label('Hotel')
                             ->options(fn(Get $get): Collection => Hotel::query()
@@ -176,29 +205,26 @@ class TourResource extends Resource
                             ->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
                             ->live()
                             ->collapsible(),
-
                         Select::make('monuments')
                             ->label('Select Monuments')
                             ->preload()
                             ->multiple()
                             ->searchable()
-                            ->relationship('monuments', 'name', fn(Builder $query, $get) => $query->where('city_id', $get('city_id'))) // Filter monuments by city    
+                            ->relationship('monuments', 'name', fn(Builder $query, $get) => $query->where('city_id', $get('city_id')))
                             ->required()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('city')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('ticket_price')
-                                    ->required()
-                                    ->numeric(),
-                                Forms\Components\Textarea::make('description')
-                                    ->columnSpanFull(),
-                            ]),  // Allow multiple selections
+                            ->afterStateUpdated(function ($state, $record) {
+                                if ($record) {
+                                    // Sync the monuments relationship with the selected values
+                                    $record->monuments()->sync($state);
+                                } else {
+                                    Log::warning('Record is null while syncing monuments. Ensure the record is properly saved.');
+                                }
+                            }),
 
-                            Select::make('restaurant_id')
+
+
+
+                        Select::make('restaurant_id')
                             ->label('Restaurant')
                             ->options(fn(Get $get): Collection => Restaurant::query()
                                 //->where('type', $get('type'))
@@ -206,7 +232,7 @@ class TourResource extends Resource
                                 ->pluck('name', 'id'))
                             ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', [])) // Clear hotel_rooms when hotel_id changes
                             ->live(),
-                            Repeater::make('restaurant_meal_types')
+                        Repeater::make('restaurant_meal_types')
                             ->relationship('mealTypeRestaurantTourDays')
                             ->schema([
                                 Forms\Components\Hidden::make('restaurant_id')
@@ -215,7 +241,7 @@ class TourResource extends Resource
                                     ->afterStateHydrated(function ($state) {
                                         Log::info('Restaurant ID set in hidden field:', ['restaurant_id' => $state]);
                                     }),
-                                    Select::make('meal_type_id')
+                                Select::make('meal_type_id')
                                     ->label('Meal Type')
                                     ->options(function (callable $get) {
                                         $restaurantId = $get('restaurant_id');
@@ -228,9 +254,9 @@ class TourResource extends Resource
                                     ->afterStateUpdated(function ($state) {
                                         Log::info('Meal Type ID Selected:', ['meal_type_id' => $state]);
                                     })
-                                
+
                             ])
-                         
+
 
 
                     ]),
@@ -284,4 +310,10 @@ class TourResource extends Resource
             'edit' => Pages\EditTour::route('/{record}/edit'),
         ];
     }
+
+    // protected function afterSave($record, array $data): void
+    // {
+    //     // Sync the monuments relationship with the selected values
+    //     $record->monuments()->sync($data['monuments'] ?? []);
+    // }
 }
