@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -28,56 +29,66 @@ class TransportResource extends Resource
         return $form
             ->schema([
                 Select::make('category')
-                ->label('Category')
-                ->options([
-                    'bus' => 'Bus',
-                    'car' => 'Car',
-                    'mikro_bus' => 'Mikro Bus',
-                    'air' => 'Air',
-                    'rail' => 'Rail',
+                    ->label('Category')
+                    ->options([
+                        'bus' => 'Bus',
+                        'car' => 'Car',
+                        'mikro_bus' => 'Mikro Bus',
+                        'air' => 'Air',
+                        'rail' => 'Rail',
+                    ])
+                    ->live() // Make it reactive
+                    ->required(),
 
-                ]),
+                Select::make('transport_type_id')
+                    ->label('Transport Type')
+                    ->options(function ($get) {
+                        $selectedCategory = $get('category');
+
+                        if (!$selectedCategory) {
+                            return [];
+                        }
+
+                        // Fetch the transport types dynamically based on the selected category
+                        return \App\Models\TransportType::where('category', $selectedCategory)
+                            ->pluck('type', 'id');
+                    })
+                    ->required()
+                    ->preload(),
                 Forms\Components\TextInput::make('plate_number')
+                ->visible(function ($get) {
+                    return $get('category') !== 'rail';
+                })
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('model')
+                ->visible(function ($get) {
+                    return $get('category') !== 'rail';
+                })
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('number_of_seat')
+                ->visible(function ($get) {
+                    return $get('category') !== 'rail';
+                })
                     ->required()
                     ->numeric(),
-                // Forms\Components\Select::make('transportation_id')
+                TimePicker::make('departure_time')
+                    ->visible(function ($get) {
+                        return $get('category') === 'rail';
+                    })
+                    ->required(),
+                      
+               TimePicker::make('arrival_time')
+                ->visible(function ($get) {
+                    return $get('category') === 'rail';
+                })
+                    ->required(),
+                   
+                 
+                
 
-                //     ->relationship('transportation', 'category')
-                //     ->required()
-                //     ->preload(),
-                Forms\Components\Select::make('transport_type_id')
-                    ->relationship('transportType', 'type')
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('type')
-                    ->required()
-                    ->maxLength(255),
-                Repeater::make('transportPrices')
-                    ->relationship()
-                    ->schema([
-
-                        Forms\Components\Select::make('price_type')
-                            ->options([
-                                'per_day' => 'Per Day',
-                                'per_pickup_dropoff' => 'Per Pickup Dropoff'
-                            ])
-                            ->required(),
-                        Forms\Components\TextInput::make('cost')
-                            ->required()
-                            ->numeric()
-                            // ->default(0.00)
-                            ->prefix('$'),
-                    ])
-
-                    ])
-                    ->required()
-                    ->preload(),
-            ]);
+                ]);
     }
 
     public static function table(Table $table): Table
@@ -99,13 +110,13 @@ class TransportResource extends Resource
                 Tables\Columns\TextColumn::make('number_of_seat')
                     ->numeric()
                     ->sortable(),
-                    Tables\Columns\TextColumn::make('category'),
-                    Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
+                Tables\Columns\TextColumn::make('category'),
+                Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
                     ->label('Per Day, Per Pickup'),
 
-               
+
                 Tables\Columns\TextColumn::make('transportType.type')
-                  //  ->numeric()
+                    //  ->numeric()
                     ->sortable(),
             ])
             ->filters([

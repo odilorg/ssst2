@@ -133,7 +133,7 @@ class TourResource extends Resource
 
                                                 Select::make('transport_id')
                                                     ->label('Transport')
-                                                    ->relationship('transport', 'model', function ($query, callable $get) {
+                                                    ->relationship('transport.transportType', 'type', function ($query, callable $get) {
                                                         $category = $get('category'); // Get the selected category
                                                         if ($category) {
                                                             $query->where('category', $category); // Filter transports by selected category
@@ -152,6 +152,9 @@ class TourResource extends Resource
                                                             return [
                                                                 'per_day' => 'Per Day',
                                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
+                                                                'vip' => 'VIP',
+                                                                'economy' => 'Economy',
+                                                                'business' => 'Business',
                                                             ]; // Default options if no transport is selected
                                                         }
 
@@ -164,6 +167,9 @@ class TourResource extends Resource
                                                             return [
                                                                 'per_day' => 'Per Day',
                                                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
+                                                                'vip' => 'VIP',
+                                                                'economy' => 'Economy',
+                                                                'business' => 'Business',
                                                             ]; // Fallback if transport or transportType is missing
                                                         }
 
@@ -171,6 +177,9 @@ class TourResource extends Resource
                                                         return [
                                                             'per_day' => 'Per Day',
                                                             'per_pickup_dropoff' => 'Per Pickup Dropoff',
+                                                            'vip' => 'VIP',
+                                                            'economy' => 'Economy',
+                                                            'business' => 'Business',
                                                         ];
                                                     })
                                                     ->required()

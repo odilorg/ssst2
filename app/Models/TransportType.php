@@ -9,9 +9,12 @@ class TransportType extends Model
     //
 
     protected $fillable = [
-        'type',
-        
-        
+        'type',        
+        'category',
+        'running_days',
+    ];
+    protected $casts = [
+        'running_days' => 'array',
     ];
 
     public function transportPrices()

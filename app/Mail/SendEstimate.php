@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 class SendEstimate extends Mailable
 {
     use Queueable, SerializesModels;
-
+public $estimate;
     /**
      * Create a new message instance.
      */
@@ -21,9 +21,7 @@ class SendEstimate extends Mailable
     {
         $this->estimate = $estimate;
     }
-    {
-        //
-    }
+   
 
     /**
      * Get the message envelope.

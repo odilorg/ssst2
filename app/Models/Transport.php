@@ -11,7 +11,11 @@ class Transport extends Model
         'model',
         'number_of_seat',
         'category',
-        'transport_type_id'
+        'transport_type_id',
+        'departure_time',
+        'arrival_time',
+       
+        'city_id'
     ];
 
     
@@ -20,4 +24,10 @@ class Transport extends Model
     {
         return $this->belongsTo(TransportType::class);
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
 }
