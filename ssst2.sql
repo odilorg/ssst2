@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 02, 2025 at 12:24 PM
+-- Generation Time: Jan 04, 2025 at 05:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -101,8 +101,8 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('a17961fa74e9275d529f489537f179c05d50c2f3', 'i:1;', 1735808915),
-('a17961fa74e9275d529f489537f179c05d50c2f3:timer', 'i:1735808915;', 1735808915);
+('a17961fa74e9275d529f489537f179c05d50c2f3', 'i:1;', 1736007446),
+('a17961fa74e9275d529f489537f179c05d50c2f3:timer', 'i:1736007446;', 1736007446);
 
 -- --------------------------------------------------------
 
@@ -187,7 +187,11 @@ CREATE TABLE `estimates` (
 
 INSERT INTO `estimates` (`id`, `created_at`, `updated_at`, `estimate_number`, `estimate_date`, `notes`, `file_name`, `customer_id`, `tour_id`, `number`) VALUES
 (43, '2025-01-02 05:27:16', '2025-01-02 05:27:16', '71', '1971-06-30', 'Officiis id porro ve', 'estimate_43.pdf', 1, 4, 'EST-2025-043'),
-(44, '2025-01-02 05:28:15', '2025-01-02 05:28:15', '423', '2024-11-21', 'Non quos est est r', 'estimate_44.pdf', 1, 3, 'EST-2025-044');
+(44, '2025-01-02 05:28:15', '2025-01-02 05:28:15', '423', '2024-11-21', 'Non quos est est r', 'estimate_44.pdf', 1, 3, 'EST-2025-044'),
+(45, '2025-01-02 10:50:15', '2025-01-02 10:50:15', '408', '2022-05-20', 'Dolores qui aut blan', NULL, 1, 2, 'EST-2025-045'),
+(46, '2025-01-02 10:52:47', '2025-01-02 10:52:57', '791', '2013-09-07', 'Sint lorem accusanti', 'estimate_46.pdf', 1, 2, 'EST-2025-046'),
+(47, '2025-01-02 10:56:41', '2025-01-02 10:56:43', '593', '1998-08-06', 'Obcaecati nostrud a ', 'estimate_47.pdf', 1, 2, 'EST-2025-047'),
+(48, '2025-01-02 11:05:12', '2025-01-02 11:05:13', '679', '1982-12-03', 'Consequatur illo vel', 'estimate_48.pdf', 1, 3, 'EST-2025-048');
 
 -- --------------------------------------------------------
 
@@ -325,7 +329,8 @@ CREATE TABLE `jobs` (
 INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `available_at`, `created_at`) VALUES
 (1, 'default', '{\"uuid\":\"61852200-083c-4918-a899-2168dc1b85e6\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:1;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732057, 1735732057),
 (2, 'default', '{\"uuid\":\"7791c56f-eea0-435d-8366-4d218176baa9\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:2;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732166, 1735732166),
-(3, 'default', '{\"uuid\":\"7ecb654d-0a54-475f-9773-d7c46d331e10\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:3;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732231, 1735732231);
+(3, 'default', '{\"uuid\":\"7ecb654d-0a54-475f-9773-d7c46d331e10\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:3;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735732231, 1735732231),
+(4, 'default', '{\"uuid\":\"0b91b73b-fb8e-4026-be65-586e7fb51d44\",\"displayName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\GenerateEstimatePdf\",\"command\":\"O:28:\\\"App\\\\Jobs\\\\GenerateEstimatePdf\\\":1:{s:8:\\\"estimate\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:19:\\\"App\\\\Models\\\\Estimate\\\";s:2:\\\"id\\\";i:45;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";N;s:15:\\\"collectionClass\\\";N;}}\"}}', 0, NULL, 1735833016, 1735833016);
 
 -- --------------------------------------------------------
 
@@ -473,7 +478,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (2028, '2025_01_01_123050_add_file_name_to_estimates_table', 19),
 (2029, '2025_01_02_092258_add_hotel_category_to_tour_days_table', 20),
 (2030, '2025_01_02_102212_add_number_people_to_tours_table', 21),
-(2031, '2025_01_02_103016_add_some_cols_to_tours_table', 22);
+(2031, '2025_01_02_103016_add_some_cols_to_tours_table', 22),
+(2032, '2025_01_04_111706_add_category_to_transport_types_table', 23),
+(2033, '2025_01_04_120210_add_running_days_to_transport_types_table', 24),
+(2034, '2025_01_04_161827_add_cols_to_transports_table', 25),
+(2035, '2025_01_04_163527_add_cols_to_transports_table', 26);
 
 -- --------------------------------------------------------
 
@@ -500,7 +509,8 @@ INSERT INTO `monuments` (`id`, `created_at`, `updated_at`, `name`, `ticket_price
 (1, '2024-12-29 06:15:31', '2025-01-01 05:23:11', 'Registan', 8.00, 'dfd', '[]', 1),
 (2, '2024-12-29 06:15:47', '2025-01-01 05:23:19', 'Gur Emir', 5.00, NULL, '[]', 1),
 (3, '2024-12-29 06:28:19', '2025-01-01 05:23:28', 'Shahi Zinda', 8.50, NULL, '[]', 1),
-(4, '2025-01-01 05:24:29', '2025-01-01 05:24:29', 'Ark', 10.00, 'dfd', '[]', 2);
+(4, '2025-01-01 05:24:29', '2025-01-01 05:24:29', 'Ark', 10.00, 'dfd', '[]', 2),
+(5, '2025-01-02 10:46:28', '2025-01-02 10:46:28', 'Somoniy', 9.00, 'jhgjk', '[]', 2);
 
 -- --------------------------------------------------------
 
@@ -643,7 +653,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('ztMDa2wrub8rJX0VzMrio6gv5D2MKc4nVi3hhiEA', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiOFN4MVVJQ05vd2g5VzdFMWxoVVo0b0RjOTNlNGhvUUxnVU5iZUp6RiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi90b3VycyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkUE1vZGpaU1dleU1YTFNIblFjbEdwdUI3dDhCbnJwc2o2dWhhRVRFcXFVZmRmalRrMW1qQ3EiO3M6ODoiZmlsYW1lbnQiO2E6MDp7fX0=', 1735817061);
+('aKEXNJsCcgrwiZTxXvunzqfJcd8yXH5lHLIfV0en', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiZXdjOE9FUkpCdWJjTlNIYnhQMGhmUnlTTjhKRzc4SVdyZWdWM1lpRyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjMzOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vdG91cnMiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkUE1vZGpaU1dleU1YTFNIblFjbEdwdUI3dDhCbnJwc2o2dWhhRVRFcXFVZmRmalRrMW1qQ3EiO3M6ODoiZmlsYW1lbnQiO2E6MDp7fX0=', 1736009583);
 
 -- --------------------------------------------------------
 
@@ -775,8 +785,7 @@ CREATE TABLE `tour_day_transport` (
 --
 
 INSERT INTO `tour_day_transport` (`id`, `created_at`, `updated_at`, `tour_day_id`, `transport_id`, `price_type`) VALUES
-(4, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_day'),
-(5, '2025-01-01 08:15:46', '2025-01-01 08:15:46', 3, 3, 'per_pickup_dropoff'),
+(4, '2025-01-01 08:15:46', '2025-01-04 11:52:27', 3, 5, 'vip'),
 (6, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 4, 3, 'per_day'),
 (7, '2025-01-02 04:55:54', '2025-01-02 04:55:54', 4, 3, 'per_pickup_dropoff'),
 (8, '2025-01-02 04:59:16', '2025-01-02 04:59:16', 5, 1, 'per_day'),
@@ -816,21 +825,25 @@ CREATE TABLE `transports` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `plate_number` varchar(255) NOT NULL,
-  `model` varchar(255) NOT NULL,
-  `number_of_seat` int(11) NOT NULL,
+  `plate_number` varchar(255) DEFAULT NULL,
+  `model` varchar(255) DEFAULT NULL,
+  `number_of_seat` int(11) DEFAULT NULL,
   `transport_type_id` bigint(20) UNSIGNED NOT NULL,
-  `category` enum('bus','car','mikro_bus','air','rail') NOT NULL
+  `category` enum('bus','car','mikro_bus','air','rail') NOT NULL,
+  `departure_time` time DEFAULT NULL,
+  `arrival_time` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `transports`
 --
 
-INSERT INTO `transports` (`id`, `created_at`, `updated_at`, `plate_number`, `model`, `number_of_seat`, `transport_type_id`, `category`) VALUES
-(1, '2024-12-29 03:53:03', '2024-12-29 05:40:09', '30H656G', 'BYD Chazor', 3, 2, 'car'),
-(2, '2024-12-29 05:40:33', '2024-12-29 06:07:39', '30HY656', 'Lacetti', 3, 4, 'car'),
-(3, '2024-12-29 05:41:23', '2024-12-29 05:41:23', '30H767', 'Golden Dragon', 43, 3, 'bus');
+INSERT INTO `transports` (`id`, `created_at`, `updated_at`, `plate_number`, `model`, `number_of_seat`, `transport_type_id`, `category`, `departure_time`, `arrival_time`) VALUES
+(1, '2024-12-29 03:53:03', '2024-12-29 05:40:09', '30H656G', 'BYD Chazor', 3, 2, 'car', NULL, NULL),
+(2, '2024-12-29 05:40:33', '2024-12-29 06:07:39', '30HY656', 'Lacetti', 3, 4, 'car', NULL, NULL),
+(3, '2024-12-29 05:41:23', '2024-12-29 05:41:23', '30H767', 'Golden Dragon', 43, 3, 'bus', NULL, NULL),
+(4, '2025-01-04 11:42:15', '2025-01-04 11:44:44', NULL, 'Afrosiyob', NULL, 5, 'rail', '22:39:44', '22:39:47'),
+(5, '2025-01-04 11:46:24', '2025-01-04 11:46:24', NULL, 'Afrosiyob', NULL, 7, 'rail', '23:48:19', '00:49:24');
 
 -- --------------------------------------------------------
 
@@ -844,7 +857,7 @@ CREATE TABLE `transport_prices` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `cost` decimal(8,2) NOT NULL DEFAULT 0.00,
   `transport_type_id` bigint(20) UNSIGNED NOT NULL,
-  `price_type` enum('per_day','per_pickup_dropoff') NOT NULL
+  `price_type` enum('per_day','per_pickup_dropoff','vip','economy','business') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -852,12 +865,20 @@ CREATE TABLE `transport_prices` (
 --
 
 INSERT INTO `transport_prices` (`id`, `created_at`, `updated_at`, `cost`, `transport_type_id`, `price_type`) VALUES
-(1, '2024-12-29 03:52:18', '2024-12-29 03:52:18', 100.00, 2, 'per_day'),
-(2, '2024-12-29 03:52:18', '2024-12-29 03:52:18', 50.00, 2, 'per_pickup_dropoff'),
-(3, '2024-12-29 05:41:19', '2024-12-29 05:41:19', 150.00, 3, 'per_day'),
-(4, '2024-12-29 05:41:19', '2024-12-29 05:41:19', 80.00, 3, 'per_pickup_dropoff'),
-(5, '2024-12-29 06:07:35', '2024-12-29 06:07:35', 80.00, 4, 'per_day'),
-(6, '2024-12-29 06:07:35', '2024-12-29 06:07:35', 30.00, 4, 'per_pickup_dropoff');
+(1, '2024-12-29 03:52:18', '2025-01-04 06:44:45', 100.00, 2, 'per_day'),
+(2, '2024-12-29 03:52:18', '2025-01-04 06:44:45', 50.00, 2, 'per_pickup_dropoff'),
+(3, '2024-12-29 05:41:19', '2025-01-04 06:45:23', 150.00, 3, 'per_day'),
+(4, '2024-12-29 05:41:19', '2025-01-04 06:45:23', 80.00, 3, 'per_pickup_dropoff'),
+(5, '2024-12-29 06:07:35', '2025-01-04 06:45:32', 80.00, 4, 'per_day'),
+(6, '2024-12-29 06:07:35', '2025-01-04 06:45:32', 30.00, 4, 'per_pickup_dropoff'),
+(7, '2025-01-04 06:48:12', '2025-01-04 06:48:12', 10.00, 5, 'economy'),
+(8, '2025-01-04 06:48:12', '2025-01-04 06:48:12', 20.00, 5, 'vip'),
+(9, '2025-01-04 06:48:12', '2025-01-04 06:48:12', 15.00, 5, 'business'),
+(10, '2025-01-04 07:24:14', '2025-01-04 07:24:14', 200.00, 6, 'per_day'),
+(11, '2025-01-04 07:24:14', '2025-01-04 07:24:14', 100.00, 6, 'per_pickup_dropoff'),
+(12, '2025-01-04 11:43:49', '2025-01-04 11:43:49', 20.00, 7, 'vip'),
+(13, '2025-01-04 11:43:49', '2025-01-04 11:43:49', 10.00, 7, 'economy'),
+(14, '2025-01-04 11:43:49', '2025-01-04 11:43:49', 15.00, 7, 'business');
 
 -- --------------------------------------------------------
 
@@ -871,17 +892,22 @@ CREATE TABLE `transport_types` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `type` varchar(255) NOT NULL,
   `cost` decimal(8,2) NOT NULL DEFAULT 0.00,
-  `price_type` enum('per_day','per_pickup_dropoff') NOT NULL
+  `price_type` enum('per_day','per_pickup_dropoff') NOT NULL,
+  `category` enum('bus','car','mikro_bus','air','rail') NOT NULL,
+  `running_days` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`running_days`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `transport_types`
 --
 
-INSERT INTO `transport_types` (`id`, `created_at`, `updated_at`, `type`, `cost`, `price_type`) VALUES
-(2, '2024-12-29 03:52:18', '2024-12-29 03:52:18', 'Sedan', 0.00, 'per_day'),
-(3, '2024-12-29 05:41:18', '2024-12-29 05:41:18', '43 seat', 0.00, 'per_day'),
-(4, '2024-12-29 06:07:35', '2024-12-29 06:07:35', 'Sedan Lacetti', 0.00, 'per_day');
+INSERT INTO `transport_types` (`id`, `created_at`, `updated_at`, `type`, `cost`, `price_type`, `category`, `running_days`) VALUES
+(2, '2024-12-29 03:52:18', '2025-01-04 06:25:02', 'Sedan', 0.00, 'per_day', 'car', NULL),
+(3, '2024-12-29 05:41:18', '2024-12-29 05:41:18', '43 seat', 0.00, 'per_day', 'bus', NULL),
+(4, '2024-12-29 06:07:35', '2025-01-04 06:25:31', 'Sedan Lacetti', 0.00, 'per_day', 'car', NULL),
+(5, '2025-01-04 06:48:12', '2025-01-04 11:48:03', 'Afrosiyob-Tashkent - Samarkand', 0.00, 'per_day', 'rail', '[\"monday\",\"thursday\",\"tuesday\",\"wednesday\",\"friday\",\"saturday\",\"sunday\"]'),
+(6, '2025-01-04 07:24:14', '2025-01-04 07:24:14', '50 seat', 0.00, 'per_day', 'bus', NULL),
+(7, '2025-01-04 11:43:49', '2025-01-04 11:48:20', 'Afrosiyob-Samarkand-Bukhara', 0.00, 'per_day', 'rail', '[\"monday\",\"tuesday\",\"wednesday\",\"thursday\",\"friday\",\"saturday\",\"sunday\"]');
 
 -- --------------------------------------------------------
 
@@ -1170,7 +1196,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `estimates`
 --
 ALTER TABLE `estimates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1206,7 +1232,7 @@ ALTER TABLE `hotels`
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `meal_types`
@@ -1224,13 +1250,13 @@ ALTER TABLE `meal_type_restaurant_tour_days`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2032;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2036;
 
 --
 -- AUTO_INCREMENT for table `monuments`
 --
 ALTER TABLE `monuments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `monument_tour_days`
@@ -1296,19 +1322,19 @@ ALTER TABLE `transportation_pricings`
 -- AUTO_INCREMENT for table `transports`
 --
 ALTER TABLE `transports`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transport_prices`
 --
 ALTER TABLE `transport_prices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `transport_types`
 --
 ALTER TABLE `transport_types`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1374,12 +1400,6 @@ ALTER TABLE `tour_days`
 ALTER TABLE `tour_day_transport`
   ADD CONSTRAINT `tour_day_transport_tour_day_id_foreign` FOREIGN KEY (`tour_day_id`) REFERENCES `tour_days` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `tour_day_transport_transport_id_foreign` FOREIGN KEY (`transport_id`) REFERENCES `transports` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `transportation_pricings`
---
-ALTER TABLE `transportation_pricings`
-  ADD CONSTRAINT `transportation_pricings_transportation_id_foreign` FOREIGN KEY (`transportation_id`) REFERENCES `transportations` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
