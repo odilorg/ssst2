@@ -50,7 +50,7 @@ class HotelResource extends Resource
                         ->columnSpanFull(),
                     ]),                    
 
-                Select::make('category')
+                Select::make('type')
                     ->label('Category')
                     ->options([
                         'bed_breakfast' => 'B&B',
