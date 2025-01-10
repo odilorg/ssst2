@@ -21,7 +21,7 @@ class GuideResource extends Resource
 
     protected static ?string $navigationGroup = 'Tour Items';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     public static function form(Form $form): Form
     {
