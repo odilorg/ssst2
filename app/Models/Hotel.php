@@ -12,7 +12,7 @@ class Hotel extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address', 'category', 'city_id' ];
+    protected $fillable = ['name', 'address', 'category', 'city_id', 'type', 'description', 'images'];
 
     // public function days(): BelongsToMany
     // {
