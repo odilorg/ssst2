@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEstimate extends CreateRecord
 {
     protected static string $resource = EstimateResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
