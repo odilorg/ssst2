@@ -19,4 +19,6 @@ class Tour extends Model
     }
 
     
+
+    
 }

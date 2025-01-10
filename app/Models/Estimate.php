@@ -59,4 +59,21 @@ class Estimate extends Model
             GenerateEstimatePdf::dispatch($estimate);
         });
     }
+
+
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        // Placeholder for estimate_number during creation (if required)
+        $model->estimate_number = 'EST0000' . date('mY');
+    });
+
+    static::created(function ($model) {
+        // Update estimate_number after the ID is assigned
+        $model->estimate_number = 'EST' . $model->id . date('mY');
+        $model->save();
+    });
+}
 }

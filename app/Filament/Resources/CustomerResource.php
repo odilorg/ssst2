@@ -17,24 +17,31 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationLabel = 'Клиенты';
+    protected static ?string $modelLabel = 'Клиент';
+    protected static ?string $pluralModelLabel = 'Клиенты';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                ->label('Имя клиента')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                ->label('Email')    
                     ->email()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('phone')
+                ->label('Телефон')  
                     ->tel()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('address')
+                ->label('Адрес')    
                     ->required()
                     ->maxLength(255),
             ]);
@@ -53,12 +60,16 @@ class CustomerResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Имя клиента')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
+                ->label('Телефон')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                ->label('Адрес')
                     ->searchable(),
             ])
             ->filters([

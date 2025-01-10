@@ -18,18 +18,24 @@ class CityResource extends Resource
     protected static ?string $model = City::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Города';
+    protected static ?string $modelLabel = 'Город';
+    protected static ?string $pluralModelLabel = 'Города';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                ->label('Название города')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                ->label('Описание города')
                     ->maxLength(555)
                     ->default(null),
                 Forms\Components\FileUpload::make('images')
+                ->label('Изображения города')
                 ->multiple()
                 ->image()
                     ->columnSpanFull(),
@@ -49,8 +55,10 @@ class CityResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
+                ->label('Название города')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
+                ->label('Описание города')
                     ->searchable(),
             ])
             ->filters([

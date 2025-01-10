@@ -19,27 +19,45 @@ class EstimateResource extends Resource
 {
     protected static ?string $model = Estimate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calculator';
+
+    protected static ?string $navigationLabel = 'Калькуляция Тура';
+    protected static ?string $modelLabel = 'Калькуляция';
+    protected static ?string $pluralModelLabel = 'Калькуляции';
+
+
+
+
+
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('estimate_number')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('estimate_date')
-                    ->required(),
-                Forms\Components\Textarea::make('notes')
-                    ->columnSpanFull(),
                 Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
-                    ->required()
-                    ->preload(),
-                Forms\Components\Select::make('tour_id')
-                ->relationship('tour', 'name')    
+                ->label('Имя клиента')
+                ->relationship('customer', 'name')
                 ->required()
-                    ->preload(),
+                ->preload(),
+            Forms\Components\Select::make('tour_id')
+            ->label('Выберите Тур')
+            ->relationship('tour', 'name')    
+            ->required()
+                ->preload(),
+                Forms\Components\TextInput::make('estimate_number')
+               
+                    ->hidden()
+                    ->required()
+                    ->maxLength(255)
+                    ->default(fn () => 'EST-' . substr(time(), -4) . '-' . date('m-Y')),
+                    Forms\Components\DatePicker::make('estimate_date')
+                    ->label('Дата оценки')
+                    ->required(),
+                Forms\Components\TextInput::make('notes')
+                ->label('Примечания')
+                    ->columnSpanFull(),
+               
                 
             ]);
     }
@@ -57,14 +75,18 @@ class EstimateResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('estimate_number')
+                    ->label('Номер калькуляции')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('estimate_date')
+                ->label('Дата калькуляции')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
+                ->label('Имя клиента')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tour.name')
+                ->label('Название тура')
                     ->numeric()
                
             ])
