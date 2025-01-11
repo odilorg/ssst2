@@ -21,7 +21,10 @@ class TransportTypeResource extends Resource
     protected static ?string $model = TransportType::class;
     protected static ?string $navigationGroup = 'Tour Items';
 
-    protected static ?string $navigationParentItem = 'Transports';
+    protected static ?string $navigationParentItem = 'Транспорт';
+    protected static ?string $navigationLabel = 'Типы Транспорта';
+    protected static ?string $modelLabel = 'Тип Транспорта';
+    protected static ?string $pluralModelLabel = 'Типы Транспорта';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -34,6 +37,7 @@ class TransportTypeResource extends Resource
                         'bus' => 'Bus',
                         'car' => 'Car',
                         'mikro_bus' => 'Mikro Bus',
+                        'mini_van' => 'Mini Van',
                         'air' => 'Air',
                         'rail' => 'Rail'
                     ])
@@ -50,6 +54,7 @@ class TransportTypeResource extends Resource
                             ->options([
                                 'per_day' => 'Per Day',
                                 'per_pickup_dropoff' => 'Per Pickup Dropoff',
+                                'po_gorodu' => 'Po Gorodu',
                                 'vip' => 'VIP',
                                 'economy' => 'Economy',
                                 'business' => 'Business',
@@ -95,6 +100,7 @@ class TransportTypeResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('type')
+                ->label('Тип транспорта')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price_type')
                     ->searchable(),

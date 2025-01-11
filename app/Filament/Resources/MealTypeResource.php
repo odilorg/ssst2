@@ -18,7 +18,7 @@ class MealTypeResource extends Resource
     protected static ?string $model = MealType::class;
     protected static ?string $navigationGroup = 'Tour Items';
 
-    protected static ?string $navigationParentItem = 'Restaurants';
+    protected static ?string $navigationParentItem = 'Рестораны';
 
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

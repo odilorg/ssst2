@@ -21,27 +21,32 @@ class TransportResource extends Resource
     protected static ?string $model = Transport::class;
     protected static ?string $navigationGroup = 'Tour Items';
 
+    protected static ?string $navigationLabel = 'Транспорт';
+    protected static ?string $modelLabel = 'Транспорт';
+    protected static ?string $pluralModelLabel = 'Транспорт';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Select::make('category')
-                    ->label('Category')
+                    ->label('Выберите категорию')
                     ->options([
                         'bus' => 'Bus',
                         'car' => 'Car',
                         'mikro_bus' => 'Mikro Bus',
+                        'mini_van' => 'Mini Van',
                         'air' => 'Air',
-                        'rail' => 'Rail',
+                        'rail' => 'Rail'
                     ])
                     ->live() // Make it reactive
                     ->required(),
 
                 Select::make('transport_type_id')
-                    ->label('Transport Type')
+                    ->label('Тип транспорта')
                     ->options(function ($get) {
                         $selectedCategory = $get('category');
 
@@ -56,21 +61,24 @@ class TransportResource extends Resource
                     ->required()
                     ->preload(),
                 Forms\Components\TextInput::make('plate_number')
-                ->visible(function ($get) {
-                    return $get('category') !== 'rail';
-                })
+                    ->label('Гос. номер')
+                    ->visible(function ($get) {
+                        return $get('category') !== 'rail';
+                    })
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('model')
-                ->visible(function ($get) {
-                    return $get('category') !== 'rail';
-                })
+                    ->label('Модель')
+                    ->visible(function ($get) {
+                        return $get('category') !== 'rail';
+                    })
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('number_of_seat')
-                ->visible(function ($get) {
-                    return $get('category') !== 'rail';
-                })
+                    ->label('Количество мест')
+                    ->visible(function ($get) {
+                        return $get('category') !== 'rail';
+                    })
                     ->required()
                     ->numeric(),
                 TimePicker::make('departure_time')
@@ -78,17 +86,17 @@ class TransportResource extends Resource
                         return $get('category') === 'rail';
                     })
                     ->required(),
-                      
-               TimePicker::make('arrival_time')
-                ->visible(function ($get) {
-                    return $get('category') === 'rail';
-                })
-                    ->required(),
-                   
-                 
-                
 
-                ]);
+                TimePicker::make('arrival_time')
+                    ->visible(function ($get) {
+                        return $get('category') === 'rail';
+                    })
+                    ->required(),
+
+
+
+
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -104,20 +112,26 @@ class TransportResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('plate_number')
+                ->label('Гос. номер')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('model')
+                ->label('Модель')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('number_of_seat')
+                ->label('Кол. мест')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category'),
-                Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
-                    ->label('Per Day, Per Pickup'),
+                Tables\Columns\TextColumn::make('category')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Категория'),
+                // Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
+                //     ->label('Per Day, Per Pickup'),
 
 
-                Tables\Columns\TextColumn::make('transportType.type')
-                    //  ->numeric()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('transportType.type')
+                //     //  ->numeric()
+                //     ->sortable(),
             ])
             ->filters([
                 //

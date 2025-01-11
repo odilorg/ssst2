@@ -12,7 +12,12 @@ class Restaurant extends Model
         'phone',
         'website',
         'email',
-        'city_id'
+        'city_id',
+        'menu_images'
+    ];
+
+    protected $casts = [
+        'menu_images' => 'array'
     ];
 
     public function mealTypes()
