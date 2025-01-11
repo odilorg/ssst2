@@ -81,6 +81,7 @@ class RestaurantResource extends Resource
                                 'breakfast' => 'Breakfast',
                                 'lunch' => 'Lunch',
                                 'dinner' => 'Dinner',
+                                'coffee_break' => 'Coffee Break',
 
                             ]),
                         Forms\Components\TextInput::make('description')
