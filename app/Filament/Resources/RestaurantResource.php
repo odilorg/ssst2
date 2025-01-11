@@ -75,7 +75,7 @@ class RestaurantResource extends Resource
                     ->label('Блюда')
                     ->relationship()
                     ->schema([
-                        Select::make('category')
+                        Select::make('name')
                             ->label('Категория блюда')
                             ->options([
                                 'breakfast' => 'Breakfast',
