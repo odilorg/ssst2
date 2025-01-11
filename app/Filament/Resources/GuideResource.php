@@ -22,19 +22,42 @@ class GuideResource extends Resource
     protected static ?string $navigationGroup = 'Tour Items';
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static ?string $navigationLabel = 'Гиды';
+    protected static ?string $modelLabel = 'Гид';
+    protected static ?string $pluralModelLabel = 'Гиды';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('ФИО Гида')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('daily_rate')
+                Forms\Components\TextInput::make('phone')
+                    ->label('Телефон')
                     ->required()
-                    ->numeric()
-                    ->default(0.00),
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('address')
+                    ->label('Адрес')
+                    //->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('city')
+                    ->label('Город')
+                    //->required()
+                    ->maxLength(255),            
+               
+                    
+                Forms\Components\TextInput::make('daily_rate')
+                    ->label('Оплата в день')
+                    ->required()
+                    ->numeric(),
+                    //->default(0.00),
                 Select::make('languages')
+                    ->label('Языки')
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -46,6 +69,9 @@ class GuideResource extends Resource
                     ->searchable()
                     ->required(),
                 Toggle::make('is_marketing'),
+                Forms\Components\FileUpload::make('image')
+                ->label('Фото')
+                ->image(),
                     
 
     
@@ -57,10 +83,38 @@ class GuideResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('ФИО Гида')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('daily_rate')
+                    ->label('Оплата')
+                    ->prefix('$')
+
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Телефон')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                ->icon('heroicon-m-envelope')
+                ->iconColor('primary')
+                ->copyable()
+                ->copyMessage('Email address copied')
+                ->copyMessageDuration(1500)
+
+
+
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Адрес')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('city')
+                    ->label('Город')
+                    ->searchable(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Фото'),
+                    //->thumbnail()
+                    //->sortable()
+                    //->searchable(),    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -69,7 +123,11 @@ class GuideResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('language')
+                Tables\Columns\TextColumn::make('languages.name')
+                ->listWithLineBreaks()
+
+
+                    ->label('Языки')
                     ->searchable(),
             ])
             ->filters([

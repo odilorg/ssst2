@@ -24,7 +24,11 @@ class RoomResource extends Resource
 
     protected static ?string $navigationGroup = 'Tour Items';
 
-    protected static ?string $navigationParentItem = 'Hotels';
+    protected static ?string $navigationParentItem = 'Гостиницы';
+
+    protected static ?string $navigationLabel = 'Номера';
+    protected static ?string $modelLabel = 'Номер';
+    protected static ?string $pluralModelLabel = 'Номера';
 
 
 

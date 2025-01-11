@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tours', function (Blueprint $table) {
-            $table->integer('tour_duration')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-
+        Schema::table('hotels', function (Blueprint $table) {
+            $table->text('description')->nullable();
+            $table->string('phone');
+            $table->string('email');
+            $table->string('website')->nullable();
+            $table->json('images')->nullable();
         });
     }
 
@@ -24,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tours', function (Blueprint $table) {
+        Schema::table('hotels', function (Blueprint $table) {
             //
         });
     }

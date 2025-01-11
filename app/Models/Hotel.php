@@ -12,13 +12,27 @@ class Hotel extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address', 'category', 'city_id', 'type', 'description', 'images'];
+    protected $fillable = ['name',
+     'address',
+     'category',
+     'city_id',
+     'type',
+     'description',
+      'images',
+    'description',
+    'phone',
+    'email',
+    'images'
+    ];
 
     // public function days(): BelongsToMany
     // {
     //     return $this->belongsToMany(Day::class)->withPivot(['number_of_rooms','number_of_nights','agreed_price'])->withTimestamps();
     // }
-
+    protected $casts = [
+        'images' => 'array',
+    ];
+    
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

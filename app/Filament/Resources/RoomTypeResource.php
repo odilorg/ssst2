@@ -19,6 +19,7 @@ class RoomTypeResource extends Resource
     protected static ?string $navigationGroup = 'Tour Items';
 
     protected static ?string $navigationParentItem = 'Hotels';
+   
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

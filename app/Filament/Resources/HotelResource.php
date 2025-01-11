@@ -23,6 +23,9 @@ class HotelResource extends Resource
 
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static ?string $navigationLabel = 'Гостиницы';
+    protected static ?string $modelLabel = 'Гостиница';
+    protected static ?string $pluralModelLabel = 'Гостиницы';
 
     public static function form(Form $form): Form
     {

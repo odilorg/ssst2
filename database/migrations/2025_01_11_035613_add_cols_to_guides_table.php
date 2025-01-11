@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transports', function (Blueprint $table) {
-            $table->time('departure_time')->nullable();
-            $table->time('arrival_time')->nullable();
-            $table->string('departure_location')->nullable();
-            $table->string('arrival_location')->nullable();
-
+        Schema::table('guides', function (Blueprint $table) {
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('image')->nullable();
+            
         });
     }
 
@@ -25,7 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('transports', function (Blueprint $table) {
+        Schema::table('guides', function (Blueprint $table) {
             //
         });
     }
