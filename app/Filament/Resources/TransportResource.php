@@ -60,6 +60,11 @@ class TransportResource extends Resource
                     })
                     ->required()
                     ->preload(),
+                 Select::make('driver_id')
+                    ->label('Водитель')
+                   ->relationship('driver', 'name')
+                    ->required()
+                    ->preload(),   
                 Forms\Components\TextInput::make('plate_number')
                     ->label('Гос. номер')
                     ->visible(function ($get) {
@@ -114,6 +119,9 @@ class TransportResource extends Resource
                 Tables\Columns\TextColumn::make('plate_number')
                 ->label('Гос. номер')
                     ->searchable(),
+                   Tables\Columns\TextColumn::make('driver.name')
+                ->label('Водитель')
+                    ->searchable(), 
                 Tables\Columns\TextColumn::make('model')
                 ->label('Модель')
                     ->searchable(),

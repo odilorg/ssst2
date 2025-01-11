@@ -14,7 +14,7 @@ class Transport extends Model
         'transport_type_id',
         'departure_time',
         'arrival_time',
-       
+       'driver_id',
         'city_id'
     ];
 
@@ -25,9 +25,9 @@ class Transport extends Model
         return $this->belongsTo(TransportType::class);
     }
 
-    public function city()
+    public function driver()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(Driver::class);
     }
 
 }
