@@ -149,12 +149,24 @@
         <ul>
             @forelse ($day->mealTypeRestaurantTourDays as $meal)
                 @php
+                    // Define human-readable labels for meal types
+                    $mealTypeLabels = [
+                        'breakfast' => 'Завтрак',
+                        'lunch' => 'Обед',
+                        'dinner' => 'Ужин',
+                        'coffee_break' => 'Кофе брейк',
+                    ];
+        
+                    // Get the meal type name in a human-readable format
+                    $mealTypeName = $mealTypeLabels[$meal->mealType->name ?? ''] ?? ($meal->mealType->name ?? 'N/A');
+        
+                    // Calculate costs
                     $mealCostPerPerson = $meal->mealType->price ?? 0;
                     $mealCost = $mealCostPerPerson * ($tour->number_people ?? 1); // Multiply by number of people
                     $dayCost += $mealCost;
                 @endphp
                 <li>
-                    {{ $meal->mealType->name ?? 'N/A' }} at {{ $meal->restaurant?->name ?? 'N/A' }}
+                    {{ $mealTypeName }} at {{ $meal->restaurant?->name ?? 'N/A' }}
                     (Price Per Person: ${{ number_format($mealCostPerPerson, 2) }},
                     Total: ${{ number_format($mealCost, 2) }})
                 </li>
@@ -162,6 +174,7 @@
                 <li>No meals assigned</li>
             @endforelse
         </ul>
+        
         
 
         <p><strong>Day {{ $loop->iteration }} Cost:</strong> ${{ number_format($dayCost, 2) }}</p>

@@ -236,10 +236,26 @@ class TourResource extends Resource
                                                 ->live(),
     
                                                 Select::make('meal_type_id')
-                                                ->label('Тип питания')
-                                                ->options(fn(callable $get) => MealType::where('restaurant_id', $get('restaurant_id'))->pluck('name', 'id'))
-                                                ->required()
-                                                                                            
+                                                ->label('Тип питания') // "Meal Type" in Russian
+                                                ->options(function (callable $get) {
+                                                    // Define a mapping of enum values to human-readable labels
+                                                    $humanReadableLabels = [
+                                                        'breakfast' => 'Завтрак',       // Breakfast
+                                                        'lunch' => 'Обед',             // Lunch
+                                                        'dinner' => 'Ужин',            // Dinner
+                                                        'coffee_break' => 'Кофе брейк', // Coffee Break
+                                                    ];
+                                            
+                                                    // Fetch options dynamically from the database
+                                                    $mealTypes = MealType::where('restaurant_id', $get('restaurant_id'))->pluck('name', 'id');
+                                            
+                                                    // Map database values to human-readable labels
+                                                    return $mealTypes->mapWithKeys(function ($value, $key) use ($humanReadableLabels) {
+                                                        return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
+                                                    });
+                                                })
+                                                ->required(),
+                                                                                                                                        
                                             ]),
                                     ]),
 
