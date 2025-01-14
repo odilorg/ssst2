@@ -36,6 +36,11 @@
 </head>
 
 <body>
+
+    <div class="logo">
+        <img src="{{ asset('storage/foot-logo.svg') }}" alt="Company Logo">
+    </div>
+
     <h1>Estimate for {{ $tour->name }}</h1>
     <p><strong>Description:</strong> {{ $tour->description }}</p>
     <p><strong>Duration:</strong> {{ $tour->duration }} days</p>
@@ -47,9 +52,16 @@
     <h2>Tour Days</h2>
     @php
         $totalCost = 0; // Initialize total cost
-    @endphp
+        $hotelCategoryCounts = [];
+        $transportDescriptions = [];
 
-    @foreach ($tour->tourDays as $day)
+        // $acoomodationCategory = '';
+        // $TransportationName = '';
+
+    @endphp
+    <!-- Main Tour details -->
+
+    @foreach ($tour->tourDays as $day) 
         <h3>Day {{ $loop->iteration }}: {{ $day->name }}</h3>
         <p><strong>Description:</strong> {{ $day->description }}</p>
 
@@ -57,81 +69,43 @@
             $dayCost = 0; // Initialize daily cost
         @endphp
 
-        <p><strong>Guide:</strong> {{ $day->guide?->name ?? 'Not Assigned' }}
-            @if ($day->guide)
-                (Daily Rate: ${{ number_format($day->guide->daily_rate, 2) }})
-                @php
-                    $dayCost += $day->guide->daily_rate;
-                @endphp
-            @endif
-        </p>
+        @php
+            $dayCost += $day->guide->daily_rate;
+        @endphp
+    <!-- Transport details -->
 
-        <h4>Transport Details</h4>
-<table>
-    <thead>
-        <tr>
-            <th>Transport Type</th>
-            <th>Model</th>
-            <th>Price Type</th>
-            <th>Cost</th>
-        </tr>
-    </thead>
-    <tbody>
         @forelse ($tour->tourDays as $day)
             @foreach ($day->tourDayTransports as $transport)
                 @php
+                    // Get the transport description (e.g., type and features)
+                    $description = $transport->transportType->description ?? 'Unknown transport';
+
+                    // Avoid duplicates
+                    if (!in_array($description, $transportDescriptions)) {
+                        $transportDescriptions[] = $description;
+                    }
+
+                    // Calculate the transport price
                     $transportPrice =
-                        $transport->transportType->transportPrices
-                            ->where('price_type', $transport->price_type)
-                            ->first()?->cost ?? 0;
+                        $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()
+                            ?->cost ?? 0;
+                    $dayCost += $transportPrice;
                 @endphp
-                <tr>
-                    <td>{{ $transport->transportType->type ?? 'N/A' }}</td>
-                    <td>{{ $transport->transport->model ?? 'N/A' }}</td>
-                    <td>{{ $transport->price_type === 'per_day' ? 'Per Day' : 'Per Pickup/Dropoff' }}</td>
-                    <td>${{ number_format($transportPrice, 2) }}</td>
-                </tr>
             @endforeach
-        @empty
-            <tr>
-                <td colspan="4">No transport assigned</td>
-            </tr>
         @endforelse
-    </tbody>
-</table>
 
-        <h4>Hotel Details</h4>
-        <p><strong>Hotel:</strong> {{ $day->hotel?->name ?? 'Not Assigned' }}</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Room Type</th>
-                    <th>Cost Per Night</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($day->hotelRooms as $hotelRoom)
-                    @php
-                        $roomCost = ($hotelRoom->hotelRoom?->cost_per_night ?? 0) * ($hotelRoom->quantity ?? 0);
-                        $dayCost += $roomCost;
-                    @endphp
-                    <tr>
-                        <td>{{ $hotelRoom->hotelRoom?->roomType?->type ?? 'N/A' }}</td>
-                        <td>${{ number_format($hotelRoom->hotelRoom?->cost_per_night ?? 0, 2) }}</td>
-                        <td>{{ $hotelRoom->quantity ?? 0 }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3">No rooms assigned</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <!-- Hotel details -->
+
+        @foreach ($tour->tourDays as $day)
+            @php
+                $category = $day->hotel->category ?? 'Unknown';
+                $hotelCategoryCounts[$category] = ($hotelCategoryCounts[$category] ?? 0) + 1;
+
+            @endphp
+        @endforeach
 
 
-
-
+    <!-- Monument details -->
 
         <h4>Monuments</h4>
         <ul>
@@ -139,50 +113,67 @@
                 @php
                     $dayCost += $monument->ticket_price;
                 @endphp
-                <li>{{ $monument->name }} (Ticket Price: ${{ number_format($monument->ticket_price, 2) }})</li>
+                <li>{{ $monument->name }} (Description:{{ $monument->description }})</li>
             @empty
-                <li>No monuments assigned</li>
             @endforelse
         </ul>
+    <!-- Meals details -->
 
-        <h4>Meals</h4>
-        <ul>
-            @forelse ($day->mealTypeRestaurantTourDays as $meal)
-                @php
-                    // Define human-readable labels for meal types
-                    $mealTypeLabels = [
-                        'breakfast' => 'Завтрак',
-                        'lunch' => 'Обед',
-                        'dinner' => 'Ужин',
-                        'coffee_break' => 'Кофе брейк',
-                    ];
-        
-                    // Get the meal type name in a human-readable format
-                    $mealTypeName = $mealTypeLabels[$meal->mealType->name ?? ''] ?? ($meal->mealType->name ?? 'N/A');
-        
-                    // Calculate costs
-                    $mealCostPerPerson = $meal->mealType->price ?? 0;
-                    $mealCost = $mealCostPerPerson * ($tour->number_people ?? 1); // Multiply by number of people
-                    $dayCost += $mealCost;
-                @endphp
-                <li>
-                    {{ $mealTypeName }} at {{ $meal->restaurant?->name ?? 'N/A' }}
-                    (Price Per Person: ${{ number_format($mealCostPerPerson, 2) }},
-                    Total: ${{ number_format($mealCost, 2) }})
-                </li>
-            @empty
-                <li>No meals assigned</li>
-            @endforelse
-        </ul>
-        
-        
+        @forelse ($day->mealTypeRestaurantTourDays as $meal)
+            @php
+                // Define human-readable labels for meal types
+                $mealTypeLabels = [
+                    'breakfast' => 'Завтрак',
+                    'lunch' => 'Обед',
+                    'dinner' => 'Ужин',
+                    'coffee_break' => 'Кофе брейк',
+                ];
 
-        <p><strong>Day {{ $loop->iteration }} Cost:</strong> ${{ number_format($dayCost, 2) }}</p>
+                // Get the meal type name in a human-readable format
+                $mealTypeName = $mealTypeLabels[$meal->mealType->name ?? ''] ?? ($meal->mealType->name ?? 'N/A');
+
+                // Calculate costs
+                $mealCostPerPerson = $meal->mealType->price ?? 0;
+                $mealCost = $mealCostPerPerson * ($tour->number_people ?? 1); // Multiply by number of people
+                $dayCost += $mealCost;
+            @endphp
+            <li>
+                {{ $mealTypeName }} at {{ $meal->restaurant?->name ?? 'N/A' }}
+            </li>
+        @empty
+        @endforelse
+
+
+
         @php
             $totalCost += $dayCost;
         @endphp
         <hr>
     @endforeach
+    <!-- Included and Not included details -->
+
+    <h2>Include</h2>
+    <ul>
+        <li><strong>Accommodation:</strong>
+            @foreach ($hotelCategoryCounts as $category => $count)
+                {{ $count }} nights in {{ $category }} hotel with breakfast<br>
+            @endforeach
+        </li>
+
+        <li><strong>Transportation:</strong> Comfortable bus with Air Conditioner</li>
+        <li><strong>Flights:</strong> {{ $tour->flights ?? 'In Uzbekistan (Tashkent - Urgench)' }}</li>
+        <li><strong>Visa Support:</strong> {{ $tour->visa_support ?? 'Provided for all participants' }}</li>
+        <li><strong>Meals:</strong> {{ $tour->meals ?? 'Lunch, Dinner' }}</li>
+    </ul>
+
+    <h2>Not Include</h2>
+    <ul>
+        <li>International flights</li>
+        <li>Entrance Fees to the monuments and places</li>
+        <li>Meals (Lunch, Dinner)</li>
+        <li>All things that are not entered in the "Include" section</li>
+    </ul>
+    <!-- Total Cost details -->
 
     <h2>Total Cost of the Tour: ${{ number_format($totalCost, 2) }}</h2>
 </body>
