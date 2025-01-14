@@ -82,6 +82,9 @@ class TourResource extends Resource
                             ->suffix('дней')
                             ->readOnly()
                             ->default(0),
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Изображение тура')
+                            ->image(),                            
 
                         Forms\Components\Hidden::make('tour_number'),
                     ])->columns(2),
@@ -112,6 +115,9 @@ class TourResource extends Resource
                             })
                             ->searchable()
                             ->preload(),
+                            Forms\Components\FileUpload::make('image')
+                            ->label('Изображение дня')
+                            ->image(),
 
                         Tabs::make('Транспорт')
                             ->tabs([

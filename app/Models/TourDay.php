@@ -18,7 +18,8 @@ class TourDay extends Model
          'hotel_id',
          'city_id',
          'restaurant_id',
-         'type'
+         'type',
+         'image',
         
     ];
 

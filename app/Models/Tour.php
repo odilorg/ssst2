@@ -11,7 +11,9 @@ class Tour extends Model
      'number_people',
      'tour_duration',
      'start_date',
-     'end_date',];
+     'end_date',
+     'image',
+    ];
 
     public function tourDays(): HasMany
     {
