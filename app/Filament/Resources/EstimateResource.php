@@ -36,29 +36,31 @@ class EstimateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('customer_id')
-                ->label('Имя клиента')
-                ->relationship('customer', 'name')
-                ->required()
-                ->preload(),
-            Forms\Components\Select::make('tour_id')
-            ->label('Выберите Тур')
-            ->relationship('tour', 'name')    
-            ->required()
-                ->preload(),
+                    ->label('Имя клиента')
+                    ->relationship('customer', 'name')
+                    ->required()
+                    ->preload(),
+                Forms\Components\Select::make('tour_id')
+                    ->label('Выберите Тур')
+                    ->relationship('tour', 'name')
+                    ->required()
+                    ->preload(),
                 Forms\Components\TextInput::make('estimate_number')
-               
+
                     ->hidden()
                     ->required()
                     ->maxLength(255)
-                    ->default(fn () => 'EST-' . substr(time(), -4) . '-' . date('m-Y')),
-                    Forms\Components\DatePicker::make('estimate_date')
+                    ->default(fn() => 'EST-' . substr(time(), -4) . '-' . date('m-Y')),
+                Forms\Components\DatePicker::make('estimate_date')
                     ->label('Дата оценки')
+                    ->default('today')
+
                     ->required(),
                 Forms\Components\TextInput::make('notes')
-                ->label('Примечания')
+                    ->label('Примечания')
                     ->columnSpanFull(),
-               
-                
+
+
             ]);
     }
 
@@ -78,17 +80,17 @@ class EstimateResource extends Resource
                     ->label('Номер калькуляции')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('estimate_date')
-                ->label('Дата калькуляции')
+                    ->label('Дата калькуляции')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
-                ->label('Имя клиента')
+                    ->label('Имя клиента')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tour.name')
-                ->label('Название тура')
+                    ->label('Название тура')
                     ->numeric()
-               
+
             ])
             ->filters([
                 //
@@ -101,7 +103,7 @@ class EstimateResource extends Resource
                         return response()->download(storage_path('app/public/estimates/') . $record->file_name);
                     }),
 
-                    Tables\Actions\Action::make('send_contract')
+                Tables\Actions\Action::make('send_contract')
                     ->icon('heroicon-o-envelope')
                     ->visible(fn(Estimate $record): bool => !is_null($record->file_name))
                     ->action(function (Estimate $record) {

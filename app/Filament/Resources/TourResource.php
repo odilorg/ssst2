@@ -111,7 +111,6 @@ class TourResource extends Resource
                                 $query->where('is_marketing', true);
                             })
                             ->searchable()
-                            ->required()
                             ->preload(),
 
                         Tabs::make('Транспорт')
