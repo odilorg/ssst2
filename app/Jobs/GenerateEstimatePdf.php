@@ -40,7 +40,9 @@ class GenerateEstimatePdf implements ShouldQueue
         $tour = Tour::with([
             'tourDays.hotelRooms.hotelRoom.roomType', // Preload room details and types
             'tourDays.hotel', // Preload hotel details
+            'tourDays.tourDayTransports.transportType.transportPrices', // Preload transport details, type, and prices
         ])->find($this->estimate->tour_id);
+        
 
         if (!$tour) {
             Log::error('Tour not found', ['tour_id' => $this->estimate->tour_id]);

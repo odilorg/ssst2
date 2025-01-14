@@ -115,6 +115,8 @@ class TourResource extends Resource
                             })
                             ->searchable()
                             ->preload(),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Описание'),
                             Forms\Components\FileUpload::make('image')
                             ->label('Изображение дня')
                             ->image(),
