@@ -235,16 +235,11 @@ class TourResource extends Resource
                                                 ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', []))
                                                 ->live(),
     
-                                                    Select::make('meal_type_id')
-                                                    ->label('Тип питания')
-                                                    ->options([
-                                                        'breakfast' => 'Завтрак', // Match the enum values from the database
-                                                        'lunch' => 'Обед',
-                                                        'dinner' => 'Ужин',
-                                                        'coffee_break' => 'Кофе брейк',
-                                                    ])
-                                                    ->required(),
-                                                
+                                                Select::make('meal_type_id')
+                                                ->label('Тип питания')
+                                                ->options(fn(callable $get) => MealType::where('restaurant_id', $get('restaurant_id'))->pluck('name', 'id'))
+                                                ->required()
+                                                                                            
                                             ]),
                                     ]),
 
