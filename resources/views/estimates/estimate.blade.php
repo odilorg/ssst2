@@ -85,6 +85,17 @@
             <tbody>
                 @forelse ($day->tourDayTransports as $tourDayTransport)
                     @php
+                    $transportPaymentLabels = [
+                                'per_day' => 'Per Day',
+                                'per_pickup_dropoff' => 'Per Pickup Dropoff',
+                                'po_gorodu' => 'Po Gorodu',
+                                'vip' => 'VIP',
+                                'economy' => 'Economy',
+                                'business' => 'Business',
+                    ];
+
+                    // Get the meal type name in a human-readable format
+                    $transportPaymentName = $transportPaymentLabels[$tourDayTransport->price_type ?? ''] ?? ($tourDayTransport->price_type ?? 'N/A');
                         // Access transport type and calculate transport price
                         $transportPrice = $tourDayTransport->transportType->transportPrices
                             ->where('price_type', $tourDayTransport->price_type)
@@ -92,7 +103,7 @@
                     @endphp
                     <tr>
                         <td>{{ $tourDayTransport->transportType->type ?? 'N/A' }}</td>
-                        <td>{{ $tourDayTransport->price_type ?? 'N/A' }}</td>
+                        <td>{{ $transportPaymentName ?? 'N/A' }}</td>
                         <td>${{ number_format($transportPrice, 2) }}</td>
                     </tr>
                 @empty
@@ -156,10 +167,10 @@
                 @php
                     // Define human-readable labels for meal types
                     $mealTypeLabels = [
-                        'breakfast' => 'Завтрак',
-                        'lunch' => 'Обед',
-                        'dinner' => 'Ужин',
-                        'coffee_break' => 'Кофе брейк',
+                        'breakfast' => 'Zavtrak',
+                        'lunch' => 'Obed',
+                        'dinner' => 'Ujin',
+                        'coffee_break' => 'Cofee Break',
                     ];
 
                     // Get the meal type name in a human-readable format
