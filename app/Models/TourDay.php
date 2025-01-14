@@ -14,7 +14,7 @@ class TourDay extends Model
         'name',
         'description',
         'guide_id',
-         'transport_id',
+         'transport_type_id',
          'hotel_id',
          'city_id',
          'restaurant_id',
@@ -38,7 +38,7 @@ class TourDay extends Model
 
     public function tourDayTransports(): HasMany
     {
-        return $this->hasMany(TourDayTransport::class); ;
+        return $this->hasMany(TourDayTransport::class ); 
     }
        
     public function hotel()
@@ -51,9 +51,9 @@ class TourDay extends Model
         return $this->belongsTo(Restaurant::class);
     }
     
-    public function transport()
+    public function transportType()
     {
-        return $this->belongsTo(Transport::class);
+        return $this->belongsTo(TransportType::class);
     }
     public function hotelRooms()
     {

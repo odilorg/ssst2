@@ -8,7 +8,7 @@ class TourDayTransport extends Model
 {
     protected $fillable = [
         'tour_day_id',
-        'transport_id',
+        'transport_type_id',
         'price_type',
     ];
     protected $table = 'tour_day_transport'; // Specify the table name explicitly
@@ -18,8 +18,8 @@ class TourDayTransport extends Model
         return $this->belongsTo(TourDay::class);
     }
 
-    public function transport()
+    public function transportType()
     {
-        return $this->belongsTo(Transport::class);
+        return $this->belongsTo(TransportType::class, 'transport_type_id');
     }
 }

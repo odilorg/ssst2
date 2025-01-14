@@ -41,8 +41,8 @@
     <p><strong>Duration:</strong> {{ $tour->duration }} days</p>
     <p><strong>Start Date:</strong> {{ $tour->start_date }}</p>
     <p><strong>End Date:</strong> {{ $tour->end_date }}</p>
-    <p><strong>End Date:</strong> {{ $tour->number_people }}</p>
-    <p><strong>End Date:</strong> {{ $tour->tour_number }}</p>
+    <p><strong>Number of People:</strong> {{ $tour->number_people }}</p>
+    <p><strong>Tour Number:</strong> {{ $tour->tour_number }}</p>
 
     <h2>Tour Days</h2>
     @php
@@ -67,39 +67,39 @@
         </p>
 
         <h4>Transport Details</h4>
-        <table>
-            <thead>
+<table>
+    <thead>
+        <tr>
+            <th>Transport Type</th>
+            <th>Model</th>
+            <th>Price Type</th>
+            <th>Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse ($tour->tourDays as $day)
+            @foreach ($day->tourDayTransports as $transport)
+                @php
+                    $transportPrice =
+                        $transport->transportType->transportPrices
+                            ->where('price_type', $transport->price_type)
+                            ->first()?->cost ?? 0;
+                @endphp
                 <tr>
-                    <th>Transport Type</th>
-                    <th>Model</th>
-                    <th>Price Type</th>
-                    <th>Cost</th>
+                    <td>{{ $transport->transportType->type ?? 'N/A' }}</td>
+                    <td>{{ $transport->transport->model ?? 'N/A' }}</td>
+                    <td>{{ $transport->price_type === 'per_day' ? 'Per Day' : 'Per Pickup/Dropoff' }}</td>
+                    <td>${{ number_format($transportPrice, 2) }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @forelse ($day->tourDayTransports as $transport)
-                    @php
-                        $transportPrice =
-                            $transport->transport->transportType->transportPrices
-                                ->where('price_type', $transport->price_type)
-                                ->first()?->cost ?? 0;
+            @endforeach
+        @empty
+            <tr>
+                <td colspan="4">No transport assigned</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
 
-                        $dayCost += $transportPrice; // Ensure addition to day cost
-                    @endphp
-                    <tr>
-                        <td>{{ $transport->transport->transportType->type ?? 'N/A' }}</td>
-                        <td>{{ $transport->transport->model ?? 'N/A' }}</td>
-                        <td>{{ $transport->price_type === 'per_day' ? 'Per Day' : 'Per Pickup/Dropoff' }}</td>
-                        <td>${{ number_format($transportPrice, 2) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4">No transport assigned</td>
-                    </tr>
-                @endforelse
-
-            </tbody>
-        </table>
         <h4>Hotel Details</h4>
         <p><strong>Hotel:</strong> {{ $day->hotel?->name ?? 'Not Assigned' }}</p>
         <table>

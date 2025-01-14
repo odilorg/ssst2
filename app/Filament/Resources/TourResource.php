@@ -39,26 +39,28 @@ class TourResource extends Resource
         return $form
             ->schema([
 
-                Section::make('Tour Information')
-                    ->description('Enter the tour information')
+                Section::make('Информация о туре')
+                    ->description('Введите информацию о туре')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Название')
                             ->required()
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn(Set $set, ?string $state) => $set('tour_number', Str::slug($state))),
 
                         TextInput::make('number_people')
+                            ->label('Количество человек')
                             ->numeric()
-                            ->default(0)
                             ->required(),
+
                         Forms\Components\DatePicker::make('start_date')
+                            ->label('Дата начала')
                             ->required()
                             ->before('end_date')
                             ->live(),
 
-
-
                         Forms\Components\DatePicker::make('end_date')
+                            ->label('Дата окончания')
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
@@ -69,250 +71,202 @@ class TourResource extends Resource
                                     $set('tour_duration', $duration);
                                 }
                             }),
+
                         Forms\Components\Textarea::make('description')
+                            ->label('Описание')
                             ->required(),
 
-
-
-
                         Forms\Components\TextInput::make('tour_duration')
+                            ->label('Длительность тура')
                             ->required()
-                            ->suffix('days')
+                            ->suffix('дней')
                             ->readOnly()
                             ->default(0),
+
                         Forms\Components\Hidden::make('tour_number'),
                     ])->columns(2),
 
-
-
-
-
-
                 Repeater::make('tourDays')
+                    ->label('Добавить дни тура')
                     ->relationship()
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Название Дня. Day 1,2 и т.д. добавляется автоматически')
                             ->required(),
+
                         Select::make('city_id')
-                            ->label('City')
+                            ->label('Город')
                             ->relationship('city', 'name')
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
-                                $set('hotel_rooms', []); // Clear the hotel_rooms field
-                                $set('restaurant_meal_types', []); // Set another_field to a specific value
-                            })->required()
-                            ->preload(),
-                        Forms\Components\Select::make('guide_id')
-                            ->label('Guide')
-                            ->relationship('guide', 'name', function ($query) {
-                                $query->where('is_marketing', true); // Add the constraint for the is_marketing column
+                                $set('hotel_rooms', []);
+                                $set('restaurant_meal_types', []);
                             })
-                            ->searchable() // Enable searching for guides
                             ->required()
                             ->preload(),
 
-                        Tabs::make('Transport')
+                        Forms\Components\Select::make('guide_id')
+                            ->label('Гид')
+                            ->relationship('guide', 'name', function ($query) {
+                                $query->where('is_marketing', true);
+                            })
+                            ->searchable()
+                            ->required()
+                            ->preload(),
+
+                        Tabs::make('Транспорт')
                             ->tabs([
-                                Tabs\Tab::make('Transport')
+                                Tabs\Tab::make('Транспорт')
+                                    ->label('Транспорт')
                                     ->schema([
                                         Repeater::make('tourDayTransports')
-                                            ->label('Choose Transport')
+                                            ->label('Выбрать транспорт')
                                             ->relationship()
                                             ->schema([
                                                 Select::make('category')
-                                                    ->label('Category')
+                                                    ->label('Категория')
                                                     ->options([
-                                                        'bus' => 'Bus',
-                                                        'car' => 'Car',
-                                                        'mikro_bus' => 'Mikro Bus',
-                                                        'air' => 'Air',
-                                                        'rail' => 'Rail',
+                                                        'bus' => 'Автобус',
+                                                        'car' => 'Машина',
+                                                        'mikro_bus' => 'Микроавтобус',
+                                                        'mini_van' => 'Минивэн',
+                                                        'air' => 'Воздушный',
+                                                        'rail' => 'Железнодорожный',
                                                     ])
-                                                    ->dehydrated(false) // Prevent this field from being sent to the server
-                                                    ->live(), // Make this field reactive to trigger updates in the dependent field
+                                                    ->dehydrated(false)
+                                                    ->live(),
 
-                                                Select::make('transport_id')
-                                                    ->label('Transport')
-                                                    ->relationship('transport.transportType', 'type', function ($query, callable $get) {
-                                                        $category = $get('category'); // Get the selected category
+                                                Select::make('transport_type_id')
+                                                    ->label('Транспорт')
+                                                    ->relationship('transportType', 'type', function ($query, callable $get) {
+                                                        $category = $get('category');
                                                         if ($category) {
-                                                            $query->where('category', $category); // Filter transports by selected category
+                                                            $query->where('category', $category);
                                                         }
                                                     })
                                                     ->required()
                                                     ->preload()
-                                                    ->live(), // Make this field reactive to update when the category changes
+                                                    ->live(),
 
                                                 Select::make('price_type')
-                                                    ->label('Price Type')
-                                                    ->options(function (callable $get) {
-                                                        $transportId = $get('transport_id'); // Get the selected transport ID
-
-                                                        if (!$transportId) {
-                                                            return [
-                                                                'per_day' => 'Per Day',
-                                                                'per_pickup_dropoff' => 'Per Pickup Dropoff',
-                                                                'vip' => 'VIP',
-                                                                'economy' => 'Economy',
-                                                                'business' => 'Business',
-                                                            ]; // Default options if no transport is selected
-                                                        }
-
-                                                        // Fetch the selected transport with its related prices
-                                                        $transport = \App\Models\Transport::where('id', $transportId)
-                                                            ->with(['transportType.transportPrices'])
-                                                            ->first();
-
-                                                        if (!$transport || !$transport->transportType) {
-                                                            return [
-                                                                'per_day' => 'Per Day',
-                                                                'per_pickup_dropoff' => 'Per Pickup Dropoff',
-                                                                'vip' => 'VIP',
-                                                                'economy' => 'Economy',
-                                                                'business' => 'Business',
-                                                            ]; // Fallback if transport or transportType is missing
-                                                        }
-
-                                                        // Return static options
-                                                        return [
-                                                            'per_day' => 'Per Day',
-                                                            'per_pickup_dropoff' => 'Per Pickup Dropoff',
-                                                            'vip' => 'VIP',
-                                                            'economy' => 'Economy',
-                                                            'business' => 'Business',
-                                                        ];
-                                                    })
+                                                    ->label('Тип цены')
+                                                    ->options([
+                                                        'per_day' => 'За день',
+                                                        'per_pickup_dropoff' => 'За трансфер',
+                                                        'po_gorodu' => 'По городу',
+                                                        'vip' => 'VIP',
+                                                        'economy' => 'Эконом',
+                                                        'business' => 'Бизнес',
+                                                    ])
                                                     ->required()
                                                     ->live()
-                                                    ->searchable(), // Enable search for usability
+                                                    ->searchable(),
                                             ]),
                                     ]),
-                                Tabs\Tab::make('Hotels')
+
+                                Tabs\Tab::make('Отели')
+                                    ->label('Отели')
                                     ->schema([
                                         Forms\Components\Select::make('type')
-                                            ->label('Hotel Category')
+                                            ->label('Категория отеля')
                                             ->options([
-                                                'bed_breakfast' => 'Bed and Breakfast',
-                                                '3_star' => '3 Star',
-                                                '4_star' => '4 Star',
-                                                '5_star' => '5 Star',
+                                                'bed_breakfast' => 'Bed & Breakfast',
+                                                '3_star' => '3 звезды',
+                                                '4_star' => '4 звезды',
+                                                '5_star' => '5 звезд',
                                             ])
                                             ->live()
-                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])), // Clear hotel_rooms when hotel_id changes
-                                        //->dehydrated(false),
+                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])),
+
                                         Select::make('hotel_id')
-                                            ->label('Hotel')
+                                            ->label('Отель')
                                             ->options(fn(Get $get): Collection => Hotel::query()
                                                 ->where('type', $get('type'))
                                                 ->where('city_id', $get('city_id'))
                                                 ->pluck('name', 'id'))
-                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])) // Clear hotel_rooms when hotel_id changes
+                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', []))
                                             ->live(),
 
                                         Forms\Components\Repeater::make('hotel_rooms')
-                                            ->relationship('hotelRooms') // Explicitly define the relationship
-                                            ->label('Hotel Rooms')
+                                            ->label('Номера в отеле')
+                                            ->relationship('hotelRooms')
                                             ->schema([
-                                                // Hidden field to ensure hotel_id is submitted inside the pivot table
                                                 Forms\Components\Hidden::make('hotel_id')
-                                                    ->default(fn(callable $get) => $get('../../hotel_id')) // Fetch the parent hotel_id
-                                                    ->dehydrated(fn(callable $get) => $get('../../hotel_id')), // Include in the payload only if set
+                                                    ->default(fn(callable $get) => $get('../../hotel_id'))
+                                                    ->dehydrated(fn(callable $get) => $get('../../hotel_id')),
 
                                                 Select::make('room_id')
-                                                    ->label('Hotel')
+                                                    ->label('Номер')
                                                     ->options(fn(Get $get): Collection => Room::query()
                                                         ->with('roomType')
                                                         ->where('hotel_id', $get('hotel_id'))
-                                                        //->where('city_id', $get('city_id'))
                                                         ->get()
-                                                        ->mapWithKeys(function ($room) {
-                                                            return [$room->id => $room->roomType->type]; // Map room id to the type from roomType
-                                                        }))
+                                                        ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type]))
                                                     ->required()
                                                     ->searchable(),
+
                                                 Forms\Components\TextInput::make('quantity')
-                                                    ->label('Quantity')
+                                                    ->label('Количество')
                                                     ->default(1)
                                                     ->numeric()
                                                     ->required(),
                                             ])
                                             ->columns(2)
-                                            ->hidden(fn(callable $get) => !$get('hotel_id')) // Show only when a hotel is selected
+                                            ->hidden(fn(callable $get) => !$get('hotel_id'))
                                             ->live()
                                             ->collapsible(),
                                     ]),
-                                Tabs\Tab::make('Monuments')
+
+                                Tabs\Tab::make('Рестораны')
+                                    ->label('Рестораны')
+                                    ->schema([
+                                       
+                                        Repeater::make('restaurant_meal_types')
+                                            ->label('Добавить рестораны')
+                                            ->relationship('mealTypeRestaurantTourDays')
+                                            ->schema([
+                                                // Forms\Components\Hidden::make('restaurant_id')
+                                                //     ->default(fn(callable $get) => $get('../../restaurant_id'))
+                                                //     ->dehydrated(fn(callable $get) => $get('../../restaurant_id')),
+                                                Select::make('restaurant_id')
+                                                ->label('Ресторан')
+                                                ->options(fn(Get $get): Collection => Restaurant::query()
+                                                    ->where('city_id', $get('../../city_id'))
+                                                    ->pluck('name', 'id'))
+                                                ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', []))
+                                                ->live(),
+    
+                                                    Select::make('meal_type_id')
+                                                    ->label('Тип питания')
+                                                    ->options([
+                                                        'breakfast' => 'Завтрак', // Match the enum values from the database
+                                                        'lunch' => 'Обед',
+                                                        'dinner' => 'Ужин',
+                                                        'coffee_break' => 'Кофе брейк',
+                                                    ])
+                                                    ->required(),
+                                                
+                                            ]),
+                                    ]),
+
+                                Tabs\Tab::make('Памятники')
+                                    ->label('Памятники')
                                     ->schema([
                                         Select::make('monuments')
-                                            ->label('Select Monuments')
+                                            ->label('Выбрать памятники')
                                             ->preload()
                                             ->multiple()
                                             ->searchable()
                                             ->relationship('monuments', 'name', fn(Builder $query, $get) => $query->where('city_id', $get('city_id')))
-                                            ->required()
                                             ->afterStateUpdated(function ($state, $record) {
                                                 if ($record) {
-                                                    // Sync the monuments relationship with the selected values
                                                     $record->monuments()->sync($state);
                                                 } else {
                                                     Log::warning('Record is null while syncing monuments. Ensure the record is properly saved.');
                                                 }
                                             }),
                                     ]),
-
-                                Tabs\Tab::make('Restaurants')
-                                    ->schema([
-                                        Select::make('restaurant_id')
-                                            ->label('Restaurant')
-                                            ->options(fn(Get $get): Collection => Restaurant::query()
-                                                //->where('type', $get('type'))
-                                                ->where('city_id', $get('city_id'))
-                                                ->pluck('name', 'id'))
-                                            ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', [])) // Clear hotel_rooms when hotel_id changes
-                                            ->live(),
-                                        Repeater::make('restaurant_meal_types')
-                                            ->relationship('mealTypeRestaurantTourDays')
-                                            ->schema([
-                                                Forms\Components\Hidden::make('restaurant_id')
-                                                    ->default(fn(callable $get) => $get('../../restaurant_id'))
-                                                    ->dehydrated(fn(callable $get) => $get('../../restaurant_id'))
-                                                    ->afterStateHydrated(function ($state) {
-                                                        Log::info('Restaurant ID set in hidden field:', ['restaurant_id' => $state]);
-                                                    }),
-                                                Select::make('meal_type_id')
-                                                    ->label('Meal Type')
-                                                    ->options(function (callable $get) {
-                                                        $restaurantId = $get('restaurant_id');
-                                                        $mealTypes = MealType::where('restaurant_id', $restaurantId)
-                                                            ->pluck('name', 'id');
-                                                        Log::info('Meal Type Options:', $mealTypes->toArray());
-                                                        return $mealTypes;
-                                                    })
-                                                    ->required()
-                                                    ->afterStateUpdated(function ($state) {
-                                                        Log::info('Meal Type ID Selected:', ['meal_type_id' => $state]);
-                                                    })
-
-                                            ])
-                                    ]),
-
-
                             ]),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     ])->columnSpanFull(),
             ]);
     }
@@ -322,22 +276,31 @@ class TourResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Название')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('description')
+                    ->label('Описание')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('tour_number')
+                    ->label('Номер тура')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Дата создания')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Дата обновления')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Add filters here
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -352,7 +315,7 @@ class TourResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // Define relations here
         ];
     }
 
@@ -364,10 +327,4 @@ class TourResource extends Resource
             'edit' => Pages\EditTour::route('/{record}/edit'),
         ];
     }
-
-    // protected function afterSave($record, array $data): void
-    // {
-    //     // Sync the monuments relationship with the selected values
-    //     $record->monuments()->sync($data['monuments'] ?? []);
-    // }
 }
