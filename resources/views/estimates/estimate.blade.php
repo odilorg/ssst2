@@ -87,26 +87,36 @@
         @endphp
         <p><strong>Accommodation:</strong> {{ $hotelCategoryName }} </p>
         <p><strong>Guide:</strong> {{ $day->guide->languages->pluck('name')->implode(', ') }}</p>
-        @php
-        $transportTypeLabels = [
-            'bus' => 'Bus',
-            'car' => 'Car',
-            'mikro_bus' => 'Mikro Bus',
-            'mini_van' => 'Mini Van',
-            'air' => 'Air',
-            'rail' => 'Rail'
-        ];
-    
-        // Collect transport names
-        $transportTypeNames = $day->transports->map(function ($transport) use ($transportTypeLabels) {
-            $type = $transport->transportType->type ?? null;
-            return $transportTypeLabels[$type] ?? ($type ?? 'N/A');
-        })->implode(', ');
-    @endphp
-    
-    <p><strong>Transport:</strong> {{ $transportTypeNames }}</p>
-    
             
+                @php
+                    $transportCategoryLabels = [
+                        'bus' => 'Bus',
+                        'car' => 'Car',
+                        'mikro_bus' => 'Mikro Bus',
+                        'mini_van' => 'Mini Van',
+                        'air' => 'Air',
+                        'rail' => 'Rail'
+                    ];
+            
+                    // Collect the transport category names into an array
+                    $transportCategoryNames = $day->tourDayTransports->map(function ($tourDayTransport) use ($transportCategoryLabels) {
+                        $category = $tourDayTransport->transportType->category ?? null;
+                        return $transportCategoryLabels[$category] ?? ($category ?? 'N/A');
+                    });
+                @endphp
+            
+                <!-- Join categories with a comma -->
+                <p><strong>Transport:</strong> {{ $transportCategoryNames->join(', ') }}</p>
+                   
+            
+            
+
+        <!-- Use the collected transport names -->
+
+
+
+
+
         @php
             $dayCost = 0; // Initialize daily cost
         @endphp
