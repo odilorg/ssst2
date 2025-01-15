@@ -107,7 +107,28 @@
             
                 <!-- Join categories with a comma -->
                 <p><strong>Transport:</strong> {{ $transportCategoryNames->join(', ') }}</p>
-                   
+                @php
+    // Define human-readable labels for meal types
+    $mealTypeLabels = [
+        'breakfast' => 'Breakfast',
+        'lunch' => 'Lunch',
+        'dinner' => 'Diner',
+        'coffee_break' => 'Coffee Break',
+    ];
+
+    // Map meal types to human-readable labels and join them with a comma
+    $mealTypeNames = $day->mealTypeRestaurantTourDays->map(function ($meal) use ($mealTypeLabels) {
+        $mealTypeName = $meal->mealType->name ?? null;
+        return $mealTypeLabels[$mealTypeName] ?? ($mealTypeName ?? 'N/A');
+    })->join(', ');
+@endphp
+
+<p>
+    <strong>Meals:</strong> {{ $mealTypeNames }}
+</p>
+
+               
+
             
             
 
