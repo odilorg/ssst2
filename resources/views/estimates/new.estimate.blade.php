@@ -47,7 +47,7 @@
     <p><strong>Start Date:</strong> {{ \Carbon\Carbon::parse($tour->start_date)->format('d-m-Y') }}</p>
     <p><strong>End Date:</strong> {{ \Carbon\Carbon::parse($tour->end_date)->format('d-m-Y') }}</p>
     <p><strong>Number of People:</strong> {{ $tour->number_people }}</p>
-<!--    <p><strong>Tour Number:</strong> {{ $tour->tour_number }}</p> -->
+    <!--    <p><strong>Tour Number:</strong> {{ $tour->tour_number }}</p> -->
 
     <h2>Tour Days</h2>
     @php
@@ -56,14 +56,13 @@
         $transportDescriptions = [];
         $mealTypes = [];
 
-
         // $acoomodationCategory = '';
         // $TransportationName = '';
 
     @endphp
     <!-- Main Tour details -->
 
-    @foreach ($tour->tourDays as $day) 
+    @foreach ($tour->tourDays as $day)
         <h3>Day {{ $loop->iteration }}: {{ $day->name }}</h3>
         <p><strong>Description:</strong> {{ $day->description }}</p>
 
@@ -74,28 +73,25 @@
         @php
             $dayCost += $day->guide->daily_rate;
         @endphp
-    <!-- Transport details -->
-    @foreach ($tour->tourDays as $day)
-    @foreach ($day->tourDayTransports as $transport)
-        @php
-            // Get the transport description (e.g., type and features)
-            $description = $transport->transportType->category ?? 'Unknown transport';
+        <!-- Transport details -->
+            @foreach ($day->tourDayTransports as $transport)
+                @php
+                    // Get the transport description (e.g., type and features)
+                    $description = $transport->transportType->category ?? 'Unknown transport';
 
-            // Avoid duplicates
-            if (!in_array($description, $transportDescriptions)) {
-                $transportDescriptions[] = $description;
-            }
+                    // Avoid duplicates
+                    if (!in_array($description, $transportDescriptions)) {
+                        $transportDescriptions[] = $description;
+                    }
 
-            // Calculate the transport price
-            $transportPrice =
-                $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()
-                    ?->cost ?? 0;
-            $dayCost += $transportPrice;
-        @endphp
-    @endforeach
-@endforeach
-
-    <!-- Hotel details -->
+                    // Calculate the transport price
+                    $transportPrice =
+                        $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()
+                            ?->cost ?? 0;
+                    $dayCost += $transportPrice;
+                @endphp
+            @endforeach
+        <!-- Hotel details -->
 
         @foreach ($tour->tourDays as $day)
             @php
@@ -106,7 +102,7 @@
         @endforeach
 
 
-    <!-- Monument details -->
+        <!-- Monument details -->
 
         <h4>Monuments</h4>
         <ul>
@@ -118,7 +114,7 @@
             @empty
             @endforelse
         </ul>
-    <!-- Meals details -->
+        <!-- Meals details -->
 
         @forelse ($day->mealTypeRestaurantTourDays as $meal)
             @php
@@ -133,11 +129,10 @@
                 // Get the meal type name in a human-readable format
                 $mealTypeName = $mealTypeLabels[$meal->mealType->name ?? ''] ?? ($meal->mealType->name ?? 'N/A');
 
-                        // Avoid duplicates
-                            if (!in_array($mealTypeName, $mealTypes)) {
-                                $mealTypes[] = $mealTypeName;
-                            }
-
+                // Avoid duplicates
+                if (!in_array($mealTypeName, $mealTypes)) {
+                    $mealTypes[] = $mealTypeName;
+                }
 
                 // Calculate costs
                 $mealCostPerPerson = $meal->mealType->price ?? 0;
@@ -167,9 +162,10 @@
             @endforeach
         </li>
 
-        <li><strong>Transportation:</strong> Comfortable {{ implode(', ', $transportDescriptions) }} with Air Conditioner</li>
+        <li><strong>Transportation:</strong> Comfortable {{ implode(', ', $transportDescriptions) }} with Air
+            Conditioner</li>
         <!--<li><strong>Flights:</strong> {{ $tour->flights ?? 'In Uzbekistan (Tashkent - Urgench)' }}</li>-->
-        <li><strong>Visa Support:</strong>  'Provided for all participants' </li>
+        <li><strong>Visa Support:</strong> 'Provided for all participants' </li>
         <li><strong>Meals:</strong> {{ $tour->meals ?? 'Lunch, Dinner' }}</li>
     </ul>
 
@@ -177,11 +173,13 @@
     <ul>
         <li>International flights</li>
         <li>Entrance Fees to the monuments and places</li>
-        <li>@if (!empty($mealTypes))
-            <li><strong>Meals:</strong> ({{ implode(', ', $mealTypes) }})</li>
-        @else
-            <li><strong>Meals:</strong> None</li>
-        @endif</li>
+        <li>
+            @if (!empty($mealTypes))
+        <li><strong>Meals:</strong> ({{ implode(', ', $mealTypes) }})</li>
+    @else
+        <li><strong>Meals:</strong> None</li>
+        @endif
+        </li>
         <li>All things that are not entered in the "Include" section</li>
     </ul>
     <!-- Total Cost details -->

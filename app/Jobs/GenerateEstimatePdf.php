@@ -42,7 +42,10 @@ class GenerateEstimatePdf implements ShouldQueue
             'tourDays.hotel', // Preload hotel details
             'tourDays.tourDayTransports.transportType.transportPrices', // Preload transport details, type, and prices
         ])->find($this->estimate->tour_id);
-        
+            // Log the content of $tour
+                Log::info('Tour Details:', [
+                    'tour' => $tour
+                ]);
 
         if (!$tour) {
             Log::error('Tour not found', ['tour_id' => $this->estimate->tour_id]);
