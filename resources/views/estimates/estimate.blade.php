@@ -38,7 +38,7 @@
 <body>
 
     <div class="logo">
-        <img src="{{ asset('storage/foot-logo.svg') }}" alt="Company Logo">
+        <img src="{{ public_path("storage/foot-logo.svg") }}" alt="Company Logo">
     </div>
 
     <h1>Estimate for {{ $tour->name }}</h1>

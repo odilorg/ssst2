@@ -55,6 +55,10 @@ class GenerateEstimatePdf implements ShouldQueue
         // Log the loaded $tour object
         Log::info('Loaded Tour Data:', ['tour' => $tour->toArray()]);
 
+        //  // Render the HTML and debug it
+        //  $html = view('estimates.estimate', compact('tour'))->render();
+        //  dd($html); // Debug and stop execution here to inspect the rendered HTML
+
         // Generate the PDF
         $pdf = Pdf::loadView('estimates.estimate', compact('tour'));
 
