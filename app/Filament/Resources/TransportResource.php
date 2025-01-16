@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TimePicker;
@@ -112,7 +113,17 @@ class TransportResource extends Resource
                     FileUpload::make('images')
                     ->label('Фотографии транспорта')    
                     ->image()
+                    ->multiple(),
+                    Select::make('amenities')
                     ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->relationship(titleAttribute: 'name')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required(),
+
+                    ]),
 
 
 
@@ -153,6 +164,11 @@ class TransportResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label('Категория'),
+                    TextColumn::make('amenities.name')
+                    ->listWithLineBreaks()   
+                    //->bulleted()
+
+ 
 
                 // Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
                 //     ->label('Per Day, Per Pickup'),

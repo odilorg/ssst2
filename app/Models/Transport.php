@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Transport extends Model
 {
@@ -22,6 +23,11 @@ class Transport extends Model
     protected $casts = [
         'images' => 'array',
     ];
+
+    public function amenities(): BelongsToMany
+    {
+        return $this->belongsToMany(Amenity::class);
+    }
 
     public function transportType()
     {
