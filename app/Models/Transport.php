@@ -15,10 +15,13 @@ class Transport extends Model
         'departure_time',
         'arrival_time',
        'driver_id',
-        'city_id'
+        'city_id',
+        'images',
     ];
 
-    
+    protected $casts = [
+        'images' => 'array',
+    ];
 
     public function transportType()
     {

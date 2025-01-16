@@ -14,6 +14,7 @@ class EditMonument extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\ViewAction::make(),
         ];
     }
     protected function getRedirectUrl(): string

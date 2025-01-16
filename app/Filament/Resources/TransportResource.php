@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Faker\Core\File;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Transport;
@@ -10,6 +11,8 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransportResource\Pages;
@@ -60,43 +63,57 @@ class TransportResource extends Resource
                     })
                     ->required()
                     ->preload(),
-                 Select::make('driver_id')
+
+                Select::make('driver_id')
                     ->label('Водитель')
-                   ->relationship('driver', 'name')
+                    ->relationship('driver', 'name')
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
                     ->required()
-                    ->preload(),   
+                    ->preload(),
+
+
                 Forms\Components\TextInput::make('plate_number')
                     ->label('Гос. номер')
                     ->visible(function ($get) {
-                        return $get('category') !== 'rail';
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
                     })
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('model')
                     ->label('Модель')
                     ->visible(function ($get) {
-                        return $get('category') !== 'rail';
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
                     })
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('number_of_seat')
                     ->label('Количество мест')
                     ->visible(function ($get) {
-                        return $get('category') !== 'rail';
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
                     })
                     ->required()
                     ->numeric(),
+
                 TimePicker::make('departure_time')
                     ->visible(function ($get) {
-                        return $get('category') === 'rail';
+                        return in_array($get('category'), ['rail', 'air']); // Show only for rail and air
                     })
                     ->required(),
 
                 TimePicker::make('arrival_time')
                     ->visible(function ($get) {
-                        return $get('category') === 'rail';
+                        return in_array($get('category'), ['rail', 'air']); // Show only for rail and air
                     })
                     ->required(),
+                    FileUpload::make('images')
+                    ->label('Фотографии транспорта')    
+                    ->image()
+                    ->multiple()
+
 
 
 
@@ -117,22 +134,26 @@ class TransportResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('plate_number')
-                ->label('Гос. номер')
+                    ->label('Гос. номер')
                     ->searchable(),
-                   Tables\Columns\TextColumn::make('driver.name')
-                ->label('Водитель')
-                    ->searchable(), 
+                Tables\Columns\TextColumn::make('driver.name')
+                    ->label('Водитель')
+                    ->searchable(),
+                    ImageColumn::make('images')
+                    ->circular()
+                    ->stacked(), 
                 Tables\Columns\TextColumn::make('model')
-                ->label('Модель')
+                    ->label('Модель')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('number_of_seat')
-                ->label('Кол. мест')
+                    ->label('Кол. мест')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category')
                     ->searchable()
                     ->sortable()
                     ->label('Категория'),
+
                 // Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
                 //     ->label('Per Day, Per Pickup'),
 

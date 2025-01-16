@@ -7,12 +7,16 @@ use Filament\Tables;
 use App\Models\Monument;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
 use App\Filament\Resources\MonumentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonumentResource\RelationManagers;
+
 
 class MonumentResource extends Resource
 {
@@ -91,6 +95,7 @@ class MonumentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),  
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -105,13 +110,31 @@ class MonumentResource extends Resource
             //
         ];
     }
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                TextEntry::make('name')
+                ->color('primary'), // Adds primary color to the text
+            TextEntry::make('city.name')
+                ->color('primary'), // Adds primary color to the city name
+            TextEntry::make('ticket_price')
+                ->color('primary'), // Adds primary color to the ticket price
+            TextEntry::make('description')
+                ->color('primary'), // Adds primary color to the description
+            ImageEntry::make('images')
+                ->circular()
 
+
+            ]);
+    }
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListMonuments::route('/'),
             'create' => Pages\CreateMonument::route('/create'),
             'edit' => Pages\EditMonument::route('/{record}/edit'),
+             'view' => Pages\ViewMonument::route('/{record}'),
         ];
     }
 }
