@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
 
 class TransportResource extends Resource
 {
@@ -110,11 +111,11 @@ class TransportResource extends Resource
                         return in_array($get('category'), ['rail', 'air']); // Show only for rail and air
                     })
                     ->required(),
-                    FileUpload::make('images')
-                    ->label('Фотографии транспорта')    
+                FileUpload::make('images')
+                    ->label('Фотографии транспорта')
                     ->image()
                     ->multiple(),
-                    Select::make('amenities')
+                Select::make('amenities')
                     ->label('Удобства')
                     ->multiple()
                     ->preload()
@@ -125,6 +126,39 @@ class TransportResource extends Resource
                             ->required(),
 
                     ]),
+                Select::make('fuel_type')
+                    ->label('Тип топлива')
+                    ->options([
+                        'diesel' => 'Дизель',
+                        'benzin/propane' => 'Бензин/Пропан',
+                        'natural_gaz' => 'Газ',
+                    ])
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
+                    ->required(), 
+                 
+                TextInput::make('fuel_consumption')
+                    ->label('Расход топлива л/100км')
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
+                    ->required()
+                    ->numeric(),  
+                    TextInput::make('oil_change_interval_months')
+                    ->label('Интервал замены масла (месяцы)')
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
+                    ->required()
+                    ->numeric(),
+                TextInput::make('oil_change_interval_km')    
+                    ->label('Интервал замены масла (км)')
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
+                    ->required()
+                    ->numeric(),        
 
 
 
@@ -151,9 +185,9 @@ class TransportResource extends Resource
                 Tables\Columns\TextColumn::make('driver.name')
                     ->label('Водитель')
                     ->searchable(),
-                    ImageColumn::make('images')
+                ImageColumn::make('images')
                     ->circular()
-                    ->stacked(), 
+                    ->stacked(),
                 Tables\Columns\TextColumn::make('model')
                     ->label('Модель')
                     ->searchable(),
@@ -165,11 +199,11 @@ class TransportResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label('Категория'),
-                    TextColumn::make('amenities.name')
-                    ->listWithLineBreaks()   
-                    //->bulleted()
+                TextColumn::make('amenities.name')
+                    ->listWithLineBreaks()
+                //->bulleted()
 
- 
+
 
                 // Tables\Columns\TextColumn::make('transportType.transportPrices.cost')
                 //     ->label('Per Day, Per Pickup'),

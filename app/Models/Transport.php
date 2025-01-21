@@ -19,6 +19,9 @@ class Transport extends Model
         'city_id',
         'images',
         'fuel_type',
+        'oil_change_interval_months',
+        'oil_change_interval_km',
+        'fuel_consumption',
     ];
 
     protected $casts = [

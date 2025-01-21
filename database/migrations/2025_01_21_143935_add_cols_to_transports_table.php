@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::table('transports', function (Blueprint $table) {
             $table->integer('oil_change_interval_months');
+            $table->integer('oil_change_interval_km');
+            $table->decimal('fuel_consumption', 8, 2);
+            $table->enum('fuel_type', ['diesel', 'benzin/propane','natural gas']);
+
 
         });
     }
