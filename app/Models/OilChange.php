@@ -17,7 +17,6 @@ class OilChange extends Model
         'other_services',
         'next_change_date',
         'next_change_mileage',
-        'oil_cost',
         
     ];
 
