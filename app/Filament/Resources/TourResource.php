@@ -84,7 +84,11 @@ class TourResource extends Resource
                             ->default(0),
                         Forms\Components\FileUpload::make('image')
                             ->label('Изображение тура')
-                            ->image(),                            
+                            ->image(),
+                            Forms\Components\FileUpload::make('tour_file')
+                            ->label('Файл тура')
+                            ->maxSize(10024),
+                            
 
                         Forms\Components\Hidden::make('tour_number'),
                     ])->columns(2),
