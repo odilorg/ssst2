@@ -115,6 +115,7 @@ class TransportResource extends Resource
                     ->image()
                     ->multiple(),
                     Select::make('amenities')
+                    ->label('Удобства')
                     ->multiple()
                     ->preload()
                     ->searchable()

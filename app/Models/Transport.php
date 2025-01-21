@@ -18,11 +18,22 @@ class Transport extends Model
        'driver_id',
         'city_id',
         'images',
+        'fuel_type',
     ];
 
     protected $casts = [
         'images' => 'array',
     ];
+
+    public function oilChanges()
+    {
+        return $this->hasMany(OilChange::class);
+    }
+
+    public function latestOilChange()
+    {
+        return $this->oilChanges()->latest('oil_change_date')->first();
+    }
 
     public function amenities(): BelongsToMany
     {
