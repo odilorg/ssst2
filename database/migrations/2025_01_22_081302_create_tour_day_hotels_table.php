@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tour_day_hotels', function (Blueprint $table) {
+        Schema::create('tour_day_hotels', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
             $table->string(column: 'type')->nullable()->after('hotel_id'); // Add type column
+            $table->foreignId('tour_day_id')->constrained('tour_days')->cascadeOnDelete();
+            $table->foreignId('hotel_id')->constrained('hotels')->cascadeOnDelete();
+
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tour_day_hotels', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('tour_day_hotels');
     }
 };
