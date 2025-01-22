@@ -38,9 +38,13 @@ class GenerateEstimatePdf implements ShouldQueue
     try {
         // Preload necessary relationships
         $tour = Tour::with([
-            'tourDays.hotelRooms.hotelRoom.roomType', // Preload room details and types
-            'tourDays.hotel', // Preload hotel details
+            'tourDays.tourDayHotels.hotel.hotelRooms.roomType', // Preload hotel details and associated rooms and their types
+            'tourDays.tourDayHotels.hotelRooms.room.roomType', // Preload hotel room relationships for nested repeaters
             'tourDays.tourDayTransports.transportType.transportPrices', // Preload transport details, type, and prices
+            'tourDays.cities', // Preload cities for tour days
+            'tourDays.guide.languages', // Preload guide and their languages
+            'tourDays.mealTypeRestaurantTourDays.mealType', // Preload meal types for restaurants
+            'tourDays.monuments', // Preload monuments
         ])->find($this->estimate->tour_id);
             // Log the content of $tour
                 Log::info('Tour Details:', [

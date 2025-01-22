@@ -38,7 +38,7 @@
 <body>
 
     <div class="logo">
-        <img src="{{ public_path("foot-logo.svg") }}" alt="Company Logo">
+        <img src="{{ public_path('foot-logo.svg') }}" alt="Company Logo">
     </div>
 
     <h1>Estimate for {{ $tour->name }}</h1>
@@ -63,7 +63,7 @@
             'mikro_bus' => 'Mikro Bus',
             'mini_van' => 'Mini Van',
             'air' => 'Air',
-            'rail' => 'Rail'
+            'rail' => 'Rail',
         ];
         $mealTypeLabels = [
             'breakfast' => 'Breakfast',
@@ -76,35 +76,33 @@
     @foreach ($tour->tourDays as $day)
         <h3>Day {{ $loop->iteration }}: {{ $day->name }}</h3>
         <p><strong>Description:</strong> {{ $day->description }}</p>
+        <p><strong>Cities:</strong> {{ $day->cities->pluck('name')->join(', ') }}</p>
 
         @php
-            $hotelCategoryName = $day->hotelRooms->isNotEmpty()
-                ? $hotelCategoryLabels[$day->hotel->type ?? ''] ?? 'N/A'
-                : 'N/A';
+            $accommodations = $day->tourDayHotels->map(function ($hotel) use ($hotelCategoryLabels) {
+                $hotelCategory = $hotelCategoryLabels[$hotel->type ?? ''] ?? 'N/A';
+                $roomDetails = $hotel->hotelRooms->map(function ($room) {
+                    return "{$room->quantity} x {$room->room->roomType->type}";
+                })->join(', ');
 
-            $firstTransportCategory = $day->tourDayTransports
-                ->map(fn($transport) => $transportTypeLabels[$transport->transportType->category ?? ''] ?? 'N/A')
-                ->first();
+                return "{$hotel->hotel->name} ({$hotelCategory}): {$roomDetails}";
+            })->join('; ');
 
-            $mealTypeNames = $day->mealTypeRestaurantTourDays->map(
+            $transportDetails = $day->tourDayTransports->map(fn($transport) => $transportTypeLabels[$transport->transportType->category ?? ''] ?? 'N/A')->join(', ');
+
+            $mealDetails = $day->mealTypeRestaurantTourDays->map(
                 fn($meal) => $mealTypeLabels[$meal->mealType->name ?? ''] ?? 'N/A'
             )->join(', ');
 
             $monumentNames = $day->monuments->pluck('name')->join(', ');
 
-            $guideCost = $day->guide->daily_rate;
+            $guideCost = $day->guide?->daily_rate ?? 0;
 
-            $transportCost = $day->tourDayTransports->sum(
-                fn($transport) => $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()?->cost ?? 0
-            );
+            $transportCost = $day->tourDayTransports->sum(fn($transport) => $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()?->cost ?? 0);
 
-            $accommodationCost = $day->hotelRooms->sum(
-                fn($hotelRoom) => ($hotelRoom->hotelRoom?->cost_per_night ?? 0) * ($hotelRoom->quantity ?? 0)
-            );
+            $accommodationCost = $day->tourDayHotels->sum(fn($hotel) => $hotel->hotelRooms->sum(fn($room) => ($room->room?->cost_per_night ?? 0) * ($room->quantity ?? 0)));
 
-            $mealCost = $day->mealTypeRestaurantTourDays->sum(
-                fn($meal) => ($meal->mealType->price ?? 0) * $tour->number_people
-            );
+            $mealCost = $day->mealTypeRestaurantTourDays->sum(fn($meal) => ($meal->mealType->price ?? 0) * $tour->number_people);
 
             $monumentCost = $day->monuments->sum('ticket_price') * $tour->number_people;
 
@@ -112,10 +110,10 @@
             $totalCost += $dayCost;
         @endphp
 
-        <p><strong>Accommodation:</strong> {{ $hotelCategoryName }}</p>
-        <p><strong>Guide:</strong> {{ $day->guide->languages->pluck('name')->join(', ') }}</p>
-        <p><strong>Transport:</strong> {{ $firstTransportCategory }}</p>
-        <p><strong>Meals:</strong> {{ $mealTypeNames }}</p>
+        <p><strong>Accommodation:</strong> {{ $accommodations }}</p>
+        <p><strong>Guide:</strong> {{ $day->guide?->languages->pluck('name')->join(', ') ?? 'N/A' }}</p>
+        <p><strong>Transport:</strong> {{ $transportDetails }}</p>
+        <p><strong>Meals:</strong> {{ $mealDetails }}</p>
         <p><strong>Monuments:</strong> {{ $monumentNames }}</p>
         <p><strong>Day Cost Breakdown:</strong></p>
         <ul>
@@ -130,26 +128,7 @@
     @endforeach
 
     <h2>Total Cost of the Tour: ${{ number_format($totalCost, 2) }}</h2>
-
-    <h2>Include</h2>
-    <ul>
-        <li><strong>Accommodation:</strong> All hotels as mentioned</li>
-        <li><strong>Transportation:</strong> Comfortable vehicles with air conditioning</li>
-        <li><strong>Visa Support:</strong> Provided for all participants</li>
-        <li><strong>Meals:</strong> Breakfast, lunch, and dinner</li>
-    </ul>
-
-    <h2>Not Include</h2>
-    <ul>
-        <li>International flights</li>
-        <li>Entrance fees to monuments</li>
-        <li>Personal expenses</li>
-    </ul>
-    <div class="total-section" style="text-align: center; margin-top: 30px; font-size: 1.2em; border-top: 2px solid #ddd; padding-top: 20px;">
-        <h2>Total Cost of the Tour: ${{ number_format($totalCost, 2) }}</h2>
-        <p><strong>Cost per Person:</strong> ${{ number_format($totalCost / $tour->number_people, 2) }}</p>
-    </div>
-    
 </body>
 
 </html>
+
