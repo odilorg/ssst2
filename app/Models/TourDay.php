@@ -32,9 +32,9 @@ class TourDay extends Model
         return $this->belongsTo(Guide::class);
     }
 
-    public function city()
+    public function cities()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsToMany(City::class, 'city_tour_day', 'tour_day_id', 'city_id')->withTimestamps();
     }
 
     public function tourDayTransports(): HasMany

@@ -85,10 +85,10 @@ class TourResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->label('Изображение тура')
                             ->image(),
-                            Forms\Components\FileUpload::make('tour_file')
+                        Forms\Components\FileUpload::make('tour_file')
                             ->label('Файл тура')
                             ->maxSize(10024),
-                            
+
 
                         Forms\Components\Hidden::make('tour_number'),
                     ])->columns(2),
@@ -102,15 +102,19 @@ class TourResource extends Resource
                             ->required(),
 
                         Select::make('city_id')
-                            ->label('Город')
-                            ->relationship('city', 'name')
+                            ->label('Города')
+                            ->relationship('cities', 'name') // Assuming "cities" relationship exists
+                            ->multiple()
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
+                                // Clear dependent fields on city change
                                 $set('hotel_rooms', []);
                                 $set('restaurant_meal_types', []);
                             })
+                            ->default(fn($record) => $record?->cities?->pluck('id')) // Populate selected cities when editing
                             ->required()
                             ->preload(),
+
 
                         Forms\Components\Select::make('guide_id')
                             ->label('Гид')
@@ -121,7 +125,7 @@ class TourResource extends Resource
                             ->preload(),
                         Forms\Components\Textarea::make('description')
                             ->label('Описание'),
-                            Forms\Components\FileUpload::make('image')
+                        Forms\Components\FileUpload::make('image')
                             ->label('Изображение дня')
                             ->image(),
 
@@ -188,15 +192,16 @@ class TourResource extends Resource
                                             ])
                                             ->live()
                                             ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])),
-
                                         Select::make('hotel_id')
                                             ->label('Отель')
                                             ->options(fn(Get $get): Collection => Hotel::query()
                                                 ->where('type', $get('type'))
-                                                ->where('city_id', $get('city_id'))
+                                                ->whereIn('city_id', $get('city_id')) // Support multiple city IDs
                                                 ->pluck('name', 'id'))
+                                            ->default(fn($record) => $record?->hotel_id) // Populate selected hotel when editing
                                             ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', []))
                                             ->live(),
+
 
                                         Forms\Components\Repeater::make('hotel_rooms')
                                             ->label('Номера в отеле')
@@ -231,7 +236,7 @@ class TourResource extends Resource
                                 Tabs\Tab::make('Рестораны')
                                     ->label('Рестораны')
                                     ->schema([
-                                       
+
                                         Repeater::make('restaurant_meal_types')
                                             ->label('Добавить рестораны')
                                             ->relationship('mealTypeRestaurantTourDays')
@@ -240,34 +245,36 @@ class TourResource extends Resource
                                                 //     ->default(fn(callable $get) => $get('../../restaurant_id'))
                                                 //     ->dehydrated(fn(callable $get) => $get('../../restaurant_id')),
                                                 Select::make('restaurant_id')
-                                                ->label('Ресторан')
-                                                ->options(fn(Get $get): Collection => Restaurant::query()
-                                                    ->where('city_id', $get('../../city_id'))
-                                                    ->pluck('name', 'id'))
-                                                ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', []))
-                                                ->live(),
-    
+                                                    ->label('Рестораны')
+                                                    ->options(fn(Get $get): Collection => Restaurant::query()
+                                                        ->whereIn('city_id', $get('../../city_id')) // Handle multiple city IDs
+                                                        ->pluck('name', 'id'))
+                                                    ->default(fn($record) => $record?->restaurant_id) // Populate selected restaurant when editing
+                                                    ->afterStateUpdated(fn($state, callable $set) => $set('restaurant_meal_types', []))
+                                                    ->live(),
+
+
                                                 Select::make('meal_type_id')
-                                                ->label('Тип питания') // "Meal Type" in Russian
-                                                ->options(function (callable $get) {
-                                                    // Define a mapping of enum values to human-readable labels
-                                                    $humanReadableLabels = [
-                                                        'breakfast' => 'Завтрак',       // Breakfast
-                                                        'lunch' => 'Обед',             // Lunch
-                                                        'dinner' => 'Ужин',            // Dinner
-                                                        'coffee_break' => 'Кофе брейк', // Coffee Break
-                                                    ];
-                                            
-                                                    // Fetch options dynamically from the database
-                                                    $mealTypes = MealType::where('restaurant_id', $get('restaurant_id'))->pluck('name', 'id');
-                                            
-                                                    // Map database values to human-readable labels
-                                                    return $mealTypes->mapWithKeys(function ($value, $key) use ($humanReadableLabels) {
-                                                        return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
-                                                    });
-                                                })
-                                                ->required(),
-                                                                                                                                        
+                                                    ->label('Тип питания') // "Meal Type" in Russian
+                                                    ->options(function (callable $get) {
+                                                        // Define a mapping of enum values to human-readable labels
+                                                        $humanReadableLabels = [
+                                                            'breakfast' => 'Завтрак',       // Breakfast
+                                                            'lunch' => 'Обед',             // Lunch
+                                                            'dinner' => 'Ужин',            // Dinner
+                                                            'coffee_break' => 'Кофе брейк', // Coffee Break
+                                                        ];
+
+                                                        // Fetch options dynamically from the database
+                                                        $mealTypes = MealType::where('restaurant_id', $get('restaurant_id'))->pluck('name', 'id');
+
+                                                        // Map database values to human-readable labels
+                                                        return $mealTypes->mapWithKeys(function ($value, $key) use ($humanReadableLabels) {
+                                                            return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
+                                                        });
+                                                    })
+                                                    ->required(),
+
                                             ]),
                                     ]),
 
@@ -279,7 +286,13 @@ class TourResource extends Resource
                                             ->preload()
                                             ->multiple()
                                             ->searchable()
-                                            ->relationship('monuments', 'name', fn(Builder $query, $get) => $query->where('city_id', $get('city_id')))
+                                            ->relationship(
+                                                'monuments',
+                                                'name',
+                                                fn(Builder $query, $get) =>
+                                                $query->whereIn('city_id', $get('city_id')) // Handle multiple city IDs
+                                            )
+                                            ->default(fn($record) => $record?->monuments->pluck('id')) // Populate selected monuments when editing
                                             ->afterStateUpdated(function ($state, $record) {
                                                 if ($record) {
                                                     $record->monuments()->sync($state);
@@ -287,6 +300,7 @@ class TourResource extends Resource
                                                     Log::warning('Record is null while syncing monuments. Ensure the record is properly saved.');
                                                 }
                                             }),
+
                                     ]),
                             ]),
                     ])->columnSpanFull(),
