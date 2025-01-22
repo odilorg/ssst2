@@ -42,10 +42,10 @@ class TourDay extends Model
         return $this->hasMany(TourDayTransport::class ); 
     }
        
-    public function hotel()
-    {
-        return $this->belongsTo(Hotel::class);
-    }
+//     public function hotels()
+// {
+//     return $this->belongsToMany(Hotel::class, 'tour_day_hotels', 'tour_day_id', 'hotel_id')->withPivot('type');
+// }
 
     public function restaurant()
     {
@@ -56,11 +56,14 @@ class TourDay extends Model
     {
         return $this->belongsTo(TransportType::class);
     }
-    public function hotelRooms()
-    {
-        return $this->hasMany(HotelTourDayRoom::class); // HasMany with the pivot model
-    }
-
+    // public function hotelRooms()
+    // {
+    //     return $this->hasMany(HotelTourDayRoom::class); // HasMany with the pivot model
+    // }
+    // public function hotelRooms()
+    // {
+    //     return $this->hasManyThrough(Room::class, Hotel::class, 'id', 'hotel_id', 'id', 'id');
+    // }
     public function mealTypeRestaurantTourDays()
     {
         return $this->hasMany(MealTypeRestaurantTourDay::class, 'tour_day_id');
@@ -70,7 +73,12 @@ class TourDay extends Model
     public function monuments(): BelongsToMany
     {
         return $this->belongsToMany(Monument::class, 'monument_tour_days');
-    }  
+    } 
+    
+    public function tourDayHotels(): HasMany
+    {
+        return $this->hasMany(TourDayHotel::class);
+    }
     
 
 

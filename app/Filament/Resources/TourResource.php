@@ -182,55 +182,110 @@ class TourResource extends Resource
                                 Tabs\Tab::make('Отели')
                                     ->label('Отели')
                                     ->schema([
-                                        Forms\Components\Select::make('type')
-                                            ->label('Категория отеля')
-                                            ->options([
-                                                'bed_breakfast' => 'Bed & Breakfast',
-                                                '3_star' => '3 звезды',
-                                                '4_star' => '4 звезды',
-                                                '5_star' => '5 звезд',
-                                            ])
-                                            ->live()
-                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])),
-                                        Select::make('hotel_id')
-                                            ->label('Отель')
-                                            ->options(fn(Get $get): Collection => Hotel::query()
-                                                ->where('type', $get('type'))
-                                                ->whereIn('city_id', $get('city_id')) // Support multiple city IDs
-                                                ->pluck('name', 'id'))
-                                            ->default(fn($record) => $record?->hotel_id) // Populate selected hotel when editing
-                                            ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', []))
-                                            ->live(),
+                                        // Forms\Components\Select::make('type')
+                                        //     ->label('Категория отеля')
+                                        //     ->options([
+                                        //         'bed_breakfast' => 'Bed & Breakfast',
+                                        //         '3_star' => '3 звезды',
+                                        //         '4_star' => '4 звезды',
+                                        //         '5_star' => '5 звезд',
+                                        //     ])
+                                        //     ->live()
+                                        //     ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', [])),
+                                        // Select::make('hotel_id')
+                                        //     ->label('Отель')
+                                        //     ->options(fn(Get $get): Collection => Hotel::query()
+                                        //         ->where('type', $get('type'))
+                                        //         ->whereIn('city_id', $get('city_id')) // Support multiple city IDs
+                                        //         ->pluck('name', 'id'))
+                                        //     ->default(fn($record) => $record?->hotel_id) // Populate selected hotel when editing
+                                        //     ->afterStateUpdated(fn($state, callable $set) => $set('hotel_rooms', []))
+                                        //     ->live(),
 
 
-                                        Forms\Components\Repeater::make('hotel_rooms')
-                                            ->label('Номера в отеле')
-                                            ->relationship('hotelRooms')
-                                            ->schema([
-                                                Forms\Components\Hidden::make('hotel_id')
-                                                    ->default(fn(callable $get) => $get('../../hotel_id'))
-                                                    ->dehydrated(fn(callable $get) => $get('../../hotel_id')),
+                                        // Forms\Components\Repeater::make('hotel_rooms')
+                                        //     ->label('Номера в отеле')
+                                        //     ->relationship('hotelRooms')
+                                        //     ->schema([
+                                        //         Forms\Components\Hidden::make('hotel_id')
+                                        //             ->default(fn(callable $get) => $get('../../hotel_id'))
+                                        //             ->dehydrated(fn(callable $get) => $get('../../hotel_id')),
 
-                                                Select::make('room_id')
-                                                    ->label('Номер')
-                                                    ->options(fn(Get $get): Collection => Room::query()
-                                                        ->with('roomType')
-                                                        ->where('hotel_id', $get('hotel_id'))
-                                                        ->get()
-                                                        ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type]))
-                                                    ->required()
-                                                    ->searchable(),
+                                        //         Select::make('room_id')
+                                        //             ->label('Номер')
+                                        //             ->options(fn(Get $get): Collection => Room::query()
+                                        //                 ->with('roomType')
+                                        //                 ->where('hotel_id', $get('hotel_id'))
+                                        //                 ->get()
+                                        //                 ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type]))
+                                        //             ->required()
+                                        //             ->searchable(),
 
-                                                Forms\Components\TextInput::make('quantity')
-                                                    ->label('Количество')
-                                                    ->default(1)
-                                                    ->numeric()
-                                                    ->required(),
-                                            ])
-                                            ->columns(2)
-                                            ->hidden(fn(callable $get) => !$get('hotel_id'))
-                                            ->live()
-                                            ->collapsible(),
+                                        //         Forms\Components\TextInput::make('quantity')
+                                        //             ->label('Количество')
+                                        //             ->default(1)
+                                        //             ->numeric()
+                                        //             ->required(),
+                                        //     ])
+                                        //     ->columns(2)
+                                        //     ->hidden(fn(callable $get) => !$get('hotel_id'))
+                                        //     ->live()
+                                        //     ->collapsible(),
+                                        Repeater::make('tourDayHotels')
+    ->relationship()
+    ->schema([
+        Select::make('hotel_id')
+            ->label('Отель')
+            ->relationship('hotel', 'name') // Relationship to the Hotel model
+            ->required()
+            ->reactive(),
+
+        Select::make('type')
+            ->label('Категория отеля')
+            ->options([
+                'bed_breakfast' => 'Bed & Breakfast',
+                '3_star' => '3 звезды',
+                '4_star' => '4 звезды',
+                '5_star' => '5 звезд',
+            ])
+            ->required(),
+
+        // Nested Repeater for hotel rooms
+        Repeater::make('hotelRooms')
+            ->label('Номера в отеле')
+            ->relationship('hotelRooms') // Assuming a HasMany relationship from TourDayHotel to Room
+            ->schema([
+                Select::make('room_id')
+                    ->label('Номер')
+                    ->options(function (Get $get): Collection {
+                        $hotelId = $get('../../hotel_id'); // Reference the parent hotel_id
+                
+                        if (!$hotelId) {
+                            return collect(); // Return an empty collection if no hotel_id is set
+                        }
+                
+                        // Query rooms and map their types
+                        return Room::query()
+                            ->where('hotel_id', $hotelId) // Filter rooms by the selected hotel
+                            ->with('roomType') // Preload the roomType relationship
+                            ->get()
+                            ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type ?? 'Unknown Type']); // Map room ID to room type
+                    })
+                    ->required(),
+
+                Forms\Components\TextInput::make('quantity')
+                    ->label('Количество')
+                    ->default(1)
+                    ->numeric()
+                    ->required(),
+            ])
+            ->columns(2)
+            ->collapsible()
+            ->hidden(fn(Get $get) => !$get('hotel_id')), // Hide if hotel_id is not set
+    ])
+    ->columns(2)
+    ->collapsible(),
+
                                     ]),
 
                                 Tabs\Tab::make('Рестораны')

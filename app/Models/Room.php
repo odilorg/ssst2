@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Room extends Model
@@ -43,4 +44,9 @@ class Room extends Model
     protected $casts = [
         'images' => 'array',
     ];
+
+    public function hotelRooms(): HasMany
+{
+    return $this->hasMany(HotelRoom::class);
+}
 }
