@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('check:oil-change-due')->daily();
+        $schedule->command('check:oil-change-due')->everyMinute();
     }
 
     protected function commands()
