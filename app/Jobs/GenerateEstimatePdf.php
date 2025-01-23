@@ -47,17 +47,17 @@ class GenerateEstimatePdf implements ShouldQueue
             'tourDays.monuments', // Preload monuments
         ])->find($this->estimate->tour_id);
             // Log the content of $tour
-                Log::info('Tour Details:', [
-                    'tour' => $tour
-                ]);
+                // Log::info('Tour Details:', [
+                //     'tour' => $tour
+                // ]);
 
-        if (!$tour) {
-            Log::error('Tour not found', ['tour_id' => $this->estimate->tour_id]);
-            return;
-        }
+        // if (!$tour) {
+        //     Log::error('Tour not found', ['tour_id' => $this->estimate->tour_id]);
+        //     return;
+        // }
 
         // Log the loaded $tour object
-        Log::info('Loaded Tour Data:', ['tour' => $tour->toArray()]);
+       // Log::info('Loaded Tour Data:', ['tour' => $tour->toArray()]);
 
          // Render the HTML and debug it
         //  $html = view('estimates.estimate', compact('tour'))->render();
@@ -73,19 +73,19 @@ class GenerateEstimatePdf implements ShouldQueue
 
         // Update the estimate record with the file name
         $this->estimate->update(['file_name' => $fileName]);
-        Log::info('Estimate updated with file name', ['estimate_id' => $this->estimate->id, 'file_name' => $fileName]);
+      //  Log::info('Estimate updated with file name', ['estimate_id' => $this->estimate->id, 'file_name' => $fileName]);
     } catch (\Exception $e) {
         // Log any errors
-        Log::error('Error in GenerateEstimatePdf job', [
-            'estimate_id' => $this->estimate->id,
-            'error' => $e->getMessage(),
-            'stack_trace' => $e->getTraceAsString(),
-        ]);
+        // Log::error('Error in GenerateEstimatePdf job', [
+        //     'estimate_id' => $this->estimate->id,
+        //     'error' => $e->getMessage(),
+        //     'stack_trace' => $e->getTraceAsString(),
+        // ]);
 
         throw $e; // Re-throw the exception to let the job fail and retry
     }
 
-    Log::info('GenerateEstimatePdf job completed', ['estimate_id' => $this->estimate->id]);
+    //Log::info('GenerateEstimatePdf job completed', ['estimate_id' => $this->estimate->id]);
 }
 
 
