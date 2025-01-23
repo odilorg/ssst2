@@ -16,8 +16,9 @@ class CheckOilChangeDue extends Command
 
     public function handle()
     {
+        Log::info('Starting oil change due check.');
         $transports = Transport::all();
-
+        Log::info('Total transports:', ['count' => $transports->count()]);
         foreach ($transports as $transport) {
             $lastOilChange = OilChange::where('transport_id', $transport->id)
                 ->latest('oil_change_date')
