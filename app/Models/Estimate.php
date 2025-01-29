@@ -18,7 +18,8 @@ class Estimate extends Model
         'customer_id',
         'tour_id',
         'transport_id',
-        'file_name'
+        'file_name',
+        'markup',
     ];
 
     public function customer()

@@ -107,7 +107,7 @@
             $monumentCost = $day->monuments->sum('ticket_price') * $tour->number_people;
 
             $dayCost = $guideCost + $transportCost + $accommodationCost + $mealCost + $monumentCost;
-            $totalCost += $dayCost;
+            $totalCost += $dayCost * $estimate->markup/100+$dayCost;
         @endphp
 
         <p><strong>Accommodation:</strong> {{ $accommodations }}</p>

@@ -21,6 +21,11 @@ class Tour extends Model
         return $this->hasMany(TourDay::class);
     }
 
+    public function estimates(): HasMany
+    {
+        return $this->hasMany(Estimate::class);
+    }
+
     
 
     

@@ -10,6 +10,7 @@ use App\Mail\SendEstimate;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Mail;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\EstimateResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -35,30 +36,41 @@ class EstimateResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('customer_id')
-                    ->label('Имя клиента')
-                    ->relationship('customer', 'name')
-                    ->required()
-                    ->preload(),
-                Forms\Components\Select::make('tour_id')
-                    ->label('Выберите Тур')
-                    ->relationship('tour', 'name')
-                    ->required()
-                    ->preload(),
-                Forms\Components\TextInput::make('estimate_number')
+                Section::make('Инфо об калькуляции')
+                    ->description('Заполните информацию о калькуляции')
+                    ->schema([
+                        Forms\Components\Select::make('customer_id')
+                            ->label('Имя клиента')
+                            ->relationship('customer', 'name')
+                            ->required()
+                            ->preload(),
+                        Forms\Components\Select::make('tour_id')
+                            ->label('Выберите Тур')
+                            ->relationship('tour', 'name')
+                            ->required()
+                            ->preload(),
+                        Forms\Components\TextInput::make('estimate_number')
 
-                    ->hidden()
-                    ->required()
-                    ->maxLength(255)
-                    ->default(fn() => 'EST-' . substr(time(), -4) . '-' . date('m-Y')),
-                Forms\Components\DatePicker::make('estimate_date')
-                    ->label('Дата оценки')
-                    ->default('today')
+                            ->hidden()
+                            ->required()
+                            ->maxLength(255)
+                            ->default(fn() => 'EST-' . substr(time(), -4) . '-' . date('m-Y')),
+                        Forms\Components\DatePicker::make('estimate_date')
+                            ->label('Дата оценки')
+                            ->default('today')
 
-                    ->required(),
-                Forms\Components\TextInput::make('notes')
-                    ->label('Примечания')
-                    ->columnSpanFull(),
+                            ->required(),
+                        Forms\Components\TextInput::make('notes')
+                            ->label('Примечания'),
+                           // ->columnSpanFull(),
+                        Forms\Components\TextInput::make('markup')
+                            ->label('Наценка')
+                            ->prefix('%')
+                            ->numeric(),
+                            //->required(),
+                    ])->columns(2),
+
+
 
 
             ]);

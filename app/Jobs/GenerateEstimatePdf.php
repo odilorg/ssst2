@@ -42,6 +42,7 @@ class GenerateEstimatePdf implements ShouldQueue
             'tourDays.tourDayHotels.hotelRooms.room.roomType', // Preload hotel room relationships for nested repeaters
             'tourDays.tourDayTransports.transportType.transportPrices', // Preload transport details, type, and prices
             'tourDays.cities', // Preload cities for tour days
+           // 'estimates', // Tour with estimates
             'tourDays.guide.languages', // Preload guide and their languages
             'tourDays.mealTypeRestaurantTourDays.mealType', // Preload meal types for restaurants
             'tourDays.monuments', // Preload monuments
@@ -62,9 +63,9 @@ class GenerateEstimatePdf implements ShouldQueue
          // Render the HTML and debug it
         //  $html = view('estimates.estimate', compact('tour'))->render();
         //  dd($html); // Debug and stop execution here to inspect the rendered HTML
-
+            $estimate = $this->estimate;
         // Generate the PDF
-        $pdf = Pdf::loadView('estimates.estimate', compact('tour'));
+        $pdf = Pdf::loadView('estimates.estimate', compact('tour', 'estimate'));
 
         // Save the PDF to storage
         $fileName = 'estimate_' . $this->estimate->id . '.pdf';
