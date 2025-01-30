@@ -159,7 +159,7 @@ class TourResource extends Resource
                                                             $query->where('category', $category);
                                                         }
                                                     })
-                                                    ->required()
+                                                  //  ->required()
                                                     ->preload()
                                                     ->live(),
 
@@ -173,7 +173,7 @@ class TourResource extends Resource
                                                         'economy' => 'Эконом',
                                                         'business' => 'Бизнес',
                                                     ])
-                                                    ->required()
+                                                   // ->required()
                                                     ->live()
                                                     ->searchable(),
                                             ]),
@@ -194,7 +194,7 @@ class TourResource extends Resource
                                                         '4_star' => '4 звезды',
                                                         '5_star' => '5 звезд',
                                                     ])
-                                                    ->required()
+                                                    //->required()
                                                     ->reactive() // Make reactive to update dependent fields
                                                     ->afterStateUpdated(function ($state, callable $set) {
                                                         // Clear the selected hotel if type changes
@@ -208,7 +208,7 @@ class TourResource extends Resource
                                                         ->where('type', $get('type')) // Filter by selected hotel type
                                                         ->whereIn('city_id', $get('../../city_id') ?? []) // Filter by selected cities
                                                         ->pluck('name', 'id')) // Fetch hotels as key-value pairs
-                                                    ->required()
+                                                   // ->required()
                                                     ->reactive()
                                                     ->default(fn($record) => $record?->hotel_id) // Populate the field during editing
                                                     ->afterStateUpdated(function ($state, callable $set) {
@@ -237,15 +237,15 @@ class TourResource extends Resource
                                                                     ->get()
                                                                     ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type ?? 'Unknown Type']); // Map room ID to room type
                                                             })
-                                                            ->required()
+                                                           // ->required()
                                                             ->searchable()
                                                             ->reactive(),
                                 
                                                         Forms\Components\TextInput::make('quantity')
                                                             ->label('Количество')
                                                             ->default(1)
-                                                            ->numeric()
-                                                            ->required(),
+                                                            ->numeric(),
+                                                           // ->required(),
                                                     ])
                                                     ->columns(2)
                                                     ->collapsible(),
@@ -295,7 +295,7 @@ class TourResource extends Resource
                                                             return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
                                                         });
                                                     })
-                                                    ->required(),
+                                                    //->required(),
 
                                             ]),
                                     ]),
