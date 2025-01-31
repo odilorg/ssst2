@@ -97,7 +97,7 @@ class CheckOilChangeDue extends Command
             "Замена масла для транспорта : {$transport->plate_number}\n" .
             "Должна быть выполнена через  {$daysRemaining} дней или {$kmRemaining} км.\n" .
             "Последняя замена масла: {$formattedLastChangeDate}\n" .
-            "Next замена маслаa: {$formattedNextChangeDate}  или при пробеге {$lastOilChange->next_change_mileage} км.\n\n" ;
+            "Следующая замена масла:{$formattedNextChangeDate}  или при пробеге {$lastOilChange->next_change_mileage} км.\n\n" ;
             
 
         // Log for debugging
