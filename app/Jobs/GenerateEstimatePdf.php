@@ -65,6 +65,23 @@ class GenerateEstimatePdf implements ShouldQueue
         //  dd($html); // Debug and stop execution here to inspect the rendered HTML
             $estimate = $this->estimate;
         // Generate the PDF
+        // Ensure that each guide's price_types field is available
+// $tour->tourDays->each(function ($day) {
+//     if ($day->guide) {
+//         $day->guide->price_types = is_array($day->guide->price_types) 
+//             ? $day->guide->price_types 
+//             : json_decode($day->guide->price_types, true);
+//     }
+// });
+$tour->tourDays->each(function ($day) {
+    if ($day->guide) {
+        $day->guide->price_types = is_array($day->guide->price_types) 
+            ? $day->guide->price_types 
+            : json_decode($day->guide->price_types, true) ?? [];
+    }
+});
+
+
         $pdf = Pdf::loadView('estimates.estimate', compact('tour', 'estimate'));
 
         // Save the PDF to storage

@@ -79,39 +79,54 @@
         <p><strong>Cities:</strong> {{ $day->cities->pluck('name')->join(', ') }}</p>
 
         @php
-            $accommodations = $day->tourDayHotels->map(function ($hotel) use ($hotelCategoryLabels) {
-                $hotelCategory = $hotelCategoryLabels[$hotel->type ?? ''] ?? 'N/A';
-                $roomDetails = $hotel->hotelRooms->map(function ($room) {
-                    return "{$room->quantity} x {$room->room->roomType->type}";
-                })->join(', ');
+        $accommodations = $day->tourDayHotels->map(function ($hotel) use ($hotelCategoryLabels) {
+            $hotelCategory = $hotelCategoryLabels[$hotel->type ?? ''] ?? 'N/A';
+            $roomDetails = $hotel->hotelRooms->map(function ($room) {
+                return "{$room->quantity} x {$room->room->roomType->type}";
+            })->join(', ');
+    
+            return "{$hotel->hotel->name} ({$hotelCategory}): {$roomDetails}";
+        })->join('; ');
+    
+        $transportDetails = $day->tourDayTransports->map(fn($transport) => $transportTypeLabels[$transport->transportType->category ?? ''] ?? 'N/A')->join(', ');
+    
+        $mealDetails = $day->mealTypeRestaurantTourDays->map(
+            fn($meal) => $mealTypeLabels[$meal->mealType->name ?? ''] ?? 'N/A'
+        )->join(', ');
+    
+        $monumentNames = $day->monuments->pluck('name')->join(', ');
+    
+        // Get the guide's price based on the selected price type
+        $guideCost = 0;
 
-                return "{$hotel->hotel->name} ({$hotelCategory}): {$roomDetails}";
-            })->join('; ');
+        if ($day->guide && $day->guide->price_types) {
+    $selectedPriceType = $day->price_type_name; // e.g. 'pickup_dropoff'
 
-            $transportDetails = $day->tourDayTransports->map(fn($transport) => $transportTypeLabels[$transport->transportType->category ?? ''] ?? 'N/A')->join(', ');
+    // Convert array-of-objects into an associative array:
+    $priceTypeMap = collect($day->guide->price_types)
+        ->pluck('price', 'price_type_name')  // e.g. ['pickup_dropoff' => 15, 'halfday' => 30, ...]
+        ->map(fn($val) => (float) $val);     // convert '15' to a float
 
-            $mealDetails = $day->mealTypeRestaurantTourDays->map(
-                fn($meal) => $mealTypeLabels[$meal->mealType->name ?? ''] ?? 'N/A'
-            )->join(', ');
+    $guideCost = $priceTypeMap[$selectedPriceType] ?? 0;
+}
 
-            $monumentNames = $day->monuments->pluck('name')->join(', ');
 
-            $guideCost = $day->guide?->daily_rate ?? 0;
-
-            $transportCost = $day->tourDayTransports->sum(fn($transport) => $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()?->cost ?? 0);
-
-            $accommodationCost = $day->tourDayHotels->sum(fn($hotel) => $hotel->hotelRooms->sum(fn($room) => ($room->room?->cost_per_night ?? 0) * ($room->quantity ?? 0)));
-
-            $mealCost = $day->mealTypeRestaurantTourDays->sum(fn($meal) => ($meal->mealType->price ?? 0) * $tour->number_people);
-
-            $monumentCost = $day->monuments->sum('ticket_price') * $tour->number_people;
-
-            $dayCost = $guideCost + $transportCost + $accommodationCost + $mealCost + $monumentCost;
-            $totalCost += $dayCost * $estimate->markup/100+$dayCost;
-        @endphp
+    
+        $transportCost = $day->tourDayTransports->sum(fn($transport) => $transport->transportType->transportPrices->where('price_type', $transport->price_type)->first()?->cost ?? 0);
+    
+        $accommodationCost = $day->tourDayHotels->sum(fn($hotel) => $hotel->hotelRooms->sum(fn($room) => ($room->room?->cost_per_night ?? 0) * ($room->quantity ?? 0)));
+    
+        $mealCost = $day->mealTypeRestaurantTourDays->sum(fn($meal) => ($meal->mealType->price ?? 0) * $tour->number_people);
+    
+        $monumentCost = $day->monuments->sum('ticket_price') * $tour->number_people;
+    
+        $dayCost = $guideCost + $transportCost + $accommodationCost + $mealCost + $monumentCost;
+        $totalCost += $dayCost * $estimate->markup/100+$dayCost;
+    @endphp
+    
 
         <p><strong>Accommodation:</strong> {{ $accommodations }}</p>
-        <p><strong>Guide:</strong> {{ $day->guide?->languages->pluck('name')->join(', ') ?? 'N/A' }}</p>
+        <p><strong>Guide Cost:</strong> ({{ $day->price_type_name ?? 'N/A' }}) ${{ number_format($guideCost, 2) }}</p>
         <p><strong>Transport:</strong> {{ $transportDetails }}</p>
         <p><strong>Meals:</strong> {{ $mealDetails }}</p>
         <p><strong>Monuments:</strong> {{ $monumentNames }}</p>
