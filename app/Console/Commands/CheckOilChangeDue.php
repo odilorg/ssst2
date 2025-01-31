@@ -22,7 +22,6 @@ class CheckOilChangeDue extends Command
         Log::info('Total transports found', ['count' => $transports->count()]);
 
         foreach ($transports as $transport) {
-            // Log the transport being processed
             Log::info('Processing transport', [
                 'transport_id' => $transport->id,
                 'plate_number' => $transport->plate_number
@@ -33,7 +32,6 @@ class CheckOilChangeDue extends Command
                 ->first();
             
             if (!$lastOilChange) {
-                // Log if no oil change record is found for this transport
                 Log::info('No OilChange record found', [
                     'transport_id' => $transport->id
                 ]);
@@ -53,22 +51,23 @@ class CheckOilChangeDue extends Command
             $daysRemaining = now()->diffInDays($nextChangeDate, false); // Negative if overdue
             $kmRemaining = $nextChangeMileage - $transport->current_mileage;
 
-            // Log the dynamic calculation
             Log::info('Calculated remaining intervals', [
                 'days_remaining' => $daysRemaining,
                 'km_remaining' => $kmRemaining
             ]);
 
-            // Check if days remaining is 3, 2, or 1 or mileage within 300 KM
+            // Check if days remaining is 3, 2, or 1 OR if mileage is within 300 KM
             if (($daysRemaining <= 3 && $daysRemaining >= 1) || $kmRemaining <= 300) {
                 Log::info('Conditions met. Sending data to webhook', [
                     'transport_id' => $transport->id
                 ]);
+
                 $this->sendToN8nWebhook(
                     $transport,
                     $lastOilChange,
-                    max($daysRemaining, 0), // Prevent negative days
-                    max($kmRemaining, 0)    // Prevent negative KM
+                    $daysRemaining,
+                    $kmRemaining,
+                    $nextChangeDate
                 );
             } else {
                 Log::info('Conditions NOT met. No webhook sent', [
@@ -79,37 +78,90 @@ class CheckOilChangeDue extends Command
             }
         }
 
-        // Log the completion of the check
         Log::info('=== Oil change due check completed ===');
         $this->info('Oil change due check completed.');
     }
 
-    protected function sendToN8nWebhook($transport, $lastOilChange, $daysRemaining, $kmRemaining)
+    /**
+     * Send data to the N8N webhook.
+     */
+    protected function sendToN8nWebhook($transport, $lastOilChange, $daysRemaining, $kmRemaining, $nextChangeDate)
     {
-        $data = [
-            'plate_number'      => $transport->plate_number,
-            'due_in_days'       => $daysRemaining,
-            'due_in_km'         => $kmRemaining,
-            'oil_change_date'   => $lastOilChange->oil_change_date,
-            'next_change_date'  => $lastOilChange->next_change_date,
-            'next_change_mileage' => $lastOilChange->next_change_mileage,
-        ];
+        // 1) Calculate a more precise "days and hours" difference
+        //    This counts total hours, splits into days & hours
+        $totalHours = now()->diffInHours($nextChangeDate, false);
+        $daysPart   = intdiv($totalHours, 24);
+        $hoursPart  = $totalHours % 24;
 
-        Log::debug('Sending POST request to webhook', ['url' => 'https://jahongir-app.uz/n8n/webhook/35f85b50-628f-4bdc-b0dd-6cf57ed392a0', 'payload' => $data]);
+        // Build a human-friendly time string: "1 день и 20 часов"
+        // (Very simplified Russian pluralization)
+        $timeString = '';
+        if ($daysPart > 0) {
+            // For 1 day vs. multiple days
+            $timeString .= ($daysPart === 1)
+                ? '1 день'
+                : $daysPart . ' дней';
+        }
+        if ($hoursPart > 0) {
+            if (!empty($timeString)) {
+                $timeString .= ' и ';
+            }
+            // For 1 hour vs. multiple hours
+            $timeString .= ($hoursPart === 1)
+                ? '1 час'
+                : $hoursPart . ' часов';
+        }
 
-        $response = Http::post('https://jahongir-app.uz/n8n/webhook/35f85b50-628f-4bdc-b0dd-6cf57ed392a0', $data);
+        // If there's no days or hours left (maybe already overdue?), fallback
+        if (!$timeString) {
+            // Could show "0 дней" or handle overdue scenario
+            $timeString = 'меньше 24 часов';
+        }
+
+        // 2) Format dates in a "Январь 3, 2025" style
+        //    Make sure your server/container is set to locale "ru_RU" or similar
+        Carbon::setLocale('ru'); // sets Carbon’s locale for month names, etc.
+
+        $formattedNextChangeDate = $nextChangeDate->isoFormat('MMMM D, YYYY');
+        $formattedLastChangeDate = Carbon::parse($lastOilChange->oil_change_date)
+                                         ->isoFormat('MMMM D, YYYY');
+
+        // 3) Build a single text message
+        $message = 
+            "Замена масла для транспорта: {$transport->plate_number}\n" .
+            "Должна быть выполнена через {$timeString} или {$kmRemaining} км.\n\n" .
+            "Последняя замена масла: {$formattedLastChangeDate}\n" .
+            "Следующая замена масла: {$formattedNextChangeDate} или при пробеге " .
+            "{$lastOilChange->next_change_mileage} км.";
+
+        // 4) Log & send it to your webhook
+        Log::debug('Sending POST request to webhook with message', ['message' => $message]);
+
+        // You can send this entire $message, or pass it as multiple fields.
+        // Example: Put the entire text in "message"
+        $response = Http::post(
+            'https://jahongir-app.uz/n8n/webhook/35f85b50-628f-4bdc-b0dd-6cf57ed392a0',
+            [
+                'message'               => $message,
+                'plate_number'          => $transport->plate_number,
+                'due_in_days'           => $daysRemaining,
+                'due_in_km'             => $kmRemaining,
+                'oil_change_date'       => $lastOilChange->oil_change_date,
+                'next_change_date'      => $lastOilChange->next_change_date,
+                'next_change_mileage'   => $lastOilChange->next_change_mileage,
+            ]
+        );
 
         if ($response->successful()) {
             Log::info('Webhook request sent successfully', [
-                'transport_id' => $transport->id,
+                'transport_id'    => $transport->id,
                 'response_status' => $response->status(),
             ]);
         } else {
-            // Log an error if the webhook request fails
             Log::error('Failed to send webhook request', [
                 'transport_id' => $transport->id,
-                'status' => $response->status(),
-                'response' => $response->body(),
+                'status'       => $response->status(),
+                'response'     => $response->body(),
             ]);
         }
     }
