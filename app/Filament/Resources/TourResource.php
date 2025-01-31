@@ -101,28 +101,39 @@ class TourResource extends Resource
                             ->label('Название Дня. Day 1,2 и т.д. добавляется автоматически')
                             ->required(),
 
-                        Select::make('city_id')
+                            Select::make('city_id')
                             ->label('Города')
-                            ->relationship('cities', 'name') // Assuming "cities" relationship exists
+                            ->relationship('cities', 'name')
                             ->multiple()
-                            ->live()
+                           // ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
-                                // Clear dependent fields on city change
                                 $set('hotel_rooms', []);
                                 $set('restaurant_meal_types', []);
                             })
-                            ->default(fn($record) => $record?->cities?->pluck('id')) // Populate selected cities when editing
+                            ->default(fn(Get $get) => $get('id') ? \App\Models\City::whereHas('tourDays', fn($q) => $q->where('tour_days.id', $get('id')))->pluck('id') : []) // Fetch cities based on the TourDay ID
                             ->required()
                             ->preload(),
+                        
 
-
-                        Forms\Components\Select::make('guide_id')
-                            ->label('Гид')
-                            ->relationship('guide', 'name', function ($query) {
-                                $query->where('is_marketing', true);
-                            })
-                            ->searchable()
-                            ->preload(),
+                          Section::make('Rate limiting')
+                            ->description('Prevent abuse by limiting the number of requests per period')
+                            ->schema([
+                                Forms\Components\Select::make('guide_id')
+                                ->label('Гид')
+                                ->relationship('guide', 'name', function ($query) {
+                                    $query->where('is_marketing', true);
+                                })
+                                ->searchable()
+                                ->preload(),
+                                Select::make('price_type_name')
+                                ->options([
+                                    'pickup_dropoff' => 'Встреча/проводы',
+                                    'halfday' => 'Полдня',
+                                    'per_daily' => 'За день',
+                                ])
+                                ->required()
+                            ]),
+                        
                         Forms\Components\Textarea::make('description')
                             ->label('Описание'),
                         Forms\Components\FileUpload::make('image')

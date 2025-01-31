@@ -20,6 +20,7 @@ class TourDay extends Model
          'restaurant_id',
          'type',
          'image',
+         'price_type_name'
         
     ];
 

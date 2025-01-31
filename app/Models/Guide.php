@@ -18,8 +18,14 @@ class Guide extends Model
     'email',
     'address',
     'city',
-    'image'
+    'image',
+    'price_types',
     
+    ];
+
+    protected $casts = [
+      
+        'price_types' => 'array',
     ];
 
     // public function days(): BelongsToMany
