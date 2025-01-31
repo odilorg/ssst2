@@ -97,8 +97,8 @@ class CheckOilChangeDue extends Command
             "Замена масла для транспорта : {$transport->plate_number}\n" .
             "Должна быть выполнена через  {$daysRemaining} дней или {$kmRemaining} км.\n" .
             "Последняя замена масла: {$formattedLastChangeDate}\n" .
-            "Следующая замена масла:{$formattedNextChangeDate}  или при пробеге {$lastOilChange->next_change_mileage} км.\n\n" .
-            "This message was sent automatically with n8n (https://n8n.io/?utm_source=n8n-internal&utm_medium=powered_by&utm_campaign=n8n-nodes-base.telegram)";
+            "Следующая замена масла:{$formattedNextChangeDate}  или при пробеге {$lastOilChange->next_change_mileage} км.\n\n" ;
+            
 
         // Log for debugging
         Log::debug('Sending POST request to webhook with message', ['message' => $message]);
