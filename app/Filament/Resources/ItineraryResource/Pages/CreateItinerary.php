@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateItinerary extends CreateRecord
 {
     protected static string $resource = ItineraryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

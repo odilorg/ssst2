@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use App\Models\Itinerary;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Tabs\Tab;
@@ -22,54 +23,81 @@ class ItineraryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Транспорт';
+    protected static ?string $navigationLabel = 'Маршрут';
+    protected static ?string $modelLabel = 'Маршрут';
+    protected static ?string $pluralModelLabel = 'Маршруты';
+
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                
-                Forms\Components\Select::make('transport_id')
-                    ->required()
-                    ->relationship('transport', 'plate_number'),
-                Forms\Components\Select::make('tour_id')
-                    ->required()
-                    ->relationship('tour', 'name'),
-                Forms\Components\TextInput::make('tour_group_code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('km_start')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('km_end')
-                    ->required()
-                    ->numeric(),
-                Section::make('Проживание и питание')
+                Section::make('Инфо по маршруту')
+                    ->schema([
+                        Forms\Components\Select::make('transport_id')
+                            ->label('Выберите Транспорт')
+                            ->required()
+                            ->relationship('transport', 'plate_number'),
+                        Forms\Components\Select::make('tour_id')
+                            ->label('Выберите Тур')
+                            ->required()
+                            ->relationship('tour', 'name'),
+
+                        Forms\Components\TextInput::make('km_start')
+                            ->label('Начальный километраж')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('km_end')
+                            ->label('Конечный километраж')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('tour_group_code')
+                            ->label('Код группы')
+                            ->required()
+                            ->maxLength(255),
+                    ])->columns(),
+
+                Section::make('Расход топлива')
                     ->schema([
                         Forms\Components\TextInput::make('fuel_expenditure_factual')
-                            ->numeric(),
+                            ->numeric()
+                            ->label('Фактический расход топлива'),
                         Forms\Components\TextInput::make('fuel_expenditure')
+                            ->label('Расход топлива')
                             ->numeric(),
-                          
+
                     ])->columns(2),
 
-                
 
-
-                Repeater::make('itinerary')
+                Section::make('Информация о программе')
                     ->schema([
-                        Forms\Components\DatePicker::make('date')
-                            ->required(),
-                        Forms\Components\TextInput::make('destination')
-                            // ->required()
-                            ->maxLength(255),
-                        Forms\Components\TimePicker::make('pickup_time'),
-                        //  ->required(),
-                        Forms\Components\TextInput::make('program')
-                            // ->required()
-                            ->maxLength(255),
-                            Forms\Components\Checkbox::make('accommodation'),
-                            Forms\Components\Checkbox::make('food'),
+                        Repeater::make('itinerary')
+                            ->label('Пункты маршрута')
+                            ->schema([
+                                Forms\Components\DatePicker::make('date')
+                                    ->label('Дата')
+                                    ->required(),
+                                Forms\Components\TextInput::make('destination')
+                                    ->label('Пункт назначения')
+                                    ->maxLength(255),
+                                Forms\Components\TimePicker::make('pickup_time')
+                                    ->label('Время подачи'),
+                                Forms\Components\TextInput::make('program')
+                                    ->label('Программа')
+                                    ->maxLength(255),
+                                Forms\Components\Checkbox::make('accommodation')
+                                    ->label('Проживание'),
+                                Forms\Components\Checkbox::make('food')
+                                    ->label('Питание'),
 
-                    ])->columns(2),
+                            ])->columns(2)
+                            ->addActionLabel('Добавить пункт'),
+                    ]),
+
+
             ]);
     }
 
@@ -104,6 +132,19 @@ class ItineraryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('download')
+                    ->icon('heroicon-s-cloud-arrow-down')
+                    ->visible(fn(Itinerary $record): bool => !is_null($record->file_name))
+                    ->action(function (Itinerary $record) {
+                        return response()->download(storage_path('app/public/itineraries/') . $record->file_name);
+                    }),
+
+                // Tables\Actions\Action::make('send_contract')
+                //     ->icon('heroicon-o-envelope')
+                //    // ->visible(fn(Itinerary $record): bool => !is_null($record->file_name))
+                //     ->action(function (Itinerary $record) {
+                //         Mail::to($record->client_email)->queue(new SendEstimate($record));
+                //     }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
