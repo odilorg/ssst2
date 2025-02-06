@@ -12,7 +12,11 @@ class Itinerary extends Model
          'transport_id',
          'tour_id',
          'km_start',
-         'km_end'
+         'km_end',
+         'fuel_expenditure_factual',
+         'fuel_expenditure',
+         'accommodation',
+         'food',
     ];
 
     public function tour()

@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ItineraryResource\Pages;
-use App\Filament\Resources\ItineraryResource\RelationManagers;
-use App\Models\Itinerary;
 use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Itinerary;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Tabs\Tab;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ItineraryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ItineraryResource\RelationManagers;
 
 class ItineraryResource extends Resource
 {
@@ -25,6 +26,7 @@ class ItineraryResource extends Resource
     {
         return $form
             ->schema([
+                
                 Forms\Components\Select::make('transport_id')
                     ->required()
                     ->relationship('transport', 'plate_number'),
@@ -40,21 +42,34 @@ class ItineraryResource extends Resource
                 Forms\Components\TextInput::make('km_end')
                     ->required()
                     ->numeric(),
+                Section::make('Проживание и питание')
+                    ->schema([
+                        Forms\Components\TextInput::make('fuel_expenditure_factual')
+                            ->numeric(),
+                        Forms\Components\TextInput::make('fuel_expenditure')
+                            ->numeric(),
+                          
+                    ])->columns(2),
+
+                
+
 
                 Repeater::make('itinerary')
                     ->schema([
                         Forms\Components\DatePicker::make('date')
                             ->required(),
                         Forms\Components\TextInput::make('destination')
-                           // ->required()
+                            // ->required()
                             ->maxLength(255),
                         Forms\Components\TimePicker::make('pickup_time'),
-                          //  ->required(),
+                        //  ->required(),
                         Forms\Components\TextInput::make('program')
-                           // ->required()
+                            // ->required()
                             ->maxLength(255),
+                            Forms\Components\Checkbox::make('accommodation'),
+                            Forms\Components\Checkbox::make('food'),
 
-                    ])->columnSpanFull(),
+                    ])->columns(2),
             ]);
     }
 
@@ -78,11 +93,11 @@ class ItineraryResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tour_group_code')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('km_start')
+                Tables\Columns\TextColumn::make('km_start')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('km_end')
+                Tables\Columns\TextColumn::make('km_end')
                     ->searchable(),
-                    
+
             ])
             ->filters([
                 //
