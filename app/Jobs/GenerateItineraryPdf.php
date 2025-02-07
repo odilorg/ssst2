@@ -79,6 +79,8 @@ class GenerateItineraryPdf implements ShouldQueue
 
         $pdf = Pdf::loadView('itineraries.itinerary', compact( 'itinerary'));
 
+        // Set paper size to A4 and orientation to landscape
+        $pdf->setPaper('a4', 'landscape');
         // Save the PDF to storage
         $fileName = 'itinerary_' . $this->itinerary->id . '.pdf';
         $filePath = 'itineraries/' . $fileName;
