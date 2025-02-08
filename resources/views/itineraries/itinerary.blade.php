@@ -76,13 +76,13 @@
     <hr>
 
     <div class="tour-info">
-        <strong>Driver Name:</strong> {{ $itinerary->transport->driver->name }}<br>
+        <strong>Driver Name:</strong> {{ $itinerary->transport->driver->name ?? 'N/A' }}<br>
         <strong>Tour Group #:</strong> {{ $itinerary->tour_group_code }}<br>
-        <strong>Number of People:</strong> {{ $itinerary->tour->number_people}}<br>
-        <strong>Car Brand:</strong> {{ $itinerary->transport->transportType->type }}<br>
+        <strong>Number of People:</strong> {{ $itinerary->tour->number_people ?? 'N/A' }}<br>
+        <strong>Car Brand:</strong> {{ $itinerary->transport->transportType->type ?? 'N/A' }}<br>
         <strong>Plate Number:</strong> {{ $itinerary->transport->plate_number }}<br>
-        <strong>Start KM:</strong> {{ $itinerary->start_km }}<br>
-        <strong>End KM:</strong> {{ $itinerary->end_km }}
+        <strong>Start KM:</strong> {{ $itinerary->km_start }}<br>
+        <strong>End KM:</strong> {{ $itinerary->km_end }}
     </div>
 
     <h1>Tour Itinerary</h1>
@@ -91,32 +91,33 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Sana</th>
-                <th>Yo'nalish</th>
-                <th>Vaqt</th>
-                <th>Dastur</th>
-                <th>Yoqilg'i sarfi</th>
-                <th>Yoqilg'i sarfi fakt.</th>
-                <th>Projivanie</th>
-                <th>Pitanie</th>
+                <th>Date</th>
+                <th>Destination</th>
+                <th>Pickup Time</th>
+                <th>Program</th>
+                <th>Accommodation</th>
+                <th>Food</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($itinerary->itinerary as $index => $itin)
+            @forelse ($itinerary->itineraryItems as $index => $itin)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $itin['date'] }}</td>
-                <td>{{ $itin['destination'] }}</td>
-                <td>{{ $itin['pickup_time'] }}</td>
-                <td>{{ $itin['program'] }}</td>
-                <td>15</td>
-                <td>17</td>
-                <td>{{ $itin['accommodation'] ? 'Yes' : 'No' }}</td>
-                <td>{{ $itin['food'] ? 'Yes' : 'No' }}</td>
+                <td>{{ $itin->date }}</td>
+                <td>{{ optional($itin->cityDistance)->city_from_to ?? 'N/A' }}</td>
+                <td>{{ $itin->time ?? 'N/A' }}</td>
+                <td>{{ $itin->program ?? 'N/A' }}</td>
+                <td>{{ $itin->accommodation ? 'Yes' : 'No' }}</td>
+                <td>{{ $itin->food ? 'Yes' : 'No' }}</td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="7">No itinerary items found.</td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
+    
 
 </body>
 </html>

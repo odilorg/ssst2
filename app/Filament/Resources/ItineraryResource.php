@@ -43,16 +43,16 @@ class ItineraryResource extends Resource
                             ->relationship('transport', 'plate_number'),
                         Forms\Components\Select::make('tour_id')
                             ->label('Выберите Тур')
-                            ->required()
+                          //  ->required()
                             ->relationship('tour', 'name'),
 
                         Forms\Components\TextInput::make('km_start')
                             ->label('Начальный километраж')
-                            ->required()
+                          //  ->required()
                             ->numeric(),
                         Forms\Components\TextInput::make('km_end')
                             ->label('Конечный километраж')
-                            ->required()
+                           // ->required()
                             ->numeric(),
                         Forms\Components\TextInput::make('tour_group_code')
                             ->label('Код группы')
@@ -60,30 +60,31 @@ class ItineraryResource extends Resource
                             ->maxLength(255),
                     ])->columns(),
 
-                Section::make('Расход топлива')
-                    ->schema([
-                        Forms\Components\TextInput::make('fuel_expenditure_factual')
-                            ->numeric()
-                            ->label('Фактический расход топлива'),
-                        Forms\Components\TextInput::make('fuel_expenditure')
-                            ->label('Расход топлива')
-                            ->numeric(),
+                // Section::make('Расход топлива')
+                //     ->schema([
+                //         Forms\Components\TextInput::make('fuel_expenditure_factual')
+                //             ->numeric()
+                //             ->label('Фактический расход топлива'),
+                //         Forms\Components\TextInput::make('fuel_expenditure')
+                //             ->label('Расход топлива')
+                //             ->numeric(),
 
-                    ])->columns(2),
+                //     ])->columns(2),
 
 
                 Section::make('Информация о программе')
                     ->schema([
-                        Repeater::make('itinerary')
+                        Repeater::make('itineraryItems')
                             ->label('Пункты маршрута')
+                            ->relationship('itineraryItems') // Ensure this matches the relationship name in the model
                             ->schema([
                                 Forms\Components\DatePicker::make('date')
                                     ->label('Дата')
                                     ->required(),
-                                Forms\Components\TextInput::make('destination')
+                                Forms\Components\Select::make('city_distance_id')
                                     ->label('Пункт назначения')
-                                    ->maxLength(255),
-                                Forms\Components\TimePicker::make('pickup_time')
+                                    ->relationship('cityDistance', 'city_from_to'),
+                                Forms\Components\TimePicker::make('time')
                                     ->label('Время подачи'),
                                 Forms\Components\TextInput::make('program')
                                     ->label('Программа')
