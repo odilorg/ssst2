@@ -118,6 +118,21 @@
         </tbody>
     </table>
     
+    @php
+    // These calls filter the collection of itineraryItems where accommodation/food is true, then count.
+    $accommodationCount = $itinerary->itineraryItems->where('accommodation', true)->count();
+    $foodCount = $itinerary->itineraryItems->where('food', true)->count();
+    $accCost = $accommodationCount * 10;
+    $foodCost = $foodCount * 5;
+    $totalCost = $accCost + $foodCost;
+@endphp
+
+<ul>
+    <li><strong>Yoqilg'i kerak marshrut uchun - {{ $itinerary->fuel_expenditure }} liter</strong></li>
+    <li><strong>Projivanie - {{ $accCost }} $</strong></li>
+    <li><strong>Pitanie - {{ $foodCost }} $</strong></li>
+    <li><strong>Jami - {{ $totalCost }} $</strong></li>
+</ul>
 
 </body>
 </html>
