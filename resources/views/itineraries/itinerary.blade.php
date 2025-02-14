@@ -133,44 +133,49 @@
     @endphp
 
 <ul>
+    <!-- Theoretical Fuel Usage -->
     <li>
-        <strong>Theoretical Fuel Expenditure:</strong>
+        <strong>Yoqilg'i kerak marshrut uchun (Theoretical Fuel Expenditure):</strong>
         {{ $itinerary->fuel_expenditure }} liters
-    </li>
-    <li>
-        <strong>Actual Fuel Expenditure:</strong>
-        {{ $itinerary->fuel_expenditure_factual  }} liters
     </li>
 
     @php
-        $actualDistance = ($itinerary->km_end ?? 0) - ($itinerary->km_start ?? 0);
+        // Convert null to 0 for an easy numeric check.
+        $actualFuel = $itinerary->fuel_expenditure_factual ?? 0;
     @endphp
-    <li>
-        <strong>Fakticheski Proexali KM (Real Distance):</strong>
-        {{ $actualDistance }} km
-    </li>
 
-    {{-- 
-         Instead of $itinerary->fuel_remaining_liter
-         we use $itinerary->transport->fuel_remaining_liter 
-    --}}
-    @if ($itinerary->transport->fuel_remaining_liter < 0)
+    <!-- Display Actual Fuel Expenditure & Remaining Fuel only if $actualFuel > 0 -->
+    @if ($actualFuel > 0)
         <li>
-            <strong>Actual usage exceeded theoretical by:</strong>
-            {{ abs($itinerary->transport->fuel_remaining_liter) }} liters
+            <strong>Fakticheski Rashod Topliva (Actual Fuel Expenditure):</strong>
+            {{ $itinerary->fuel_expenditure_factual }} liters
         </li>
-    @else
+        <li>
+            <strong>Ostatok Topliva v etom marshrute (Remaining Fuel in this route):</strong>
+            {{ $itinerary->fuel_remaining_liter ?? 0 }} liters
+        </li>
         <li>
             <strong>Ostatok Topliva (Remaining Fuel):</strong>
-            {{ $itinerary->transport->fuel_remaining_liter }} liters
+            {{ $itinerary->transport->fuel_remaining_liter ?? 0 }} liters
         </li>
     @endif
 
-    <!-- The rest of your calculations remain the same -->
-    <li><strong>Projivanie (Accommodation):</strong> {{ $accCost }} $</li>
-    <li><strong>Pitanie (Food):</strong> {{ $foodCost }} $</li>
-    <li><strong>Jami (Total):</strong> {{ $totalCost }} $</li>
+    <!-- Other calculations remain unchanged -->
+    <li>
+        <strong>Projivanie (Accommodation):</strong>
+        {{ $accCost }} $
+    </li>
+    <li>
+        <strong>Pitanie (Food):</strong>
+        {{ $foodCost }} $
+    </li>
+    <li>
+        <strong>Jami (Total):</strong>
+        {{ $totalCost }} $
+    </li>
 </ul>
+
+
 
 
 

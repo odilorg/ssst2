@@ -23,7 +23,7 @@ class EditItinerary extends EditRecord
             'itineraryItems.cityDistance',
         ]);
 
-        // 2) Sum up distance from itinerary items
+        // 2) Calculate total "theoretical" distance
         $totalDistance = 0;
         foreach ($itinerary->itineraryItems as $item) {
             $distance = $item->cityDistance->distance_km ?? 0;
@@ -43,45 +43,50 @@ class EditItinerary extends EditRecord
 
         $actualFuelExpenditure = $actualDistance * $fuelConsumptionPerKm;
 
-        // 6) Round or keep decimals as needed for theoretical and actual
-        //    (Here, we round to 2 decimals for clarity.)
+        // 6) Round or keep decimals as needed
         $theoreticalFuelExpenditure = round($theoreticalFuelExpenditure, 2);
         $actualFuelExpenditure      = round($actualFuelExpenditure, 2);
 
-        // 7) Calculate leftover or shortfall in liters (can be negative)
+        // 7) Difference (if negative => actual usage exceeded theoretical)
         $remainingFuel = $theoreticalFuelExpenditure - $actualFuelExpenditure;
-
-        // 8) Convert the leftover liters to an integer
-        //    (this will either truncate or round, depending on your preference)
-        //    Below we do a full round, then cast to int:
+        // We'll convert difference to an integer (truncate or rounding)
         $remainingFuelInt = (int) round($remainingFuel);
 
-        // 9) Update the itineraries table
-        //    - 'fuel_expenditure' for the theoretical usage
-        //    - 'fuel_expenditure_factual' for the actual usage
+        // 8) Update ONLY the itineraries table columns
         $itinerary->update([
-            'fuel_expenditure'        => $theoreticalFuelExpenditure,  // existing column
-            'fuel_expenditure_factual'=> $actualFuelExpenditure,       // new column
+            'fuel_expenditure'          => $theoreticalFuelExpenditure,
+            'fuel_expenditure_factual'  => $actualFuelExpenditure,
+            'fuel_remaining_liter'  => $remainingFuelInt,
         ]);
 
-        // 10) Update the transports table for the remaining fuel (integer)
+        // 9) Add the difference (remainingFuelInt) to the existing transport's fuel_remaining_liter
         $transport = $itinerary->transport;
         if ($transport) {
+            // If null, cast to 0
+            $oldValue = (int) $transport->fuel_remaining_liter;
+            $newValue = $oldValue + $remainingFuelInt; 
+            // newValue can go up or down depending on sign of $remainingFuelInt
+
             $transport->update([
-                'fuel_remaining_liter' => $remainingFuelInt,
+                'fuel_remaining_liter' => $newValue,
+            ]);
+
+            Log::info('Updated transport fuel_remaining_liter', [
+                'transport_id' => $transport->id,
+                'old_value'    => $oldValue,
+                'delta'        => $remainingFuelInt,
+                'new_value'    => $newValue,
             ]);
         }
 
-        // 11) Log
-        Log::info('Updated itinerary & transport', [
-            'itinerary_id'              => $itinerary->id,
-            'theoreticalFuelExp'        => $theoreticalFuelExpenditure,
-            'actualFuelExp'             => $actualFuelExpenditure,
-            'transport_id'              => $transport->id ?? null,
-            'fuel_remaining_liter_int'  => $remainingFuelInt,
+        Log::info('Updated itinerary', [
+            'itinerary_id' => $itinerary->id,
+            'theoretical_fuel_expenditure' => $theoreticalFuelExpenditure,
+            'actual_fuel_expenditure'      => $actualFuelExpenditure,
+            'fuel_difference_int'          => $remainingFuelInt,
         ]);
 
-        // 12) Regenerate PDF
+        // 10) Regenerate PDF
         GenerateItineraryPdf::dispatch($itinerary);
 
         Log::info('EditItinerary afterSave: calculations done & PDF generated.', [
