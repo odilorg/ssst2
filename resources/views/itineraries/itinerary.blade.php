@@ -119,20 +119,60 @@
     </table>
     
     @php
-    // These calls filter the collection of itineraryItems where accommodation/food is true, then count.
-    $accommodationCount = $itinerary->itineraryItems->where('accommodation', true)->count();
-    $foodCount = $itinerary->itineraryItems->where('food', true)->count();
-    $accCost = $accommodationCount * 10;
-    $foodCost = $foodCount * 5;
-    $totalCost = $accCost + $foodCost;
-@endphp
+        // Count how many itinerary items have accommodation or food
+        $accommodationCount = $itinerary->itineraryItems->where('accommodation', true)->count();
+        $foodCount = $itinerary->itineraryItems->where('food', true)->count();
+
+        // Some example cost calculations
+        $accCost = $accommodationCount * 10;
+        $foodCost = $foodCount * 5;
+        $totalCost = $accCost + $foodCost;
+
+        // If you prefer, you can store actualDistance in a variable
+        $actualDistance = ($itinerary->km_end ?? 0) - ($itinerary->km_start ?? 0);
+    @endphp
 
 <ul>
-    <li><strong>Yoqilg'i kerak marshrut uchun - {{ $itinerary->fuel_expenditure }} liter</strong></li>
-    <li><strong>Projivanie - {{ $accCost }} $</strong></li>
-    <li><strong>Pitanie - {{ $foodCost }} $</strong></li>
-    <li><strong>Jami - {{ $totalCost }} $</strong></li>
+    <li>
+        <strong>Theoretical Fuel Expenditure:</strong>
+        {{ $itinerary->fuel_expenditure }} liters
+    </li>
+    <li>
+        <strong>Actual Fuel Expenditure:</strong>
+        {{ $itinerary->fuel_expenditure_factual  }} liters
+    </li>
+
+    @php
+        $actualDistance = ($itinerary->km_end ?? 0) - ($itinerary->km_start ?? 0);
+    @endphp
+    <li>
+        <strong>Fakticheski Proexali KM (Real Distance):</strong>
+        {{ $actualDistance }} km
+    </li>
+
+    {{-- 
+         Instead of $itinerary->fuel_remaining_liter
+         we use $itinerary->transport->fuel_remaining_liter 
+    --}}
+    @if ($itinerary->transport->fuel_remaining_liter < 0)
+        <li>
+            <strong>Actual usage exceeded theoretical by:</strong>
+            {{ abs($itinerary->transport->fuel_remaining_liter) }} liters
+        </li>
+    @else
+        <li>
+            <strong>Ostatok Topliva (Remaining Fuel):</strong>
+            {{ $itinerary->transport->fuel_remaining_liter }} liters
+        </li>
+    @endif
+
+    <!-- The rest of your calculations remain the same -->
+    <li><strong>Projivanie (Accommodation):</strong> {{ $accCost }} $</li>
+    <li><strong>Pitanie (Food):</strong> {{ $foodCost }} $</li>
+    <li><strong>Jami (Total):</strong> {{ $totalCost }} $</li>
 </ul>
+
+
 
 </body>
 </html>

@@ -20,6 +20,7 @@ class Itinerary extends Model
         'file_name',
         'number',
         'itinerary_number',
+        'fuel_remaining_liter'
         // 'itinerary' // remove if you're no longer using the old JSON field
     ];
 

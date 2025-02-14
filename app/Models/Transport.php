@@ -22,7 +22,7 @@ class Transport extends Model
         'oil_change_interval_months',
         'oil_change_interval_km',
         'fuel_consumption',
-        'fuel_remaining_liters',
+        'fuel_remaining_liter',
     ];
 
     protected $casts = [
