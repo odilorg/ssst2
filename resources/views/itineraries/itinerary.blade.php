@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tour Itinerary Report</title>
     <style>
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 20px;
-            background-color: #f9f9f9;
+            background-color: #ffffff;
         }
-        .header {
+        .header {   
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -34,7 +35,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            font-size: 16px;
+            font-size: 14px;
             min-width: 600px;
             text-align: left;
         }
@@ -43,8 +44,8 @@
             padding: 8px;
         }
         table th {
-            background-color: #009879;
-            color: #ffffff;
+            background-color: #f3f3f3;
+            color: #000000;
             font-weight: bold;
         }
         table tr:nth-child(even) {
@@ -63,47 +64,47 @@
 
     <div class="header">
         <div>
-            <img src="logo.png" alt="Company Logo">
+            <img src="{{ storage_path($itinerary->transport->company->logo) }}" alt="Company Logo">
         </div>
         <div class="company-info">
-            <strong>Company Name</strong><br>
-            Address: 1234 Street, City, Country<br>
-            Phone: +123 456 7890<br>
-            Email: contact@company.com
+            <strong>{{ $itinerary->transport->company->name }}</strong><br>
+            Address: {{ $itinerary->transport->company->address_street }} , {{ $itinerary->transport->company->address_city }}<br>
+            Phone: {{ $itinerary->transport->company->phone }}<br>
+            Email: {{ $itinerary->transport->company->email }}
         </div>
     </div>
 
     <hr>
 
     <div class="tour-info">
-        <strong>Driver Name:</strong> {{ $itinerary->transport->driver->name ?? 'N/A' }}<br>
+        <strong>Shofer Ismi:</strong> {{ $itinerary->transport->driver->name ?? 'N/A' }}<br>
         <strong>Tour Group #:</strong> {{ $itinerary->tour_group_code }}<br>
-        <strong>Number of People:</strong> {{ $itinerary->tour->number_people ?? 'N/A' }}<br>
-        <strong>Car Brand:</strong> {{ $itinerary->transport->transportType->type ?? 'N/A' }}<br>
-        <strong>Plate Number:</strong> {{ $itinerary->transport->plate_number }}<br>
-        <strong>Start KM:</strong> {{ $itinerary->km_start }}<br>
-        <strong>End KM:</strong> {{ $itinerary->km_end }}
+        <strong>Odam Soni:</strong> {{ $itinerary->tour->number_people ?? 'N/A' }}<br>
+        <strong>Transport:</strong> {{ $itinerary->transport->transportType->type ?? 'N/A' }}<br>
+        <strong>Davlat raqami:</strong> {{ $itinerary->transport->plate_number }}<br>
+        <strong>Boshlangich KM:</strong> {{ $itinerary->km_start }}<br>
+        <strong>Tugash KM:</strong> {{ $itinerary->km_end }}
     </div>
 
-    <h1>Tour Itinerary</h1>
+    <h1>Marshrutniy List</h1>
 
     <table>
         <thead>
             <tr>
                 <th>#</th>
-                <th>Date</th>
-                <th>Destination</th>
-                <th>Pickup Time</th>
-                <th>Program</th>
-                <th>Accommodation</th>
-                <th>Food</th>
+                <th style="width: 90px;">Sana</th>
+                <th style="width: 180px;">Yo'nalish</th>
+                <th>Vaqt</th>
+                <th style="width: 120px;">Programma</th>
+                <th>Proj.</th>
+                <th>Pit.</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($itinerary->itineraryItems as $index => $itin)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $itin->date }}</td>
+                <td>{{ \Carbon\Carbon::parse($itin->date)->format('d-m-Y') }}</td>
                 <td>{{ optional($itin->cityDistance)->city_from_to ?? 'N/A' }}</td>
                 <td>{{ $itin->time ?? 'N/A' }}</td>
                 <td>{{ $itin->program ?? 'N/A' }}</td>
@@ -135,7 +136,7 @@
 <ul>
     <!-- Theoretical Fuel Usage -->
     <li>
-        <strong>Yoqilg'i kerak marshrut uchun (Theoretical Fuel Expenditure):</strong>
+        <strong>Yoqilg'i kerak marshrut uchun :</strong>
         {{ $itinerary->fuel_expenditure }} liters
     </li>
 
@@ -147,30 +148,30 @@
     <!-- Display Actual Fuel Expenditure & Remaining Fuel only if $actualFuel > 0 -->
     @if ($actualFuel > 0)
         <li>
-            <strong>Fakticheski Rashod Topliva (Actual Fuel Expenditure):</strong>
+            <strong>Fakticheski Rashod Topliva :</strong>
             {{ $itinerary->fuel_expenditure_factual }} liters
         </li>
         <li>
-            <strong>Ostatok Topliva v etom marshrute (Remaining Fuel in this route):</strong>
+            <strong>Ostatok Topliva v etom marshrute :</strong>
             {{ $itinerary->fuel_remaining_liter ?? 0 }} liters
         </li>
         <li>
-            <strong>Ostatok Topliva (Remaining Fuel):</strong>
+            <strong>Ostatok Topliva :</strong>
             {{ $itinerary->transport->fuel_remaining_liter ?? 0 }} liters
         </li>
     @endif
 
     <!-- Other calculations remain unchanged -->
     <li>
-        <strong>Projivanie (Accommodation):</strong>
+        <strong>Projivanie :</strong>
         {{ $accCost }} $
     </li>
     <li>
-        <strong>Pitanie (Food):</strong>
+        <strong>Pitanie :</strong>
         {{ $foodCost }} $
     </li>
     <li>
-        <strong>Jami (Total):</strong>
+        <strong>Jami :</strong>
         {{ $totalCost }} $
     </li>
 </ul>

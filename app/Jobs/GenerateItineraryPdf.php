@@ -40,6 +40,8 @@ class GenerateItineraryPdf implements ShouldQueue
                 'tour',
                 'transport',
                 'itineraryItems',
+               
+                
             ]);
 
             // 2) Generate the PDF from the Blade view,
