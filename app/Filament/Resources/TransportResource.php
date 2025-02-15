@@ -66,6 +66,16 @@ class TransportResource extends Resource
                     ->required()
                     ->preload(),
 
+                    Select::make('company_id')
+                    ->label('Фирма')
+                    ->relationship('company', 'name')
+                    ->visible(function ($get) {
+                        return !in_array($get('category'), ['rail', 'air']); // Hide for rail and air
+                    })
+                    ->required()
+                    ->preload(),
+  
+
                 Select::make('driver_id')
                     ->label('Водитель')
                     ->relationship('driver', 'name')

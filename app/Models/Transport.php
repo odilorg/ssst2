@@ -23,11 +23,17 @@ class Transport extends Model
         'oil_change_interval_km',
         'fuel_consumption',
         'fuel_remaining_liter',
+        'company_id',
     ];
 
     protected $casts = [
         'images' => 'array',
     ];
+
+public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function oilChanges()
     {
