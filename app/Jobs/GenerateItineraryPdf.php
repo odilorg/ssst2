@@ -38,6 +38,7 @@ class GenerateItineraryPdf implements ShouldQueue
             //    "tour", "transport", and "itineraryItems" (plus anything else you need).
             $this->itinerary->load([
                 'tour',
+                'company',
                 'transport',
                 'itineraryItems',
                

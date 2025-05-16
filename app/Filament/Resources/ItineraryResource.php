@@ -46,6 +46,11 @@ class ItineraryResource extends Resource
                           //  ->required()
                             ->relationship('tour', 'name'),
 
+                         Forms\Components\Select::make('company_id')
+                            ->label('Выберите Компанию')
+                          //  ->required()
+                            ->relationship('company', 'name'),    
+
                         Forms\Components\TextInput::make('km_start')
                             ->label('Начальный километраж')
                           //  ->required()

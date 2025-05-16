@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tour Itinerary Report</title>
     <style>
-        
         body {
             font-family: 'Arial', sans-serif;
             margin: 20px;
             background-color: #ffffff;
         }
-        .header {   
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -63,14 +62,16 @@
 <body>
 
     <div class="header">
+        
         <div>
-            <img src="{{ storage_path($itinerary->transport->company->logo) }}" alt="Company Logo">
-        </div>
+@if ($itinerary->company?->logo)
+    <img src="{{ public_path('storage/' . $itinerary->company->logo) }}" alt="Company Logo" height="60">
+@endif        </div>
         <div class="company-info">
-            <strong>{{ $itinerary->transport->company->name }}</strong><br>
-            Address: {{ $itinerary->transport->company->address_street }} , {{ $itinerary->transport->company->address_city }}<br>
-            Phone: {{ $itinerary->transport->company->phone }}<br>
-            Email: {{ $itinerary->transport->company->email }}
+            <strong>{{ $itinerary->company->name }}</strong><br>
+            Address: {{ $itinerary->company->address_street }} , {{ $itinerary->company->address_city }}<br>
+            Phone: {{ $itinerary->company->phone }}<br>
+            Email: {{ $itinerary->company->email }}
         </div>
     </div>
 
@@ -118,67 +119,53 @@
             @endforelse
         </tbody>
     </table>
-    
+
     @php
-        // Count how many itinerary items have accommodation or food
         $accommodationCount = $itinerary->itineraryItems->where('accommodation', true)->count();
         $foodCount = $itinerary->itineraryItems->where('food', true)->count();
 
-        // Some example cost calculations
         $accCost = $accommodationCount * 10;
         $foodCost = $foodCount * 5;
         $totalCost = $accCost + $foodCost;
 
-        // If you prefer, you can store actualDistance in a variable
         $actualDistance = ($itinerary->km_end ?? 0) - ($itinerary->km_start ?? 0);
-    @endphp
-
-<ul>
-    <!-- Theoretical Fuel Usage -->
-    <li>
-        <strong>Yoqilg'i kerak marshrut uchun :</strong>
-        {{ $itinerary->fuel_expenditure }} liters
-    </li>
-
-    @php
-        // Convert null to 0 for an easy numeric check.
         $actualFuel = $itinerary->fuel_expenditure_factual ?? 0;
     @endphp
 
-    <!-- Display Actual Fuel Expenditure & Remaining Fuel only if $actualFuel > 0 -->
-    @if ($actualFuel > 0)
+    <ul>
         <li>
-            <strong>Fakticheski Rashod Topliva :</strong>
-            {{ $itinerary->fuel_expenditure_factual }} liters
+            <strong>Yoqilg'i kerak marshrut uchun :</strong>
+            {{ $itinerary->fuel_expenditure }} liters
+        </li>
+
+        @if ($actualFuel > 0)
+            <li>
+                <strong>Fakticheski Rashod Topliva :</strong>
+                {{ $itinerary->fuel_expenditure_factual }} liters
+            </li>
+            <li>
+                <strong>Ostatok Topliva v etom marshrute :</strong>
+                {{ $itinerary->fuel_remaining_liter ?? 0 }} liters
+            </li>
+            <li>
+                <strong>Ostatok Topliva :</strong>
+                {{ $itinerary->transport->fuel_remaining_liter ?? 0 }} liters
+            </li>
+        @endif
+
+        <li>
+            <strong>Projivanie :</strong>
+            {{ $accCost }} $
         </li>
         <li>
-            <strong>Ostatok Topliva v etom marshrute :</strong>
-            {{ $itinerary->fuel_remaining_liter ?? 0 }} liters
+            <strong>Pitanie :</strong>
+            {{ $foodCost }} $
         </li>
         <li>
-            <strong>Ostatok Topliva :</strong>
-            {{ $itinerary->transport->fuel_remaining_liter ?? 0 }} liters
+            <strong>Jami :</strong>
+            {{ $totalCost }} $
         </li>
-    @endif
-
-    <!-- Other calculations remain unchanged -->
-    <li>
-        <strong>Projivanie :</strong>
-        {{ $accCost }} $
-    </li>
-    <li>
-        <strong>Pitanie :</strong>
-        {{ $foodCost }} $
-    </li>
-    <li>
-        <strong>Jami :</strong>
-        {{ $totalCost }} $
-    </li>
-</ul>
-
-
-
-
+    </ul>
 
 </body>
 </html>

@@ -11,6 +11,7 @@ class Itinerary extends Model
         'tour_group_code',
         'transport_id',
         'tour_id',
+        'company_id',
         'km_start',
         'km_end',
         'fuel_expenditure_factual',
@@ -32,6 +33,11 @@ class Itinerary extends Model
     public function transport()
     {
         return $this->belongsTo(Transport::class);
+    }
+
+     public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function itineraryItems()
