@@ -129,6 +129,10 @@ class HotelResource extends Resource
                                 ->label('Стоимость за ночь')
                                 ->required()
                                 ->numeric(),
+                             Forms\Components\TextInput::make('room_size')
+                                ->label('Размер номера (кв. м.)')
+                                ->required()
+                                ->numeric(),    
                                
                                 Forms\Components\Textarea::make('description')
                                 ->label('Описание номера')

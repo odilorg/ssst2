@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('itineraries', function (Blueprint $table) {
-             $table->unsignedBigInteger('company_id')->after('tour_id');
-
-            $table->foreign('company_id')
-                  ->references('id')
-                  ->on('companies')
-                  ->onDelete('cascade');
+        Schema::table('rooms', function (Blueprint $table) {
+           $table->integer('room_size')->nullable()->after('cost_per_night');
         });
     }
 
@@ -26,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('itinararies', function (Blueprint $table) {
+        Schema::table('rooms', function (Blueprint $table) {
             //
         });
     }
