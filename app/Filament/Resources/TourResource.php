@@ -20,6 +20,7 @@ use Filament\Forms\Components\Tabs;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
@@ -131,7 +132,11 @@ class TourResource extends Resource
                                     'halfday' => 'Полдня',
                                     'per_daily' => 'За день',
                                 ])
-                                ->required()
+                                ->required(),
+                                // Inside Gid и цена Section
+Checkbox::make('is_guide_booked')
+    ->label('Гид забронирован')
+    ->inline(false),
                             ]),
                         
                         Forms\Components\Textarea::make('description')
