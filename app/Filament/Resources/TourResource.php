@@ -116,8 +116,8 @@ class TourResource extends Resource
                             ->preload(),
                         
 
-                          Section::make('Rate limiting')
-                            ->description('Prevent abuse by limiting the number of requests per period')
+                          Section::make('Гид и цена')
+                            ->description('Выберите гида и тип цены')
                             ->schema([
                                 Forms\Components\Select::make('guide_id')
                                 ->label('Гид')
@@ -192,6 +192,9 @@ Checkbox::make('is_guide_booked')
                                                    // ->required()
                                                     ->live()
                                                     ->searchable(),
+                                                     Checkbox::make('is_booked')
+            ->label('Забронирован') // Per transport
+            ->inline(false),
                                             ]),
                                     ]),
 
@@ -256,6 +259,9 @@ Checkbox::make('is_guide_booked')
                                                            // ->required()
                                                             ->searchable()
                                                             ->reactive(),
+                                                             Checkbox::make('is_booked')
+            ->label('Отель забронирован') // Per hotel
+            ->inline(false),
                                 
                                                         Forms\Components\TextInput::make('quantity')
                                                             ->label('Количество')
@@ -310,7 +316,10 @@ Checkbox::make('is_guide_booked')
                                                         return $mealTypes->mapWithKeys(function ($value, $key) use ($humanReadableLabels) {
                                                             return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
                                                         });
-                                                    })
+                                                    }),
+                                                     Checkbox::make('is_booked')
+            ->label('Ресторан забронирован') // Per restaurant
+            ->inline(false),
                                                     //->required(),
 
                                             ]),

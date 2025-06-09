@@ -11,6 +11,7 @@ class MealTypeRestaurantTourDay extends Model
         'meal_type_id',
         'restaurant_id',
         'tour_day_id',
+        'is_booked',
     ];
     protected $table = 'meal_type_restaurant_tour_days';
 

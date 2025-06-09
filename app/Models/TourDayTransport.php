@@ -10,6 +10,7 @@ class TourDayTransport extends Model
         'tour_day_id',
         'transport_type_id',
         'price_type',
+        'is_booked',
     ];
     protected $table = 'tour_day_transport'; // Specify the table name explicitly
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TourDayHotel extends Model
 {
-    protected $fillable = ['tour_day_id', 'hotel_id', 'type'];
+    protected $fillable = ['tour_day_id', 'hotel_id', 'type', 'is_booked'];
 
     public function tourDay(): BelongsTo
     {
