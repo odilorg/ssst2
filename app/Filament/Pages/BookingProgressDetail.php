@@ -40,7 +40,7 @@ class BookingProgressDetail extends Page implements Tables\Contracts\HasTable
                 TextColumn::make('cities.name')
                     ->label('City')
                     ->badge()
-                    ->limit(1),
+                    ,
 
                 IconColumn::make('guide_status')
                     ->label('Guide')
