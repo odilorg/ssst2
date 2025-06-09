@@ -2,14 +2,13 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\TourDay;
+use App\Models\Tour;
 use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\SelectFilter;
 
 class BookingProgressReport extends Page implements Tables\Contracts\HasTable
@@ -17,123 +16,113 @@ class BookingProgressReport extends Page implements Tables\Contracts\HasTable
     use Tables\Concerns\InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-globe-europe-africa';
-
-    protected static string $view = 'filament.pages.booking-progress-report';
-
     protected static ?string $navigationLabel = 'Booking Progress';
-
     protected static ?string $title = 'Booking Progress Report';
+    protected static string $view = 'filament.pages.booking-progress-report';
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                TourDay::query()
-                    ->with(['tour', 'cities', 'tourDayHotels', 'tourDayTransports', 'mealTypeRestaurantTourDays'])
+                Tour::query()
+                    ->with(['tourDays.tourDayHotels', 'tourDays.tourDayTransports', 'tourDays.mealTypeRestaurantTourDays', 'tourDays'])
             )
             ->columns([
-                TextColumn::make('tour.name')
-                    ->label('Tour')
-                    ->searchable(),
-
                 TextColumn::make('name')
-                    ->label('Day Name')
+                    ->label('Tour Name')
                     ->searchable(),
 
-                TextColumn::make('cities.name')
-                    ->label('City')
-                    ->badge()
-                    ->limit(1),
+                TextColumn::make('progress')
+    ->label('Progress %')
+    ->getStateUsing(function (Tour $record): string {
+        // 1) Total selected subs across all days
+        $totalSelected = $record->tourDays->reduce(function (int $carry, $day): int {
+            // guide
+            $carry += $day->guide_id ? 1 : 0;
+            // hotels
+            $carry += $day->tourDayHotels->count();
+            // transports
+            $carry += $day->tourDayTransports->count();
+            // restaurants
+            $carry += $day->mealTypeRestaurantTourDays->count();
+            return $carry;
+        }, 0);
 
-                IconColumn::make('is_guide_booked')
-                    ->label('Guide')
-                    ->state(fn ($record) => !$record->guide_id || $record->is_guide_booked)
-                    ->boolean(),
+        // 2) Total actually booked
+        $totalBooked = $record->tourDays->reduce(function (int $carry, $day): int {
+            // guide
+            $carry += ($day->guide_id && $day->is_guide_booked) ? 1 : 0;
+            // hotels
+            $carry += $day->tourDayHotels
+                ->filter(fn($h) => $h->is_booked)
+                ->count();
+            // transports
+            $carry += $day->tourDayTransports
+                ->filter(fn($t) => $t->is_booked)
+                ->count();
+            // restaurants
+            $carry += $day->mealTypeRestaurantTourDays
+                ->filter(fn($r) => $r->is_booked)
+                ->count();
+            return $carry;
+        }, 0);
 
-                IconColumn::make('hotel_status')
-                    ->label('Hotel')
-                    ->state(fn ($record) =>
-                        $record->tourDayHotels->isEmpty() || $record->tourDayHotels->every(fn($h) => (bool) $h->is_booked)
-                    )
-                    ->boolean(),
+        // 3) Render
+        if ($totalSelected === 0) {
+            return '—';
+        }
 
-                IconColumn::make('transport_status')
-                    ->label('Transport')
-                    ->state(fn ($record) =>
-                        $record->tourDayTransports->isEmpty() || $record->tourDayTransports->every(fn($t) => (bool) $t->is_booked)
-                    )
-                    ->boolean(),
+        return (string) intval($totalBooked * 100 / $totalSelected) . '%';
+    })
+    ->sortable(),
 
-                IconColumn::make('restaurant_status')
-                    ->label('Restaurant')
-                    ->state(fn ($record) =>
-                        $record->mealTypeRestaurantTourDays->isEmpty() || $record->mealTypeRestaurantTourDays->every(fn($r) => (bool) $r->is_booked)
-                    )
-                    ->boolean(),
-
-                TextColumn::make('status_summary')
-                    ->label('Missing')
-                    ->state(function ($record) {
-                        $missing = [];
-
-                        if ($record->guide_id && !$record->is_guide_booked) {
-                            $missing[] = 'Guide';
-                        }
-
-                        if ($record->tourDayHotels->isNotEmpty() && $record->tourDayHotels->some(fn($h) => !$h->is_booked)) {
-                            $missing[] = 'Hotel';
-                        }
-
-                        if ($record->tourDayTransports->isNotEmpty() && $record->tourDayTransports->some(fn($t) => !$t->is_booked)) {
-                            $missing[] = 'Transport';
-                        }
-
-                        if ($record->mealTypeRestaurantTourDays->isNotEmpty() && $record->mealTypeRestaurantTourDays->some(fn($r) => !$r->is_booked)) {
-                            $missing[] = 'Restaurant';
-                        }
-
-                        return count($missing) ? implode(', ', $missing) : '✅ All Ready';
-                    }),
-
-                TextColumn::make('missing_details_by_day')
+                TextColumn::make('tourWideMissing')
                     ->label('Tour-Wide Missing')
-                    ->state(function ($record) {
-                        return $record->tour->tourDays->map(function ($day) {
-                            $missing = [];
-
-                            if ($day->guide_id && !$day->is_guide_booked) {
-                                $missing[] = 'Guide';
-                            }
-
-                            if ($day->tourDayHotels->isNotEmpty() && $day->tourDayHotels->some(fn($h) => !$h->is_booked)) {
-                                $missing[] = 'Hotel';
-                            }
-
-                            if ($day->tourDayTransports->isNotEmpty() && $day->tourDayTransports->some(fn($t) => !$t->is_booked)) {
-                                $missing[] = 'Transport';
-                            }
-
-                            if ($day->mealTypeRestaurantTourDays->isNotEmpty() && $day->mealTypeRestaurantTourDays->some(fn($r) => !$r->is_booked)) {
-                                $missing[] = 'Restaurant';
-                            }
-
-                            return count($missing)
-                                ? $day->name . ': ' . implode(', ', $missing)
-                                : null;
-                        })->filter()->implode(' | ');
+                    ->getStateUsing(function (Tour $record): string {
+                        return $record->tourDays
+                            ->map(function ($day) {
+                                $missing = [];
+                                if ($day->guide_id && !$day->is_guide_booked) {
+                                    $missing[] = 'Guide';
+                                }
+                                if ($day->tourDayHotels->isNotEmpty() && $day->tourDayHotels->some(function ($h) { return !$h->is_booked; })) {
+                                    $missing[] = 'Hotel';
+                                }
+                                if ($day->tourDayTransports->isNotEmpty() && $day->tourDayTransports->some(function ($t) { return !$t->is_booked; })) {
+                                    $missing[] = 'Transport';
+                                }
+                                if ($day->mealTypeRestaurantTourDays->isNotEmpty() && $day->mealTypeRestaurantTourDays->some(function ($r) { return !$r->is_booked; })) {
+                                    $missing[] = 'Restaurant';
+                                }
+                                return count($missing)
+                                    ? $day->name . ': ' . implode(', ', $missing)
+                                    : null;
+                            })
+                            ->filter()
+                            ->implode(' | ');
                     })
                     ->wrap()
                     ->toggleable(),
-            ])
-            ->filters([
-                SelectFilter::make('tour_id')
-                    ->label('Tour')
-                    ->relationship('tour', 'name'),
 
+               
+            ])
+            ->actions([
+            Action::make('view')
+                ->label('View Details')
+                ->icon('heroicon-o-eye')
+                ->url(fn (Tour $record) => BookingProgressDetail::getUrl([
+                    'tour' => $record->id,
+                ]))
+                ->openUrlInNewTab(),
+        ])
+            ->filters([
                 SelectFilter::make('city')
                     ->label('City')
-                    ->query(fn (Builder $query) => $query->with('cities'))
+                    ->query(function (Builder $query) {
+                        $query->whereHas('tourDays.cities');
+                    })
                     ->options(fn () => \App\Models\City::pluck('name', 'id')),
-            ]);
+            ])
+            ->defaultSort('name');
     }
 }
