@@ -201,79 +201,73 @@ Checkbox::make('is_guide_booked')
                                     Tabs\Tab::make('Отели')
                                     ->label('Отели')
                                     ->schema([
-                                        Repeater::make('tourDayHotels')
-                                            ->relationship()
-                                            ->schema([
-                                                // Hotel type comes first
-                                                Select::make('type')
-                                                    ->label('Категория отеля')
-                                                    ->options([
-                                                        'bed_breakfast' => 'Bed & Breakfast',
-                                                        '3_star' => '3 звезды',
-                                                        '4_star' => '4 звезды',
-                                                        '5_star' => '5 звезд',
-                                                    ])
-                                                    //->required()
-                                                    ->reactive() // Make reactive to update dependent fields
-                                                    ->afterStateUpdated(function ($state, callable $set) {
-                                                        // Clear the selected hotel if type changes
-                                                        $set('hotel_id', null);
-                                                    }),
-                                
-                                                // Hotel field filtered by type and city_id
-                                                Select::make('hotel_id')
-                                                    ->label('Отель')
-                                                    ->options(fn(Get $get): Collection => Hotel::query()
-                                                        ->where('type', $get('type')) // Filter by selected hotel type
-                                                        ->whereIn('city_id', $get('../../city_id') ?? []) // Filter by selected cities
-                                                        ->pluck('name', 'id')) // Fetch hotels as key-value pairs
-                                                   // ->required()
-                                                    ->reactive()
-                                                    ->default(fn($record) => $record?->hotel_id) // Populate the field during editing
-                                                    ->afterStateUpdated(function ($state, callable $set) {
-                                                        Log::info('Hotel ID updated:', ['hotel_id' => $state]); // Debug log
-                                                        $set('hotelRooms', []); // Clear nested fields when hotel changes
-                                                    }),
-                                
-                                                // Nested Repeater for hotel rooms
-                                                Repeater::make('hotelRooms')
-                                                    ->label('Номера в отеле')
-                                                    ->relationship('hotelRooms') // Assuming a HasMany relationship from TourDayHotel to Room
-                                                    ->schema([
-                                                        Select::make('room_id')
-                                                            ->label('Номер')
-                                                            ->options(function (Get $get): Collection {
-                                                                $hotelId = $get('../../hotel_id'); // Reference the parent hotel_id
-                                
-                                                                if (!$hotelId) {
-                                                                    return collect(); // Return an empty collection if no hotel_id is set
-                                                                }
-                                
-                                                                // Query rooms and map their types
-                                                                return Room::query()
-                                                                    ->where('hotel_id', $hotelId) // Filter rooms by the selected hotel
-                                                                    ->with('roomType') // Preload the roomType relationship
-                                                                    ->get()
-                                                                    ->mapWithKeys(fn($room) => [$room->id => $room->roomType->type ?? 'Unknown Type']); // Map room ID to room type
-                                                            })
-                                                           // ->required()
-                                                            ->searchable()
-                                                            ->reactive(),
-                                                             Checkbox::make('is_booked')
-            ->label('Отель забронирован') // Per hotel
+                                       Repeater::make('tourDayHotels')
+    ->relationship()
+    ->schema([
+        Select::make('type')
+            ->label('Категория отеля')
+            ->options([
+                'bed_breakfast' => 'Bed & Breakfast',
+                '3_star' => '3 звезды',
+                '4_star' => '4 звезды',
+                '5_star' => '5 звезд',
+            ])
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                $set('hotel_id', null);
+            }),
+
+        Select::make('hotel_id')
+            ->label('Отель')
+            ->options(fn(Get $get): Collection => Hotel::query()
+                ->where('type', $get('type'))
+                ->whereIn('city_id', $get('../../city_id') ?? [])
+                ->pluck('name', 'id'))
+            ->reactive()
+            ->default(fn($record) => $record?->hotel_id)
+            ->afterStateUpdated(function ($state, callable $set) {
+                Log::info('Hotel ID updated:', ['hotel_id' => $state]);
+                $set('hotelRooms', []);
+            }),
+
+        // ✅ Correct: checkbox goes here, per hotel
+        Checkbox::make('is_booked')
+            ->label('Отель забронирован')
             ->inline(false),
-                                
-                                                        Forms\Components\TextInput::make('quantity')
-                                                            ->label('Количество')
-                                                            ->default(1)
-                                                            ->numeric(),
-                                                           // ->required(),
-                                                    ])
-                                                    ->columns(2)
-                                                    ->collapsible(),
-                                            ])
-                                            ->columns(2)
-                                            ->collapsible(),
+
+        Repeater::make('hotelRooms')
+            ->label('Номера в отеле')
+            ->relationship('hotelRooms')
+            ->schema([
+                Select::make('room_id')
+                    ->label('Номер')
+                    ->options(function (Get $get): Collection {
+                        $hotelId = $get('../../hotel_id');
+                        if (!$hotelId) return collect();
+
+                        return Room::query()
+                            ->where('hotel_id', $hotelId)
+                            ->with('roomType')
+                            ->get()
+                            ->mapWithKeys(fn($room) => [
+                                $room->id => $room->roomType->type ?? 'Unknown Type'
+                            ]);
+                    })
+                    ->searchable()
+                    ->reactive(),
+
+                TextInput::make('quantity')
+                    ->label('Количество')
+                    ->default(1)
+                    ->numeric(),
+            ])
+            ->columns(2)
+            ->collapsible(),
+    ])
+    ->columns(2)
+    ->collapsible(),
+
+                                            
                                     ]),
                                 
 
