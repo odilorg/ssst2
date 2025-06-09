@@ -25,6 +25,18 @@ class Tour extends Model
     {
         return $this->hasMany(Estimate::class);
     }
+public function bookingProgressPercentage(): int
+{
+    $total = $this->tourDays->count();
+
+    if ($total === 0) return 0;
+
+    $ready = $this->tourDays->filter(fn($day) => $day->isFullyBooked())->count();
+
+    return intval(($ready / $total) * 100);
+}
+
+
 
     
 

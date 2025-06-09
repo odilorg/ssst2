@@ -24,6 +24,16 @@ class TourDay extends Model
          'is_guide_booked',
         
     ];
+public function isFullyBooked(): bool
+{
+    return (
+        (!$this->guide_id || $this->is_guide_booked)
+        && ($this->tourDayHotels->isEmpty() || $this->tourDayHotels->every(fn($h) => (bool) $h->is_booked))
+        && ($this->tourDayTransports->isEmpty() || $this->tourDayTransports->every(fn($t) => (bool) $t->is_booked))
+        && ($this->mealTypeRestaurantTourDays->isEmpty() || $this->mealTypeRestaurantTourDays->every(fn($r) => (bool) $r->is_booked))
+    );
+}
+
 
     public function tour()
     {
