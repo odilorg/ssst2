@@ -13,7 +13,8 @@ class Tour extends Model
      'start_date',
      'end_date',
      'image',
-     'tour_file'
+     'tour_file',
+     'country'
     ];
 
     public function tourDays(): HasMany

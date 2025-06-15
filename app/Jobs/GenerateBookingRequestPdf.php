@@ -25,8 +25,11 @@ class GenerateBookingRequestPdf implements ShouldQueue
     public function handle()
     {
         $tour = $this->request->tour()->with([
-            'tourDays',
-            'tourDays.tourDayHotels.hotel',
+            'tourDays'                    ,
+        'tourDays.tourDayHotels.hotel',         // for the hotel tables
+        'tourDays.tourDayTransports.transportType',
+        'tourDays.rooms.roomType',              // <— add this
+
         ])->first();
 
         $pdf = PDF::loadView('pdf.booking-request', [
@@ -35,6 +38,7 @@ class GenerateBookingRequestPdf implements ShouldQueue
         ]);
 
         $filename = 'booking_request_'.$this->request->id.'.pdf';
+         //$filePath = 'booking_requests/' . $fileName;
         Storage::put('booking_requests/'.$filename, $pdf->output());
 
         $this->request->update(['file_name' => $filename]);

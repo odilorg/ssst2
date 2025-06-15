@@ -54,6 +54,11 @@ class TourResource extends Resource
                             ->numeric()
                             ->required(),
 
+                        TextInput::make('country')  
+                            ->label('Страна')
+                            ->required(),
+                              
+
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Дата начала')
                             ->required()
