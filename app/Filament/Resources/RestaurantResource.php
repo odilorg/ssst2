@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Faker\Core\File;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Restaurant;
@@ -11,12 +12,12 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\RestaurantResource\Pages;
 use App\Filament\Resources\RestaurantResource\RelationManagers;
-use Faker\Core\File;
-use Filament\Forms\Components\FileUpload;
 
 class RestaurantResource extends Resource
 {
@@ -67,6 +68,12 @@ class RestaurantResource extends Resource
                             ->email()
                             ->required()
                             ->maxLength(255),
+                             Select::make('company_id')
+                    ->label('Owning Company')
+                    ->relationship('company', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                     ])->columns(2),
 
 
@@ -119,6 +126,11 @@ class RestaurantResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                 ->label('Название ')
                     ->searchable(),
+                      TextColumn::make('company.name')
+                ->label('Owning Company')
+                ->sortable()
+                ->searchable()
+                ->toggleable(),  // optional: let the user hide/show
                     Tables\Columns\TextColumn::make('phone')
                     ->label('Телефон ')
                         ->searchable(),

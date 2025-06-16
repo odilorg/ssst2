@@ -88,6 +88,12 @@ class HotelResource extends Resource
                             ->label('Фотографии гостиницы')
                             ->multiple()
                             ->image(),
+                              Select::make('company_id')
+                    ->label('Owning Company')
+                    ->relationship('company', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
 
                     ])->columns(2),
 
@@ -126,7 +132,7 @@ class HotelResource extends Resource
     
                                 ]),
                             Forms\Components\TextInput::make('cost_per_night')
-                                ->label('Стоимость за ночь')
+                                ->label('Стоимость за ночь (в $)')
                                 ->required()
                                 ->numeric(),
                              Forms\Components\TextInput::make('room_size')
@@ -164,6 +170,11 @@ class HotelResource extends Resource
                     
                     ->searchable()
                     ->label('Название'),
+                     TextColumn::make('company.name')
+                ->label('Owning Company')
+                ->sortable()
+                ->searchable()
+                ->toggleable(),  // optional: let the user hide/show
                 TextColumn::make('city.name')
                     ->searchable()
                     ->label('Город'),

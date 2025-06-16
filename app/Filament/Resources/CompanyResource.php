@@ -61,24 +61,7 @@ class CompanyResource extends Resource
                     ->image()
                     ->maxSize(1024),
                     
-Select::make('hotel_ids')
-                    ->label('Hotels')
-                    ->multiple()
-                    // only unassigned hotels or ones already on this company
-                    ->options(fn ($record) => Hotel::query()
-                        ->whereNull('company_id')
-                        ->orWhere('company_id', $record?->id)
-                        ->pluck('name', 'id'))
-                    ->preload()
-                    ->searchable()
-                    // <-- THIS is the key for Edit
-                    ->afterStateHydrated(function (Select $component) {
-                        if ($record = $component->getRecord()) {
-                            $component->state(
-                                $record->hotels->pluck('id')->toArray()
-                            );
-                        }
-                    }),
+
 
             ]);
     }
@@ -114,15 +97,15 @@ Select::make('hotel_ids')
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('inn')
-                    ->numeric()
+                    
                     ->sortable(),
                 Tables\Columns\TextColumn::make('account_number')
-                    ->numeric()
+                   
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bank_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bank_mfo')
-                    ->numeric()
+                    
                     ->sortable(),
                 Tables\Columns\TextColumn::make('director_name')
                     ->searchable(),

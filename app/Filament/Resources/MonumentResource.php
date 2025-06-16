@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
@@ -57,6 +59,12 @@ class MonumentResource extends Resource
                     ->avatar()
                     ->multiple()
                     ->columnSpanFull(),
+                    Select::make('company_id')
+                    ->label('Owning Company')
+                    ->relationship('company', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
             ]);
     }
 
@@ -76,6 +84,11 @@ class MonumentResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                 ->label('Название монумента')
                     ->searchable(),
+                     TextColumn::make('company.name')
+                ->label('Owning Company')
+                ->sortable()
+                ->searchable()
+                ->toggleable(),  // optional: let the user hide/show
                 Tables\Columns\TextColumn::make('city.name')
                 ->label('Город расположения')
                     ->searchable(),

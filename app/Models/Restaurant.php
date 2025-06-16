@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Restaurant extends Model
 {
@@ -13,13 +14,17 @@ class Restaurant extends Model
         'website',
         'email',
         'city_id',
-        'menu_images'
+        'menu_images',
+        'company_id'
     ];
 
     protected $casts = [
         'menu_images' => 'array'
     ];
-
+ public function company(): BelongsTo
+{
+    return $this->belongsTo(Company::class);
+}
     public function mealTypes()
     {
         return $this->hasMany(MealType::class, 'restaurant_id');
