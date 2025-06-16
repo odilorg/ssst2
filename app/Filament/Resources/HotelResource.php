@@ -133,6 +133,7 @@ class HotelResource extends Resource
                                 ]),
                             Forms\Components\TextInput::make('cost_per_night')
                                 ->label('Стоимость за ночь (в $)')
+                                ->suffixIcon('heroicon-m-currency-dollar')
                                 ->required()
                                 ->numeric(),
                              Forms\Components\TextInput::make('room_size')

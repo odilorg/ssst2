@@ -18,6 +18,12 @@ class CityDistanceResource extends Resource
     protected static ?string $model = CityDistance::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+     protected static ?string $navigationGroup = 'Tour Items';
+
+    protected static ?string $navigationParentItem = 'Транспорт';
+    protected static ?string $navigationLabel = 'Расстояния между городами';
+    protected static ?string $modelLabel = 'Расстояния между городами';
+    protected static ?string $pluralModelLabel = 'Расстояния между городами';
 
     public static function form(Form $form): Form
     {
