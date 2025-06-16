@@ -17,86 +17,93 @@
     <h1>Booking Request</h1>
 
     @foreach($tour->tourDays as $day)
-        <h2>Day {{ $day->day_number }}: {{ $day->name }}</h2>
-@dump($day->rooms->map(fn($r) => [
-    'room'     => $r->roomType->type ?? '(no type)',
-    'quantity' => $r->pivot->quantity,
-]))
+    @php
+        $hotelName = $day->tourDayHotels->first()?->hotel?->name;
+        $counts = collect(['twin' => 0, 'single' => 0, 'double' => 0]);
 
-        @php
-            // Build a map: [ 'twin' => x, 'single' => y, 'double' => z ]
-            $counts = collect([
-                'twin'   => 0,
-                'single' => 0,
-                'double' => 0,
-            ]);
-            foreach ($day->rooms as $room) {
-                $type = strtolower($room->roomType->type);
-                if ($counts->has($type)) {
-                    $counts[$type] += $room->pivot->quantity;
+        foreach ($day->tourDayHotels as $hotel) {
+            foreach ($hotel->hotelRooms as $hotelRoom) {
+                $rawType = strtolower(optional($hotelRoom->room->roomType)->type);
+                $qty = $hotelRoom->quantity ?? 0;
+
+                $mappedType = match (true) {
+                    str_contains($rawType, 'twin')   => 'twin',
+                    str_contains($rawType, 'single') => 'single',
+                    str_contains($rawType, 'double') => 'double',
+                    default => null,
+                };
+
+                if ($mappedType && $counts->has($mappedType)) {
+                    $counts[$mappedType] += $qty;
                 }
             }
-        @endphp
+        }
+    @endphp
 
-        {{-- Hotel & Room Breakdown --}}
-        @if($day->tourDayHotels->isNotEmpty())
-            <table>
-                <thead>
-                    <tr>
-                        <th>Group</th>
-                        <th>Country</th>
-                        <th>Guests</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th>Twin</th>
-                        <th>Single</th>
-                        <th>Double</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ $tour->tour_number }}</td>
-                        <td>{{ $tour->country }}</td>
-                        <td>{{ $tour->number_people }}</td>
-                        <td>{{ $day->check_in->format('Y-m-d H:i') }}</td>
-                        <td>{{ $day->check_out->format('Y-m-d H:i') }}</td>
-                        <td>{{ $counts['twin'] }}</td>
-                        <td>{{ $counts['single'] }}</td>
-                        <td>{{ $counts['double'] }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        @else
-            <p class="no-data">No hotel scheduled for this day.</p>
-        @endif
+    <h2>
+        Day {{ $day->day_number }}: {{ $day->name }}
+        @if($hotelName) — {{ $hotelName }} @endif
+    </h2>
 
-        {{-- Transport Booking --}}
-        <h3>Transport Booking</h3>
-        @if($day->tourDayTransports->isNotEmpty())
-            <table>
-                <thead>
+    @if($day->tourDayHotels->isNotEmpty())
+        <table>
+            <thead>
+                <tr>
+                    <th>Group</th>
+                    <th>Country</th>
+                    <th>Guests</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Twin</th>
+                    <th>Single</th>
+                    <th>Double</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ $tour->tour_number }}</td>
+                    <td>{{ $tour->country }}</td>
+                    <td>{{ $tour->number_people }}</td>
+                    <td>{{ $day->check_in->format('d-m-Y') }}</td>
+                    <td>{{ $day->check_out->format('d-m-Y') }}</td>
+                    <td>{{ $counts['twin'] }}</td>
+                    <td>{{ $counts['single'] }}</td>
+                    <td>{{ $counts['double'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @else
+        <p class="no-data">No hotel scheduled for this day.</p>
+    @endif
+
+    {{-- Transport Booking --}}
+    <h3>Transport Booking</h3>
+    @if($day->tourDayTransports->isNotEmpty())
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Vehicle Type</th>
+                    <th>Pickup</th>
+                    <th>Drop-off</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($day->tourDayTransports as $tdt)
                     <tr>
-                        <th>Category</th>
-                        <th>Vehicle Type</th>
-                        <th>Pickup</th>
-                        <th>Drop-off</th>
+                        <td>{{ ucfirst($tdt->category) }}</td>
+                        <td>{{ $tdt->transportType->type }}</td>
+                        <td>{{ $day->check_in->format('d-m-Y') }}</td>
+                        <td>{{ $day->check_out->format('d-m-Y') }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach($day->tourDayTransports as $tdt)
-                        <tr>
-                            <td>{{ ucfirst($tdt->category) }}</td>
-                            <td>{{ $tdt->transportType->type }}</td>
-                            <td>{{ $day->check_in->format('Y-m-d H:i') }}</td>
-                            <td>{{ $day->check_out->format('Y-m-d H:i') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <p class="no-data">No transport scheduled for this day.</p>
-        @endif
-    @endforeach
+                @endforeach
+            </tbody>
+        </table>
+    @else
+        <p class="no-data">No transport scheduled for this day.</p>
+    @endif
+@endforeach
+
 
     <p style="font-size:10px; text-align:center;">
         Generated on {{ now()->format('Y-m-d H:i') }}

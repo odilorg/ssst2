@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CompanyResource\Pages;
-use App\Filament\Resources\CompanyResource\RelationManagers;
-use App\Models\Company;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Hotel;
+use App\Models\Company;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\CompanyResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CompanyResource\RelationManagers;
 
 class CompanyResource extends Resource
 {
@@ -58,6 +60,26 @@ class CompanyResource extends Resource
                 Forms\Components\FileUpload::make('logo')
                     ->image()
                     ->maxSize(1024),
+                    
+Select::make('hotel_ids')
+                    ->label('Hotels')
+                    ->multiple()
+                    // only unassigned hotels or ones already on this company
+                    ->options(fn ($record) => Hotel::query()
+                        ->whereNull('company_id')
+                        ->orWhere('company_id', $record?->id)
+                        ->pluck('name', 'id'))
+                    ->preload()
+                    ->searchable()
+                    // <-- THIS is the key for Edit
+                    ->afterStateHydrated(function (Select $component) {
+                        if ($record = $component->getRecord()) {
+                            $component->state(
+                                $record->hotels->pluck('id')->toArray()
+                            );
+                        }
+                    }),
+
             ]);
     }
 
@@ -73,6 +95,14 @@ class CompanyResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('hotels_list')
+    ->label('Hotels')
+    ->state(function ($record) {
+        return $record->hotels->pluck('name')->implode(', ');
+    })
+    ->wrap()
+    ->limit(50) // Optional: trims long lists
+    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address_street')
@@ -127,4 +157,9 @@ class CompanyResource extends Resource
             'edit' => Pages\EditCompany::route('/{record}/edit'),
         ];
     }
+    public static function getEloquentQuery(): Builder
+{
+    return parent::getEloquentQuery()->with('hotels');
+}
+
 }

@@ -22,7 +22,8 @@ class Hotel extends Model
     'description',
     'phone',
     'email',
-    'images'
+    'images',
+    'company_id'
     ];
 
     // public function days(): BelongsToMany
@@ -45,4 +46,10 @@ class Hotel extends Model
     {
         return $this->hasMany(Room::class);
     }
+
+    public function company(): BelongsTo
+{
+    return $this->belongsTo(Company::class);
+}
+
 }

@@ -28,7 +28,7 @@ class GenerateBookingRequestPdf implements ShouldQueue
             'tourDays'                    ,
         'tourDays.tourDayHotels.hotel',         // for the hotel tables
         'tourDays.tourDayTransports.transportType',
-        'tourDays.rooms.roomType',              // <— add this
+    'tourDays.tourDayHotels.hotelRooms.room.roomType', // ✅ correct chain
 
         ])->first();
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -19,4 +20,10 @@ class Company extends Model
         'director_name',
         'logo'
     ];
+
+    public function hotels(): HasMany
+{
+    return $this->hasMany(Hotel::class);
+}
+
 }
