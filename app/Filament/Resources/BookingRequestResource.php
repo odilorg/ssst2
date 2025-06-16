@@ -8,7 +8,9 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\BookingRequest;
+use App\Mail\SendBookingRequest;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BookingRequestResource\Pages;
@@ -24,11 +26,11 @@ class BookingRequestResource extends Resource
     {
         return $form
             ->schema([
-                 Forms\Components\Select::make('tour_id')
-                ->relationship('tour', 'name')
-                ->required(),
-            Forms\Components\DatePicker::make('date')
-                ->required(),
+                Forms\Components\Select::make('tour_id')
+                    ->relationship('tour', 'name')
+                    ->required(),
+                Forms\Components\DatePicker::make('date')
+                    ->required(),
             ]);
     }
 
@@ -36,7 +38,7 @@ class BookingRequestResource extends Resource
     {
         return $table
             ->columns([
-                  Tables\Columns\TextColumn::make('tour.name')->label('Tour'),
+                Tables\Columns\TextColumn::make('tour.name')->label('Tour'),
                 Tables\Columns\TextColumn::make('date')->date()->label('Date'),
                 Tables\Columns\IconColumn::make('file_name')
                     ->label('PDF')
@@ -47,22 +49,27 @@ class BookingRequestResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-               Tables\Actions\Action::make('download')
-    ->label('Download PDF')
-    ->icon('heroicon-s-cloud-arrow-down')
-    ->visible(fn(BookingRequest $r) => ! is_null($r->file_name))
-    ->action(fn (BookingRequest $r) => 
-        response()->download(
-            storage_path("app/public/booking_requests/{$r->file_name}")
-        )
-    ),
-                // Tables\Actions\Action::make('email')
-                //     ->icon('heroicon-o-mail')
-                //     ->visible(fn($record) => ! is_null($record->file_name))
-                //     ->action(function (BookingRequest $r) {
-                //         Mail::to(config('app.admin_email'))
-                //             ->queue(new BookingRequestMail($r));
-                //     }),
+                Tables\Actions\Action::make('download')
+                    ->label('Download PDF')
+                    ->icon('heroicon-s-cloud-arrow-down')
+                    ->visible(fn(BookingRequest $r) => ! is_null($r->file_name))
+                    ->action(
+                        fn(BookingRequest $r) =>
+                        response()->download(
+                            storage_path("app/public/booking_requests/{$r->file_name}")
+                        )
+                    ),
+                // ← New “Send” action
+            Tables\Actions\Action::make('send_booking_request')
+                ->label(label:  'Send Booking Request')
+                ->icon('heroicon-o-envelope')
+                ->requiresConfirmation()
+                ->visible(fn (BookingRequest $record): bool => ! is_null($record->file_name))
+                ->action(function (BookingRequest $record) {
+                    Mail::to($record->email)            // assuming you have an `email` field
+                        ->queue(new SendBookingRequest($record));
+                })
+                ->successNotificationTitle('Booking request queued for sending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

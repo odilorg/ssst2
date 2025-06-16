@@ -18,12 +18,16 @@ class Company extends Model
         'bank_name',
         'bank_mfo',
         'director_name',
-        'logo'
+        'logo',
+        'is_operator',
     ];
 
     public function hotels(): HasMany
 {
     return $this->hasMany(Hotel::class);
 }
+protected $casts = [
+    'is_operator' => 'boolean',
+];
 
 }

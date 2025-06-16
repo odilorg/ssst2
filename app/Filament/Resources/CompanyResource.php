@@ -60,7 +60,10 @@ class CompanyResource extends Resource
                 Forms\Components\FileUpload::make('logo')
                     ->image()
                     ->maxSize(1024),
-                    
+                Forms\Components\Toggle::make('is_operator')
+                    ->label('Is Tour Operator')
+                    ->helperText('Mark this company as your own tour-operator profile'),
+
 
 
             ]);
@@ -69,6 +72,8 @@ class CompanyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+          // make operator‐flagged companies come first…
+        ->defaultSort('is_operator', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -78,14 +83,14 @@ class CompanyResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                    Tables\Columns\TextColumn::make('hotels_list')
-    ->label('Hotels')
-    ->state(function ($record) {
-        return $record->hotels->pluck('name')->implode(', ');
-    })
-    ->wrap()
-    ->limit(50) // Optional: trims long lists
-    ->toggleable(),
+                Tables\Columns\TextColumn::make('hotels_list')
+                    ->label('Hotels')
+                    ->state(function ($record) {
+                        return $record->hotels->pluck('name')->implode(', ');
+                    })
+                    ->wrap()
+                    ->limit(50) // Optional: trims long lists
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address_street')
@@ -97,15 +102,15 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('inn')
-                    
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('account_number')
-                   
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bank_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bank_mfo')
-                    
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('director_name')
                     ->searchable(),
@@ -141,8 +146,7 @@ class CompanyResource extends Resource
         ];
     }
     public static function getEloquentQuery(): Builder
-{
-    return parent::getEloquentQuery()->with('hotels');
-}
-
+    {
+        return parent::getEloquentQuery()->with('hotels');
+    }
 }
