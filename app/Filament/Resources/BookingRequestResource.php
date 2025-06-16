@@ -31,6 +31,7 @@ class BookingRequestResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('date')
                     ->required(),
+
             ]);
     }
 
@@ -38,6 +39,10 @@ class BookingRequestResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('request_number')
+    ->label('Req. #')
+    ->sortable()
+    ->searchable(),
                 Tables\Columns\TextColumn::make('tour.name')->label('Tour'),
                 Tables\Columns\TextColumn::make('date')->date()->label('Date'),
                 Tables\Columns\IconColumn::make('file_name')
@@ -60,16 +65,16 @@ class BookingRequestResource extends Resource
                         )
                     ),
                 // ← New “Send” action
-            Tables\Actions\Action::make('send_booking_request')
-                ->label(label:  'Send Booking Request')
-                ->icon('heroicon-o-envelope')
-                ->requiresConfirmation()
-                ->visible(fn (BookingRequest $record): bool => ! is_null($record->file_name))
-                ->action(function (BookingRequest $record) {
-                    Mail::to($record->email)            // assuming you have an `email` field
-                        ->queue(new SendBookingRequest($record));
-                })
-                ->successNotificationTitle('Booking request queued for sending'),
+                Tables\Actions\Action::make('send_booking_request')
+                    ->label(label: 'Send Booking Request')
+                    ->icon('heroicon-o-envelope')
+                    ->requiresConfirmation()
+                    ->visible(fn(BookingRequest $record): bool => ! is_null($record->file_name))
+                    ->action(function (BookingRequest $record) {
+                        Mail::to($record->email)            // assuming you have an `email` field
+                            ->queue(new SendBookingRequest($record));
+                    })
+                    ->successNotificationTitle('Booking request queued for sending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
