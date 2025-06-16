@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\BookingRequest;
+use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,23 +25,29 @@ class GenerateBookingRequestPdf implements ShouldQueue
 
     public function handle()
     {
-        $tour = $this->request->tour()->with([
-            'tourDays'                    ,
-        'tourDays.tourDayHotels.hotel',         // for the hotel tables
-        'tourDays.tourDayTransports.transportType',
-    'tourDays.tourDayHotels.hotelRooms.room.roomType', // ✅ correct chain
+        // 1) Load the tour with all the hotel / room relationships
+        $tour = $this->request
+            ->tour()
+            ->with([
+                'tourDays',
+                'tourDays.tourDayHotels.hotel',
+                'tourDays.tourDayHotels.hotelRooms.room.roomType',
+            ])
+            ->first();
 
-        ])->first();
+        // 2) Grab your “operator” company profile
+        $company = Company::where('is_operator', true)->first();
 
+        // 3) Generate the PDF, passing tour, request, and company into the view
         $pdf = PDF::loadView('pdf.booking-request', [
             'tour'    => $tour,
             'request' => $this->request,
+            'company' => $company,
         ]);
 
-        $filename = 'booking_request_'.$this->request->id.'.pdf';
-         //$filePath = 'booking_requests/' . $fileName;
-        Storage::put('booking_requests/'.$filename, $pdf->output());
-
+        // 4) Save and update the booking_request record
+        $filename = 'booking_request_' . $this->request->id . '.pdf';
+        Storage::put('booking_requests/' . $filename, $pdf->output());
         $this->request->update(['file_name' => $filename]);
     }
 }

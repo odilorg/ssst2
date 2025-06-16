@@ -11,9 +11,67 @@
         th, td { border: 1px solid #444; padding: 6px; text-align: center; }
         th { background: #eee; }
         .no-data { font-style: italic; color: #666; margin-bottom: 1em; }
+         /* ── HEADER STYLES ───────────────────────────────────────── */
+    .company-header { text-align: center; margin-bottom: 1em; }
+    .company-title {
+        font-family: 'Times New Roman', serif;
+        font-size: 32px;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        margin: 0;
+    }
+    .company-subtitles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        font-size: 12px;
+        text-transform: uppercase;
+        margin: .25em 0;
+        font-weight: bold;
+    }
+    .company-subtitles span {
+        padding: 0 .5em;
+    }
+    .thin-line {
+        border: none;
+        border-top: 1px solid #000;
+        margin: .25em 0;
+    }
+    .heavy-line {
+        border: none;
+        border-top: 2px solid #000;
+        margin: .25em 0;
+    }
+    .company-contact {
+        font-size: 10px;
+        margin: .25em 0;
+    }
     </style>
 </head>
 <body>
+    {{-- right after <body> --}}
+<div class="company-header">
+    {{-- 1) Main title with quotes --}}
+    <h1 class="company-title">"{{ $company->name }}"</h1>
+
+    {{-- 2) Two‐column subtitles (Uzbek | English) --}}
+    <div class="company-subtitles">
+        <span>{{ strtoupper($company->address_city) }} shahr mas'uliyati cheklangan jamiyat</span>
+        <span>{{ strtoupper($company->address_city) }} city limited liability company</span>
+    </div>
+
+    {{-- 3) Thin separator --}}
+    <hr class="thin-line">
+
+    {{-- 4) Contact line --}}
+    <p class="company-contact">
+        {{ $company->address_city }} sh., {{ $company->address_street }} &nbsp;
+        Tel.: {{ $company->phone }}@unless(empty($company->email)) | {{ $company->email }}@endunless
+    </p>
+
+    {{-- 5) Heavy separator --}}
+    <hr class="heavy-line">
+</div>
+
     <h1>Booking Request</h1>
 
     @foreach($tour->tourDays as $day)
