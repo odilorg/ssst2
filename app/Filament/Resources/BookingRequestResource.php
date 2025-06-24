@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use App\Models\BookingRequest;
 use App\Mail\SendBookingRequest;
 use Filament\Resources\Resource;
+use App\Jobs\GenerateTourVoucherPdf;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -75,6 +76,15 @@ class BookingRequestResource extends Resource
                             ->queue(new SendBookingRequest($record));
                     })
                     ->successNotificationTitle('Booking request queued for sending'),
+                    Tables\Actions\Action::make('generate_tour_voucher')
+    ->label('Generate Tour Voucher')
+    ->icon('heroicon-o-printer')
+    ->color('success')
+    ->requiresConfirmation()
+    ->action(fn (BookingRequest $record) =>
+        GenerateTourVoucherPdf::dispatch($record)
+    )
+    ->successNotificationTitle('Voucher queued for generation'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

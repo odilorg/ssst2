@@ -12,6 +12,7 @@ class BookingRequest extends Model
         'date',
         'file_name',
         'request_number',
+        'tour_voucher_file',
     ];
 
     
