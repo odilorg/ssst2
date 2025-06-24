@@ -76,16 +76,21 @@ class BookingRequestResource extends Resource
                             ->queue(new SendBookingRequest($record));
                     })
                     ->successNotificationTitle('Booking request queued for sending'),
-                Tables\Actions\Action::make('generate_tour_voucher')
-                    ->label('Generate Tour Voucher')
-                    ->icon('heroicon-o-printer')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(
-                        fn(BookingRequest $record) =>
-                        GenerateTourVoucherPdf::dispatch($record)
-                    )
-                    ->successNotificationTitle('Voucher queued for generation'),
+               
+        Tables\Actions\Action::make('voucher')
+            ->label('Generate & Download Voucher')
+            ->icon('heroicon-s-document-text')
+            ->requiresConfirmation()
+            ->visible(fn (BookingRequest $record): bool => true)   // or only when tour exists
+            ->action(function (BookingRequest $record) {
+                // 1) Dispatch the job synchronously so the file is ready immediately:
+                GenerateTourVoucherPdf::dispatchSync($record);
+
+                // 2) Download the resulting PDF:
+                return response()->download(
+                    storage_path("app/public/booking_requests/{$record->tour_voucher_file}")
+                );
+            }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

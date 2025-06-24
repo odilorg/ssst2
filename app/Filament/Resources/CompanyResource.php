@@ -132,12 +132,20 @@ class CompanyResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                   // ← new “Regenerate Voucher” button
-             Tables\Actions\Action::make('regenerateVoucher')
-                ->label('Regenerate Voucher Template')
-                ->icon('heroicon-o-document-text')
-                ->requiresConfirmation()
-                ->action(fn() => GenerateVoucherTemplatePdf::dispatch())
-                ->successNotificationTitle('Voucher template regeneration queued'),
+            Tables\Actions\Action::make('regenerateVoucher')
+    ->label('Regenerate & Download Voucher')
+    ->icon('heroicon-o-document-text')
+    ->requiresConfirmation()
+    ->action(function () {
+        // 1) Rebuild the template immediately
+        GenerateVoucherTemplatePdf::dispatchSync();
+
+        // 2) Stream it back to the browser
+        return response()->download(
+            storage_path('app/public/vouchers/entrance_ticket_template.pdf'),
+            'voucher_template.pdf'
+        );
+    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
