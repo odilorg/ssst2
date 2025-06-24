@@ -60,6 +60,12 @@ class CompanyResource extends Resource
                 Forms\Components\TextInput::make('director_name')
                     ->maxLength(255)
                     ->default(null),
+                Forms\Components\TextInput::make('license_number')
+                    ->label('License Number')
+                    ->maxLength(255)
+                    ->default(null)
+                    ->helperText('Optional: If your company has a license number, please provide it here.'),
+                // Optional: Add a select field for hotels                
                 Forms\Components\FileUpload::make('logo')
                     ->image()
                     ->maxSize(1024),

@@ -37,11 +37,11 @@
                     {{ $company->address_street }}, {{ $company->address_city }}<br>
                     Tel.: {{ $company->phone }}<br>
                     Email: {{ $company->email }}<br>
-                    License №{{ $company->inn }}
+                    License №:{{ $company->license_number }}
                   </td>
                   <td class="hdr-right">
                     <div class="company-name">"{{ $company->name }}" LLC</div>
-                    <div>Travel Company</div>
+                     <div>INN {{ $company->inn }}</div>
                   </td>
                 </tr>
               </table>
@@ -68,11 +68,11 @@
                     {{ $company->address_street }}, {{ $company->address_city }}<br>
                     Tel.: {{ $company->phone }}<br>
                     Email: {{ $company->email }}<br>
-                    License №{{ $company->inn }}
+                    License №:{{ $company->license_number }}
                   </td>
                   <td class="hdr-right">
                     <div class="company-name">"{{ $company->name }}" LLC</div>
-                    <div>Travel Company</div>
+                    <div>INN {{ $company->inn }}</div>
                   </td>
                 </tr>
               </table>

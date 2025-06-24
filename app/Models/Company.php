@@ -20,6 +20,7 @@ class Company extends Model
         'director_name',
         'logo',
         'is_operator',
+        'license_number',
     ];
 
     public function hotels(): HasMany
