@@ -65,6 +65,10 @@ class MonumentResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
+                    Forms\Components\Toggle::make('voucher')
+                    ->label('Generate Voucher')
+                    ->default(false)
+                    ->helperText('If enabled, a voucher will be generated for this monument.'),
             ]);
     }
 

@@ -41,9 +41,9 @@ class BookingRequestResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('request_number')
-    ->label('Req. #')
-    ->sortable()
-    ->searchable(),
+                    ->label('Req. #')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tour.name')->label('Tour'),
                 Tables\Columns\TextColumn::make('date')->date()->label('Date'),
                 Tables\Columns\IconColumn::make('file_name')
@@ -76,15 +76,16 @@ class BookingRequestResource extends Resource
                             ->queue(new SendBookingRequest($record));
                     })
                     ->successNotificationTitle('Booking request queued for sending'),
-                    Tables\Actions\Action::make('generate_tour_voucher')
-    ->label('Generate Tour Voucher')
-    ->icon('heroicon-o-printer')
-    ->color('success')
-    ->requiresConfirmation()
-    ->action(fn (BookingRequest $record) =>
-        GenerateTourVoucherPdf::dispatch($record)
-    )
-    ->successNotificationTitle('Voucher queued for generation'),
+                Tables\Actions\Action::make('generate_tour_voucher')
+                    ->label('Generate Tour Voucher')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(
+                        fn(BookingRequest $record) =>
+                        GenerateTourVoucherPdf::dispatch($record)
+                    )
+                    ->successNotificationTitle('Voucher queued for generation'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

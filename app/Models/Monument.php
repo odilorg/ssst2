@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Monument extends Model
 {
-    protected $fillable = ['name', 'city', 'ticket_price', 'description', 'city_id', 'images', 'company_id'];
+    protected $fillable = ['name', 'city', 'ticket_price', 'description', 'city_id', 'images', 'company_id', 'voucher'];
 
     public function city()
     {

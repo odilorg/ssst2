@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Models\BookingRequest;
@@ -11,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use App\Models\TourDay;
 
 class GenerateTourVoucherPdf implements ShouldQueue
 {
@@ -30,46 +32,46 @@ class GenerateTourVoucherPdf implements ShouldQueue
          * -------------------------------------------------------- */
         $company = Company::whereNotNull('is_operator')->first();
 
-        
 
-// After:
-$tour = $this->record->tour()
-    ->with([
-        'tourDays.cities',  // ✅ load your belongsToMany
-        'tourDays.guide',
-    ])
-    ->first();
+        // 1) Eager‐load just the days we care about:
+        $tour = $this->record->tour()
+            ->with(['tourDays.guide', 'tourDays.cities', 'tourDays.monuments'])
+            ->first();
 
-    // Then immediately below, build a comma list of guide names:
-$guides = $tour->tourDays
-    ->pluck('guide.full_name')     // pulls full_name from each related Guide
-    ->filter()                     // remove nulls if any days have no guide
-    ->unique()                     // drop duplicates if same guide on multiple days
-    ->implode(', ');
+        // 2) Build one entry per Monument‐TourDay pairing
+        $voucherData = collect();
+        foreach ($tour->tourDays as $day) {
+            // filter only voucher‐enabled monuments
+            $day->monuments
+                ->where('voucher', true)
+                ->each(function ($mon) use ($day, &$voucherData, $tour) {
+                    $voucherData->push([
+                        'guide'         => optional($day->guide)->name ?: '—',
+                        'city'          => $day->cities->pluck('name')->implode(', '),
+                        'monument'      => $mon->name,
+                        'tour_number'   => $tour->tour_number,
+                        'country'       => $tour->country,
+                        'number_people' => $tour->number_people,
+                        'date'          => now()->format('d.m.Y'),
+                    ]);
+                });
+        }
 
-
-// After:
-$cities = $tour->tourDays
-    ->flatMap(fn($day) => $day->cities->pluck('name'))
-    ->unique()
-    ->implode(', ');
 
         // “today” for the voucher header
         $today = Carbon::now()->format('d.m.Y');
- // number of blanks per page
-        $count = 6;
+        // number of blanks per page
+
         /* -----------------------------------------------------------
          | 2) Render PDF
          * -------------------------------------------------------- */
-       // And pass it into your view data:
-$pdf = PDF::loadView('vouchers.dynamic_tour_voucher', [
-    'company' => $company,
-    'tour'    => $tour,
-    'today'   => $today,
-    'cities'  => $cities,
-    'guides'  => $guides,
-    'count'   => $count,
-])->setPaper('a4', 'portrait');
+        // And pass it into your view data:
+        // 3) Send to Blade
+        $pdf = PDF::loadView('vouchers.dynamic_tour_voucher', [
+            'company'     => Company::where('is_operator', true)->first(),
+            'vouchers'    => $voucherData,
+            'today'       => $today,
+        ])->setPaper('a4', 'portrait');
 
         /* -----------------------------------------------------------
          | 3) Store & update BookingRequest

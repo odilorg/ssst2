@@ -2,128 +2,68 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <title>Entrance Ticket Vouchers</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Tour Vouchers</title>
   <style>
-    /* ------- PAGE ------- */
-    @page { size: A4 portrait; margin: 0; }
-    body   { margin: 5mm; font-family: 'DejaVu Sans', sans-serif; font-size: 11px; }
+    @page { size: A4 portrait; margin:0; }
+    body { margin:5mm; font-family:'DejaVu Sans'; font-size:11px; }
+    table.sheet { width:100%; border-collapse:collapse; }
+    td { width:50%; vertical-align:top; padding:0 2mm; }
+    td.right { border-left:1px dashed #000; }
 
-    /* ------- TABLE GRID (robust for dompdf) ------- */
-    table.sheet { width: 100%; border-collapse: collapse; }
-    table.sheet td { width: 50%; vertical-align: top; padding: 0; }
-    table.sheet td.right { border-left: 1px dashed #000; }
-
-    /* ------- VOUCHER BOX ------- */
-    .voucher {
-      margin: 0 4mm 1mm 0;   /* right & bottom gap reduced */
-      border: 1px solid #000;
-      padding: 2mm;
-      box-sizing: border-box;
-      page-break-inside: avoid;
-      height: 82mm;  /* fits 3 rows incl. padding + borders */          /* fit 4 rows on A4 */
-    }
-
-    /* Header boxes */
-    .top { margin-bottom: 6px; }
-    .box-left, .box-right {
-      border: 1px solid #000;
-      padding: 4px;
-      display: inline-block;
-      vertical-align: top;
-    }
-    .box-left  { width: 60%; }
-    .box-right { width: 37%; margin-left: 2%; text-align: center; }
-    .box-right .company-name { font-weight: bold; margin-bottom: 4px; }
-
-    .sep { border-top: 1px solid #000; margin: 6px 0; }
-
-    /* Body lines */
-    .body p { margin: 2px 0; line-height: 1.25; }
-    .body p label { display:inline-block; width:105px; }
-    .body p span  { display:inline-block; width:55mm; border-bottom:1px solid #000; vertical-align:bottom; }}
+    .voucher { border:1px solid #000; padding:2mm; height:82mm; page-break-inside:avoid; }
+    .hdr-table { width:100%; table-layout:fixed; border-collapse:collapse; margin-bottom:4px; }
+    .hdr-table td { border:1px solid #000; padding:4px; vertical-align:top; }
+    .hdr-left { width:65%; }
+    .hdr-right { width:35%; text-align:center; }
+    .hdr-right .company-name { font-weight:bold; margin-bottom:4px; }
+    .sep { border-top:1px solid #000; margin:4px 0; }
+    .body p { margin:2px 0; line-height:1.25; }
+    .body p label { display:inline-block; width:90px; }
+    .body p span { display:inline-block; width:50mm; border-bottom:1px solid #000; vertical-align:bottom; }
   </style>
 </head>
 <body>
   <table class="sheet">
     <tbody>
-    @for ($i = 0; $i < $count; $i += 2)
+      @foreach($vouchers->chunk(2) as $row)
         <tr>
-            <!-- Left voucher -->
-            <td>
+          @foreach($row as $v)
+            <td class="{{ $loop->iteration === 2 ? 'right' : '' }}">
               <div class="voucher">
-                <div class="top">
-              <table class="hdr" width="100%" style="table-layout:fixed; border-collapse:collapse;">
-                <tr>
-                  <td class="cell-left" style="width:65%; border:1px solid #000; padding:4px; vertical-align:top;">
-                    {{ $company->address_street }},<br>{{ $company->address_city }}<br>
-                    Tel.: {{ $company->phone }}<br>
-                    Email: {{ $company->email }}<br>
-                    License №{{ $company->inn }}{{ isset($company->license_date) ? ' from '.$company->license_date->format('d.m.Y') : '' }}
-                  </td>
-                  <td class="cell-right" style="width:35%; border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">
-                    <div style="font-weight:bold; margin-bottom:4px;">"{{ $company->name }}" LLC</div>
-                    <div>Travel Company</div>
-                  </td>
-                </tr>
-              </table>
-            </div>
+                <table class="hdr-table">
+                  <tr>
+                    <td class="hdr-left">
+                      {{ $company->address_street }}, {{ $company->address_city }}<br>
+                      Tel.: {{ $company->phone }}<br>
+                      Email: {{ $company->email }}<br>
+                      License №{{ $company->inn }}
+                    </td>
+                    <td class="hdr-right">
+                      <div class="company-name">"{{ $company->name }}" LLC</div>
+                      <div>Travel Company</div>
+                    </td>
+                  </tr>
+                </table>
                 <div class="sep"></div>
-               <div class="body">
-    <p><label>VOUCHER №</label>           {{ $tour->tour_number }}</p>
-    <p><label>Предъявить в:</label>       {{ $cities }}</p>
-    <p><label>Страна:</label>             {{ $tour->country }}</p>
-    <p><label>Количество туристов:</label>{{ $tour->number_people }}</p>
-    <p><label>№ группы:</label>           {{ $tour->tour_number }}</p>   {{-- ← here --}}
-    <p><label>Дата:</label>               {{ $today }}</p>
-    <p><label>Ф.И.О. гида:</label>        {{ optional($tour->guide)->full_name }}</p>
-    <p><label>Город:</label>              {{ $cities }}</p>
-</div>
 
-
+                <div class="body">
+                  <p><label>VOUCHER №</label><span>{{ $v['tour_number'] }}</span></p>
+                  <p><label>Гид:</label>       <span>{{ $v['guide'] }}</span></p>
+                  <p><label>Город:</label>     <span>{{ $v['city'] }}</span></p>
+                  <p><label>Предъявить:</label> <span>{{ $v['monument'] }}</span></p>
+                  <p><label>Страна:</label>     <span>{{ $v['country'] }}</span></p>
+                  <p><label>Туристов:</label>   <span>{{ $v['number_people'] }}</span></p>
+                  <p><label>Дата:</label>       <span>{{ $v['date'] }}</span></p>
+                </div>
               </div>
             </td>
+          @endforeach
 
-            <!-- Right voucher (if exists) -->
-            <td class="right">
-              @if($i + 1 < $count)
-              <div class="voucher">
-                <div class="top">
-              <table class="hdr" width="100%" style="table-layout:fixed; border-collapse:collapse;">
-                <tr>
-                  <td class="cell-left" style="width:65%; border:1px solid #000; padding:4px; vertical-align:top;">
-                    {{ $company->address_street }},<br>{{ $company->address_city }}<br>
-                    Tel.: {{ $company->phone }}<br>
-                    Email: {{ $company->email }}<br>
-                    License №{{ $company->inn }}{{ isset($company->license_date) ? ' from '.$company->license_date->format('d.m.Y') : '' }}
-                  </td>
-                  <td class="cell-right" style="width:35%; border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">
-                    <div style="font-weight:bold; margin-bottom:4px;">"{{ $company->name }}" LLC</div>
-                    <div>Travel Company</div>
-                  </td>
-                </tr>
-              </table>
-            </div>
-                <div class="sep"></div>
-               {{-- … header identical to your two-box layout … --}}
-
-<div class="body">
-    <p><label>VOUCHER №</label>           {{ $tour->tour_number }}</p>
-    <p><label>Предъявить в:</label>       {{ $cities }}</p>
-    <p><label>Страна:</label>             {{ $tour->country }}</p>
-    <p><label>Количество туристов:</label>{{ $tour->number_people }}</p>
-    <p><label>№ группы:</label>           {{ $tour->tour_number }}</p>   {{-- ← here --}}
-    <p><label>Дата:</label>               {{ $today }}</p>
-    <p><label>Ф.И.О. гида:</label>        {{ optional($tour->guide)->full_name }}</p>
-    <p><label>Город:</label>              {{ $cities }}</p>
-</div>
-
-
-              </div>
-              @endif
-            </td>
+          @if($row->count() === 1)
+            <td></td>
+          @endif
         </tr>
-    @endfor
+      @endforeach
     </tbody>
   </table>
 </body>
