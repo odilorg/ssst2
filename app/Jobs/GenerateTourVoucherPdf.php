@@ -58,9 +58,7 @@ class GenerateTourVoucherPdf implements ShouldQueue
         }
 
 
-        // “today” for the voucher header
-        $today = Carbon::now()->format('d.m.Y');
-        // number of blanks per page
+       
 
         /* -----------------------------------------------------------
          | 2) Render PDF
@@ -70,7 +68,7 @@ class GenerateTourVoucherPdf implements ShouldQueue
         $pdf = PDF::loadView('vouchers.dynamic_tour_voucher', [
             'company'     => Company::where('is_operator', true)->first(),
             'vouchers'    => $voucherData,
-            'today'       => $today,
+            
         ])->setPaper('a4', 'portrait');
 
         /* -----------------------------------------------------------
