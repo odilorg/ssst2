@@ -10,10 +10,13 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use App\Jobs\GenerateVoucherTemplatePdf;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CompanyResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CompanyResource\RelationManagers;
+use Filament\Pages\Actions;
+
 
 class CompanyResource extends Resource
 {
@@ -122,6 +125,13 @@ class CompanyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                  // ← new “Regenerate Voucher” button
+             Tables\Actions\Action::make('regenerateVoucher')
+                ->label('Regenerate Voucher Template')
+                ->icon('heroicon-o-document-text')
+                ->requiresConfirmation()
+                ->action(fn() => GenerateVoucherTemplatePdf::dispatch())
+                ->successNotificationTitle('Voucher template regeneration queued'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
