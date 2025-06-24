@@ -87,6 +87,7 @@ class MonumentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                 ->label('Название монумента')
+                ->limit(20)
                     ->searchable(),
                      TextColumn::make('company.name')
                 ->label('Owning Company')
