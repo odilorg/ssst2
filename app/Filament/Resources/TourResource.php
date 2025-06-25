@@ -135,7 +135,7 @@ class TourResource extends Resource
                                         'halfday' => 'Полдня',
                                         'per_daily' => 'За день',
                                     ])
-                                    ->required(),
+                                    ,
                                 // Inside Gid и цена Section
                                 Checkbox::make('is_guide_booked')
                                     ->label('Гид забронирован')
