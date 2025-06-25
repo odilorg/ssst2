@@ -7,14 +7,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tour extends Model
 {
-    protected $fillable = ['name', 'description', 'tour_number',
-     'number_people',
-     'tour_duration',
-     'start_date',
-     'end_date',
-     'image',
-     'tour_file',
-     'country'
+    protected $fillable = [
+        'name',
+        'description',
+        'tour_number',
+        'number_people',
+        'tour_duration',
+        'start_date',
+        'end_date',
+        'image',
+        'tour_file',
+        'country'
     ];
 
     public function tourDays(): HasMany
@@ -26,20 +29,14 @@ class Tour extends Model
     {
         return $this->hasMany(Estimate::class);
     }
-public function bookingProgressPercentage(): int
-{
-    $total = $this->tourDays->count();
+    public function bookingProgressPercentage(): int
+    {
+        $total = $this->tourDays->count();
 
-    if ($total === 0) return 0;
+        if ($total === 0) return 0;
 
-    $ready = $this->tourDays->filter(fn($day) => $day->isFullyBooked())->count();
+        $ready = $this->tourDays->filter(fn($day) => $day->isFullyBooked())->count();
 
-    return intval(($ready / $total) * 100);
-}
-
-
-
-    
-
-    
+        return intval(($ready / $total) * 100);
+    }
 }

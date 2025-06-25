@@ -45,19 +45,17 @@ class TourResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Название')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('tour_number', Str::slug($state))),
+                            ->required(),
 
                         TextInput::make('number_people')
                             ->label('Количество человек')
                             ->numeric()
                             ->required(),
 
-                        TextInput::make('country')  
+                        TextInput::make('country')
                             ->label('Страна')
                             ->required(),
-                              
+
 
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Дата начала')
@@ -107,11 +105,11 @@ class TourResource extends Resource
                             ->label('Название Дня. Day 1,2 и т.д. добавляется автоматически')
                             ->required(),
 
-                            Select::make('city_id')
+                        Select::make('city_id')
                             ->label('Города')
                             ->relationship('cities', 'name')
                             ->multiple()
-                           // ->live()
+                            // ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $set('hotel_rooms', []);
                                 $set('restaurant_meal_types', []);
@@ -119,31 +117,31 @@ class TourResource extends Resource
                             ->default(fn(Get $get) => $get('id') ? \App\Models\City::whereHas('tourDays', fn($q) => $q->where('tour_days.id', $get('id')))->pluck('id') : []) // Fetch cities based on the TourDay ID
                             ->required()
                             ->preload(),
-                        
 
-                          Section::make('Гид и цена')
+
+                        Section::make('Гид и цена')
                             ->description('Выберите гида и тип цены')
                             ->schema([
                                 Forms\Components\Select::make('guide_id')
-                                ->label('Гид')
-                                ->relationship('guide', 'name', function ($query) {
-                                    $query->where('is_marketing', true);
-                                })
-                                ->searchable()
-                                ->preload(),
+                                    ->label('Гид')
+                                    ->relationship('guide', 'name', function ($query) {
+                                        $query->where('is_marketing', true);
+                                    })
+                                    ->searchable()
+                                    ->preload(),
                                 Select::make('price_type_name')
-                                ->options([
-                                    'pickup_dropoff' => 'Встреча/проводы',
-                                    'halfday' => 'Полдня',
-                                    'per_daily' => 'За день',
-                                ])
-                                ->required(),
+                                    ->options([
+                                        'pickup_dropoff' => 'Встреча/проводы',
+                                        'halfday' => 'Полдня',
+                                        'per_daily' => 'За день',
+                                    ])
+                                    ->required(),
                                 // Inside Gid и цена Section
-Checkbox::make('is_guide_booked')
-    ->label('Гид забронирован')
-    ->inline(false),
+                                Checkbox::make('is_guide_booked')
+                                    ->label('Гид забронирован')
+                                    ->inline(false),
                             ]),
-                        
+
                         Forms\Components\Textarea::make('description')
                             ->label('Описание'),
                         Forms\Components\FileUpload::make('image')
@@ -180,7 +178,7 @@ Checkbox::make('is_guide_booked')
                                                             $query->where('category', $category);
                                                         }
                                                     })
-                                                  //  ->required()
+                                                    //  ->required()
                                                     ->preload()
                                                     ->live(),
 
@@ -194,87 +192,87 @@ Checkbox::make('is_guide_booked')
                                                         'economy' => 'Эконом',
                                                         'business' => 'Бизнес',
                                                     ])
-                                                   // ->required()
+                                                    // ->required()
                                                     ->live()
                                                     ->searchable(),
-                                                     Checkbox::make('is_booked')
-            ->label('Забронирован') // Per transport
-            ->inline(false),
+                                                Checkbox::make('is_booked')
+                                                    ->label('Забронирован') // Per transport
+                                                    ->inline(false),
                                             ]),
                                     ]),
 
-                                    Tabs\Tab::make('Отели')
+                                Tabs\Tab::make('Отели')
                                     ->label('Отели')
                                     ->schema([
-                                       Repeater::make('tourDayHotels')
-    ->relationship()
-    ->schema([
-        Select::make('type')
-            ->label('Категория отеля')
-            ->options([
-                'bed_breakfast' => 'Bed & Breakfast',
-                '3_star' => '3 звезды',
-                '4_star' => '4 звезды',
-                '5_star' => '5 звезд',
-            ])
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                $set('hotel_id', null);
-            }),
+                                        Repeater::make('tourDayHotels')
+                                            ->relationship()
+                                            ->schema([
+                                                Select::make('type')
+                                                    ->label('Категория отеля')
+                                                    ->options([
+                                                        'bed_breakfast' => 'Bed & Breakfast',
+                                                        '3_star' => '3 звезды',
+                                                        '4_star' => '4 звезды',
+                                                        '5_star' => '5 звезд',
+                                                    ])
+                                                    ->reactive()
+                                                    ->afterStateUpdated(function ($state, callable $set) {
+                                                        $set('hotel_id', null);
+                                                    }),
 
-        Select::make('hotel_id')
-            ->label('Отель')
-            ->options(fn(Get $get): Collection => Hotel::query()
-                ->where('type', $get('type'))
-                ->whereIn('city_id', $get('../../city_id') ?? [])
-                ->pluck('name', 'id'))
-            ->reactive()
-            ->default(fn($record) => $record?->hotel_id)
-            ->afterStateUpdated(function ($state, callable $set) {
-                Log::info('Hotel ID updated:', ['hotel_id' => $state]);
-                $set('hotelRooms', []);
-            }),
+                                                Select::make('hotel_id')
+                                                    ->label('Отель')
+                                                    ->options(fn(Get $get): Collection => Hotel::query()
+                                                        ->where('type', $get('type'))
+                                                        ->whereIn('city_id', $get('../../city_id') ?? [])
+                                                        ->pluck('name', 'id'))
+                                                    ->reactive()
+                                                    ->default(fn($record) => $record?->hotel_id)
+                                                    ->afterStateUpdated(function ($state, callable $set) {
+                                                        Log::info('Hotel ID updated:', ['hotel_id' => $state]);
+                                                        $set('hotelRooms', []);
+                                                    }),
 
-        // ✅ Correct: checkbox goes here, per hotel
-        Checkbox::make('is_booked')
-            ->label('Отель забронирован')
-            ->inline(false),
+                                                // ✅ Correct: checkbox goes here, per hotel
+                                                Checkbox::make('is_booked')
+                                                    ->label('Отель забронирован')
+                                                    ->inline(false),
 
-        Repeater::make('hotelRooms')
-            ->label('Номера в отеле')
-            ->relationship('hotelRooms')
-            ->schema([
-                Select::make('room_id')
-                    ->label('Номер')
-                    ->options(function (Get $get): Collection {
-                        $hotelId = $get('../../hotel_id');
-                        if (!$hotelId) return collect();
+                                                Repeater::make('hotelRooms')
+                                                    ->label('Номера в отеле')
+                                                    ->relationship('hotelRooms')
+                                                    ->schema([
+                                                        Select::make('room_id')
+                                                            ->label('Номер')
+                                                            ->options(function (Get $get): Collection {
+                                                                $hotelId = $get('../../hotel_id');
+                                                                if (!$hotelId) return collect();
 
-                        return Room::query()
-                            ->where('hotel_id', $hotelId)
-                            ->with('roomType')
-                            ->get()
-                            ->mapWithKeys(fn($room) => [
-                                $room->id => $room->roomType->type ?? 'Unknown Type'
-                            ]);
-                    })
-                    ->searchable()
-                    ->reactive(),
+                                                                return Room::query()
+                                                                    ->where('hotel_id', $hotelId)
+                                                                    ->with('roomType')
+                                                                    ->get()
+                                                                    ->mapWithKeys(fn($room) => [
+                                                                        $room->id => $room->roomType->type ?? 'Unknown Type'
+                                                                    ]);
+                                                            })
+                                                            ->searchable()
+                                                            ->reactive(),
 
-                TextInput::make('quantity')
-                    ->label('Количество')
-                    ->default(1)
-                    ->numeric(),
-            ])
-            ->columns(2)
-            ->collapsible(),
-    ])
-    ->columns(2)
-    ->collapsible(),
+                                                        TextInput::make('quantity')
+                                                            ->label('Количество')
+                                                            ->default(1)
+                                                            ->numeric(),
+                                                    ])
+                                                    ->columns(2)
+                                                    ->collapsible(),
+                                            ])
+                                            ->columns(2)
+                                            ->collapsible(),
 
-                                            
+
                                     ]),
-                                
+
 
                                 Tabs\Tab::make('Рестораны')
                                     ->label('Рестораны')
@@ -316,10 +314,10 @@ Checkbox::make('is_guide_booked')
                                                             return [$key => $humanReadableLabels[$value] ?? $value]; // Fallback to the original value if not mapped
                                                         });
                                                     }),
-                                                     Checkbox::make('is_booked')
-            ->label('Ресторан забронирован') // Per restaurant
-            ->inline(false),
-                                                    //->required(),
+                                                Checkbox::make('is_booked')
+                                                    ->label('Ресторан забронирован') // Per restaurant
+                                                    ->inline(false),
+                                                //->required(),
 
                                             ]),
                                     ]),
