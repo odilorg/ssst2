@@ -25,6 +25,11 @@ class Tour extends Model
         return $this->hasMany(TourDay::class);
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function estimates(): HasMany
     {
         return $this->hasMany(Estimate::class);
