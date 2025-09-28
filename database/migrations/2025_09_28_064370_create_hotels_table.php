@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('hotels', function (Blueprint $table) {
             $table->id();
             $table->foreignId('city_id')->constrained()->onDelete('cascade');
-            $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
+            // $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null'); // TODO: Re-enable when companies table exists
             $table->string('name');
             $table->text('address')->nullable();
             $table->string('category')->nullable();
